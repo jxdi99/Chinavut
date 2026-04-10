@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAZR LED Admin</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">
+        <h1 id="admin-title">Admin: จัดการ Master Data</h1>
+        <div class="subtitle" id="admin-subtitle">แก้ไขสินค้า/Controller ได้ทันที และบันทึกลงฐานข้อมูลของเบราว์เซอร์</div>
+      </div>
+      <div class="toolbar">
+        <div class="pill">Admin: <b id="login-status">ยังไม่ล็อกอิน</b></div>
+        <button class="btn btn-secondary" id="lang-toggle">TH / EN</button>
+        <button class="btn btn-secondary" id="theme-toggle">ธีม: สว่าง</button>
+        <a class="btn btn-primary" id="home-link" href="index.html" data-i18n="backHome">กลับหน้า Calculator</a>
+        <button class="btn btn-dark" id="login-btn" data-i18n="adminLogin">Login Admin</button>
+        <button class="btn btn-secondary" id="logout-btn" style="display:none;" data-i18n="adminLogout">ออกจากระบบ</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row" style="margin-bottom:12px;">
+        <div class="field">
+          <label id="admin-group-label">เลือกหมวดที่ต้องการแก้ไข</label>
+          <select id="admin-group">
+            <option value="UIR">UIR</option>
+            <option value="UOS">UOS</option>
+            <option value="CIH">CIH</option>
+            <option value="controllers">Controllers</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>&nbsp;</label>
+          <button class="btn btn-secondary" id="admin-add-btn" style="width:100%;" data-i18n="addRow">+ เพิ่มแถวใหม่</button>
+        </div>
+      </div>
+
+      <div class="panel" id="admin-panel">
+        <div class="panel-head">
+          <div class="small-muted">แก้ไขข้อมูลในตารางได้ทันที ระบบจะบันทึกให้อัตโนมัติ</div>
+          <div class="toolbar">
+            <button class="btn btn-danger" id="admin-reset-btn" data-i18n="reset">รีเซ็ตเป็นค่าเริ่มต้น</button>
+            <button class="btn btn-success" id="admin-save-btn" data-i18n="saveAll">บันทึกทั้งหมด</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead id="admin-thead"></thead>
+            <tbody id="admin-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="login-modal">
+    <div class="modal-box">
+      <h3 style="margin:0 0 6px;color:var(--primary);" data-i18n="loginTitle">Admin Login</h3>
+      <div class="small-muted" data-i18n="loginDesc">ล็อกอินนี้เก็บไว้ในโค้ด ไม่ต้องใช้ฐานข้อมูล</div>
+      <div class="field" style="margin-top:14px;">
+        <label data-i18n="username">Username</label>
+        <input type="text" id="login-user" autocomplete="username">
+      </div>
+      <div class="field">
+        <label data-i18n="password">Password</label>
+        <input type="password" id="login-pass" autocomplete="current-password">
+      </div>
+      <div class="footer-actions">
+        <button class="btn btn-secondary" id="login-cancel" onclick="document.getElementById('login-modal').style.display='none'" data-i18n="cancel">ยกเลิก</button>
+        <button class="btn btn-primary" id="login-submit" data-i18n="loginBtn">เข้าสู่ระบบ</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="storage.js"></script>
+  <script src="shared.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
