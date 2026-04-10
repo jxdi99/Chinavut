@@ -127,7 +127,7 @@
       <div class="result-row"><span>${App.t('weight')}</span><b>${(totalQty * g.weight).toFixed(1)} kg</b></div>
       <div class="result-row"><span>${App.t('power')}</span><b>${Math.round(area * led.avg).toLocaleString()} / ${Math.round(area * led.max).toLocaleString()} Watts</b></div>
       <div class="result-row"><span>${App.t('amps')}</span><b>${(area * led.max / 220 * 1.25).toFixed(2)} A</b></div>
-      <div class="result-row"><span>${App.t('elecCost')}</span><b>1 ชม. = ${(area * led.max / 1000 * 5).toFixed(2)} บาท </div>
+      <div class="result-row"><span>${App.t('elecCost')}</span><b>1 hour = ${(area * led.max / 1000 * 5).toFixed(2)} บาท </div>
       <div class="result-row"><span>${App.t('productPrice')}</span><b>${prodPrice > 0 ? prodPrice.toLocaleString() + ' บาท' : App.t('notQuoted')}</b></div>
       <div class="result-row"><span>${App.t('installPrice')}</span><b>${installText}</b></div>
       <div class="result-row"><span>${App.t('controllerPrice')} (${escapeHtml(selectedCon?.name || '-')})</span><b>${selectedCon && selectedCon.price > 0 ? selectedCon.price.toLocaleString() + ' บาท' : 'N/A'}</b></div>
