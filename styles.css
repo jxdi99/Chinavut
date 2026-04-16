@@ -61,6 +61,7 @@ a{color:inherit;text-decoration:none}
 .btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
 .btn-danger{background:transparent;color:var(--secondary);border:1px solid color-mix(in srgb, var(--secondary) 35%, var(--border))}
 .btn-success{background:linear-gradient(135deg,var(--success),color-mix(in srgb, var(--success) 70%, #fff));color:#fff}
+.btn-quote{background:linear-gradient(135deg,#e65100,#ff8f00);color:#fff;display:inline-flex;align-items:center;gap:6px}
 .card{
   background:var(--card);backdrop-filter:blur(14px);
   border:1px solid color-mix(in srgb, var(--border) 75%, transparent);

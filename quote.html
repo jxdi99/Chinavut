@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ใบเสนอราคา — RAZR LED Solution</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .coming-soon-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 65vh;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .coming-soon-icon {
+            font-size: 5rem;
+            margin-bottom: 18px;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 8px 24px rgba(124, 140, 255, .25));
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-16px); }
+        }
+
+        .coming-soon-title {
+            font-size: 2.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--primary-2), var(--secondary));
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 4s ease infinite;
+            margin-bottom: 12px;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .coming-soon-desc {
+            color: var(--muted);
+            font-size: 1.1rem;
+            max-width: 480px;
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+
+        .progress-bar-wrapper {
+            width: min(360px, 100%);
+            height: 8px;
+            background: color-mix(in srgb, var(--border) 60%, transparent);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 36px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 35%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-2), var(--secondary));
+            background-size: 200% 100%;
+            animation: shimmer 2s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -100% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .progress-label {
+            font-size: .85rem;
+            color: var(--muted);
+            margin-top: 8px;
+            margin-bottom: 4px;
+        }
+
+        .feature-chips {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 36px;
+        }
+
+        .feature-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: color-mix(in srgb, var(--card) 80%, transparent);
+            backdrop-filter: blur(8px);
+            font-size: .88rem;
+            font-weight: 600;
+            color: var(--muted);
+            transition: all .25s ease;
+        }
+
+        .feature-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(124, 140, 255, .12);
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            font-size: 1rem;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(124, 140, 255, .2);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="topbar">
+            <div class="brand">
+                <h1 id="page-title">📄 ใบเสนอราคา</h1>
+                <div class="subtitle">ระบบจัดทำใบเสนอราคา LED — RAZR Solution</div>
+            </div>
+            <div class="toolbar">
+                <a class="btn btn-secondary" href="index.html">← กลับหน้าหลัก</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="coming-soon-wrapper">
+                <div class="coming-soon-icon">🚀</div>
+                <div class="coming-soon-title">Coming Soon</div>
+                <p class="coming-soon-desc">
+                    ระบบจัดทำใบเสนอราคาอัตโนมัติ กำลังอยู่ระหว่างการพัฒนา<br>
+                    เร็วๆ นี้คุณจะสามารถสร้างใบเสนอราคาได้อย่างง่ายดาย
+                </p>
+
+                <div class="feature-chips">
+                    <span class="feature-chip">📝 สร้างใบเสนอราคา</span>
+                    <span class="feature-chip">💰 คำนวณราคาอัตโนมัติ</span>
+                    <span class="feature-chip">📤 Export PDF</span>
+                    <span class="feature-chip">🗂️ บันทึกประวัติ</span>
+                </div>
+
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar-fill"></div>
+                </div>
+                <div class="progress-label">กำลังพัฒนา... 35%</div>
+
+                <a class="btn btn-primary back-btn" href="index.html">← กลับไปคำนวณ LED</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="shared.js"></script>
+    <script>
+        // Apply saved theme
+        const saved = localStorage.getItem('razr_theme');
+        if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    </script>
+</body>
+
+</html>

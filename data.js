@@ -43,6 +43,7 @@
       { name: 'X2s', load: 1_300_000, price: 25_000 },
       { name: 'X4m', load: 2_600_000, price: 20_000 },
       { name: 'X4E', load: 2_600_000, price: 40_000 },
+      { name: 'X4E-W', load: 2_600_000, price: 55_000 },
       { name: 'X6', load: 3_930_000, price: 45_000 },
       { name: 'X7', load: 5_240_000, price: 50_000 },
       { name: 'X8E', load: 5_240_000, price: 70_000 },
