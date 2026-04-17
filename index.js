@@ -191,6 +191,9 @@
     state = await AppStorage.loadState();
     state.ui = state.ui || { theme: 'light', lang: 'th' };
     state.masterData = state.masterData || App.clone(DEFAULT_DATA);
+    if (!state.masterData.accessories) {
+      state.masterData.accessories = App.clone(DEFAULT_DATA.accessories);
+    }
     state.loggedIn = false;
 
     App.state = state;
