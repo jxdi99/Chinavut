@@ -241,7 +241,14 @@
       const targetIndex = Number(tr.dataset.index);
       if (draggedIndex === null || targetIndex === draggedIndex) return;
       
-      const arr = selectedGroup === 'controllers' ? data().controllers : group().items;
+      let arr;
+      if (selectedGroup === 'controllers') {
+        arr = data().controllers;
+      } else if (selectedGroup === 'accessories') {
+        arr = data().accessories;
+      } else {
+        arr = group().items;
+      }
       const item = arr.splice(draggedIndex, 1)[0];
       arr.splice(targetIndex, 0, item);
       
