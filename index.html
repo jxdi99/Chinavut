@@ -25,8 +25,8 @@
 
         <div class="tabs">
             <button class="tab-btn active" data-group="UIR">UIRx/c (640x480)</button>
-            <button class="tab-btn" data-group="UOS">UOSx (960x960)</button>
             <button class="tab-btn" data-group="CIH">CIH (600x337.5)</button>
+            <button class="tab-btn" data-group="UOS">UOSx (960x960)</button>
         </div>
 
         <div class="card">
@@ -75,6 +75,30 @@
                         <select id="con-select"></select>
                         <div class="small-muted" style="margin-top:8px;">คุณสามารถเลือกเองได้
                             ระบบจะไม่ทับค่าที่เลือกด้วยมือ</div>
+                    </div>
+
+                    <div class="field" style="margin-top:16px; padding:12px; background:color-mix(in srgb, var(--card) 90%, transparent); border:1px dashed var(--border); border-radius:12px;">
+                        <label>Controller เพิ่มเติม / อุปกรณ์เสริม</label>
+                        <div style="display:flex; gap:8px; margin-bottom:10px;">
+                            <div style="flex:2;">
+                                <select id="extra-con-select">
+                                    <option value="-1">-- ไม่รับ Controller เพิ่ม --</option>
+                                </select>
+                            </div>
+                            <div style="flex:1;">
+                                <input type="number" id="extra-con-qty" placeholder="จำนวน" min="0" value="0">
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <div style="flex:2;">
+                                <select id="acc-select">
+                                    <option value="-1">-- ไม่รับอุปกรณ์เสริม --</option>
+                                </select>
+                            </div>
+                            <div style="flex:1;">
+                                <input type="number" id="acc-qty" placeholder="จำนวน" min="0" value="0">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="footer-actions" style="justify-content:flex-start;margin-top:18px;">

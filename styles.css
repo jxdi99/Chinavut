@@ -98,6 +98,12 @@ input:focus,select:focus,textarea:focus{border-color:color-mix(in srgb, var(--pr
   display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-bottom:1px solid color-mix(in srgb, var(--border) 70%, transparent);
   font-size:.98rem
 }
+.result-row.bg-highlight {
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 4px;
+}
 .result-row:last-child{border-bottom:0}
 .result-row b{text-align:right}
 .result-total{

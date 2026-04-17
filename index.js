@@ -29,6 +29,14 @@
     const conSel = document.getElementById('con-select');
     conSel.innerHTML = currentData().controllers.map((it, idx) => `<option value="${idx}">${escapeHtml(it.name)} (Cap: ${(it.load / 1000000).toFixed(2)}M px)</option>`).join('');
     conSel.onchange = () => { manualController = true; recalc(); };
+
+    const extraConSel = document.getElementById('extra-con-select');
+    extraConSel.innerHTML = '<option value="-1">-- ไม่รับ Controller เพิ่ม --</option>' + 
+       currentData().controllers.map((it, idx) => `<option value="${idx}">${escapeHtml(it.name)}</option>`).join('');
+    
+    const accSel = document.getElementById('acc-select');
+    accSel.innerHTML = '<option value="-1">-- ไม่รับอุปกรณ์เสริม --</option>' + 
+       (currentData().accessories || []).map((it, idx) => `<option value="${idx}">${escapeHtml(it.name)} (${it.price.toLocaleString()} ฿)</option>`).join('');
   }
 
   function setTabActive(groupKey) {
@@ -111,8 +119,28 @@
       installText = 'N/A (Outdoor)';
     }
 
+    const extraConIdx = Number(document.getElementById('extra-con-select').value);
+    const extraConQty = Number(document.getElementById('extra-con-qty').value) || 0;
+    let extraConPrice = 0;
+    let extraConHtml = '';
+    if (extraConIdx >= 0 && extraConQty > 0) {
+      const eCon = currentData().controllers[extraConIdx];
+      extraConPrice = eCon.price * extraConQty;
+      extraConHtml = `<div class="result-row bg-highlight"><span>Controller ปลายทาง (${escapeHtml(eCon.name)} x${extraConQty})</span><b>${extraConPrice.toLocaleString()} บาท</b></div>`;
+    }
+
+    const accIdx = Number(document.getElementById('acc-select').value);
+    const accQty = Number(document.getElementById('acc-qty').value) || 0;
+    let accPrice = 0;
+    let accHtml = '';
+    if (accIdx >= 0 && accQty > 0) {
+      const aItem = currentData().accessories[accIdx];
+      accPrice = aItem.price * accQty;
+      accHtml = `<div class="result-row bg-highlight"><span>อุปกรณ์เสริม (${escapeHtml(aItem.name)} x${accQty})</span><b>${accPrice.toLocaleString()} บาท</b></div>`;
+    }
+
     const prodPrice = totalQty * led.price;
-    const total = prodPrice + installPrice + (selectedCon?.price || 0);
+    const total = prodPrice + installPrice + (selectedCon?.price || 0) + extraConPrice + accPrice;
 
     document.getElementById('recom-badge').textContent = recIdx !== -1
       ? `${App.t('recommend')} ${currentData().controllers[recIdx].name}`
@@ -128,9 +156,11 @@
       <div class="result-row"><span>${App.t('power')}</span><b>${Math.round(area * led.avg).toLocaleString()} / ${Math.round(area * led.max).toLocaleString()} Watts</b></div>
       <div class="result-row"><span>${App.t('amps')}</span><b>${(area * led.max / 220 * 1.25).toFixed(2)} A</b></div>
       <div class="result-row"><span>${App.t('elecCost')}</span><b>1 hour = ${(area * led.max / 1000 * 5).toFixed(2)} บาท </div>
-      <div class="result-row"><span>${App.t('productPrice')}</span><b>${prodPrice > 0 ? prodPrice.toLocaleString() + ' บาท' : App.t('notQuoted')}</b></div>
+      <div class="result-row" style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);"><span>${App.t('productPrice')}</span><b>${prodPrice > 0 ? prodPrice.toLocaleString() + ' บาท' : App.t('notQuoted')}</b></div>
       <div class="result-row"><span>${App.t('installPrice')}</span><b>${installText}</b></div>
       <div class="result-row"><span>${App.t('controllerPrice')} (${escapeHtml(selectedCon?.name || '-')})</span><b>${selectedCon && selectedCon.price > 0 ? selectedCon.price.toLocaleString() + ' บาท' : 'N/A'}</b></div>
+      ${extraConHtml}
+      ${accHtml}
       <div class="result-total">${App.t('total')}: ${prodPrice > 0 ? total.toLocaleString() + ' บาท' : App.t('notQuoted2')}</div>
     `;
   }
@@ -181,6 +211,11 @@
 
     document.getElementById('width_m').addEventListener('input', recalc);
     document.getElementById('height_m').addEventListener('input', recalc);
+
+    document.getElementById('extra-con-select').addEventListener('change', recalc);
+    document.getElementById('extra-con-qty').addEventListener('input', recalc);
+    document.getElementById('acc-select').addEventListener('change', recalc);
+    document.getElementById('acc-qty').addEventListener('input', recalc);
 
     function snapToSize(elId, useW) {
       document.getElementById(elId).addEventListener('blur', (e) => {

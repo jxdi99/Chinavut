@@ -58,6 +58,9 @@
       { name: 'VX6', load: 3_900_000, price: 80_000 },
       { name: 'AX08', load: 5_240_000, price: 67_000 },
       { name: 'AX06', load: 3_930_000, price: 49_000 }
+    ],
+    accessories: [
+      { name: 'SL10', price: 15_000 }
     ]
   };
 
