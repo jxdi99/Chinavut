@@ -32,7 +32,7 @@
 
     const extraConSel = document.getElementById('extra-con-select');
     extraConSel.innerHTML = '<option value="-1">-- ไม่รับ Controller เพิ่ม --</option>' + 
-       currentData().controllers.map((it, idx) => `<option value="${idx}">${escapeHtml(it.name)}</option>`).join('');
+       currentData().controllers.map((it, idx) => `<option value="${idx}">${escapeHtml(it.name)} (Cap: ${(it.load / 1000000).toFixed(2)}M px)</option>`).join('');
     
     const accSel = document.getElementById('acc-select');
     accSel.innerHTML = '<option value="-1">-- ไม่รับอุปกรณ์เสริม --</option>' + 

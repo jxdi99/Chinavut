@@ -78,6 +78,24 @@
           </td>
         </tr>
       `).join('');
+    } else if (selectedGroup === 'accessories') {
+      thead.innerHTML = `
+        <tr>
+          <th style="width:40px;"></th>
+          <th>ชื่ออุปกรณ์เสริม</th>
+          <th>${App.t('price')}</th>
+          <th>จัดการ</th>
+        </tr>`;
+      tbody.innerHTML = (data().accessories || []).map((it, idx) => `
+        <tr data-index="${idx}">
+          <td class="drag-handle" style="cursor:grab; text-align:center; font-size:1.2rem; color:var(--muted); user-select:none;">☰</td>
+          <td><input data-kind="accessory" data-field="name" data-index="${idx}" type="text" value="${escapeHtml(it.name)}"></td>
+          <td><input data-kind="accessory" data-field="price" data-index="${idx}" type="number" value="${it.price}"></td>
+          <td>
+            <button class="mini-btn delete" data-action="delete-accessory" data-index="${idx}">${App.t('delete')}</button>
+          </td>
+        </tr>
+      `).join('');
     } else {
       const items = group().items;
       thead.innerHTML = `
@@ -109,7 +127,7 @@
   }
 
   function normalizeGroupKey() {
-    if (selectedGroup !== 'controllers' && !data()[selectedGroup]) selectedGroup = 'UIR';
+    if (selectedGroup !== 'controllers' && selectedGroup !== 'accessories' && !data()[selectedGroup]) selectedGroup = 'UIR';
   }
 
   function addRow(){
@@ -117,6 +135,9 @@
     normalizeGroupKey();
     if (selectedGroup === 'controllers') {
       data().controllers.push({ name: 'NEW', load: 1000000, price: 0 });
+    } else if (selectedGroup === 'accessories') {
+      if (!data().accessories) data().accessories = [];
+      data().accessories.push({ name: 'NEW ACCESSORY', price: 0 });
     } else {
       group().items.push({ name: 'NEW MODEL', rw: 0, rh: 0, max: 0, avg: 0, price: 0 });
     }
@@ -138,6 +159,13 @@
     scheduleSave();
   }
 
+  function deleteAccessory(idx){
+    if (!confirm(App.t('confirmDelete'))) return;
+    if (data().accessories) data().accessories.splice(idx, 1);
+    renderTable();
+    scheduleSave();
+  }
+
   function handleTableInput(e){
     const el = e.target;
     if (!(el instanceof HTMLInputElement)) return;
@@ -150,6 +178,8 @@
       group().items[index][field] = field === 'name' ? el.value : Number(el.value || 0);
     } else if (kind === 'controller' && data().controllers[index]) {
       data().controllers[index][field] = field === 'name' ? el.value : Number(el.value || 0);
+    } else if (kind === 'accessory' && data().accessories[index]) {
+      data().accessories[index][field] = field === 'name' ? el.value : Number(el.value || 0);
     }
     scheduleSave();
   }
@@ -161,6 +191,7 @@
     const action = btn.dataset.action;
     if (action === 'delete-item') deleteItem(idx);
     if (action === 'delete-controller') deleteController(idx);
+    if (action === 'delete-accessory') deleteAccessory(idx);
   }
 
   let draggedIndex = null;
