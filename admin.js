@@ -30,9 +30,7 @@
   function closeLogin() { document.getElementById('login-modal').style.display = 'none'; }
 
   function updateLoginUI() {
-    const u = App.state.currentUser;
-    const statusText = u ? `${App.t('welcome')} คุณ ${u.name} (${u.dept})` : App.t('adminOff');
-    document.getElementById('login-status').textContent = statusText;
+    App.renderWelcomeBanner();
     
     document.getElementById('login-btn').style.display = loggedIn ? 'none' : 'inline-block';
     document.getElementById('logout-btn').style.display = loggedIn ? 'inline-block' : 'none';

@@ -9,20 +9,21 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="container page-fade-in">
         <div class="topbar">
             <div class="brand">
                 <h1 id="app-title">RAZR LED Solution Calculator Pro</h1>
                 <div class="subtitle" id="app-subtitle">คำนวณสเปก, ราคา, และจัดการสินค้าได้จากหน้า Admin</div>
             </div>
             <div class="toolbar">
-                <div class="pill"><span id="admin-status-pill" data-i18n="adminOff">Admin: ยังไม่ล็อกอิน</span></div>
                 <button class="btn btn-secondary" id="lang-toggle" data-i18n="lang">TH / EN</button>
                 <button class="btn btn-secondary" id="theme-toggle" data-i18n="theme">ธีม: สว่าง</button>
                 <button class="btn btn-secondary" id="logout-btn" data-i18n="adminLogout" style="display:none;">Logout</button>
                 <a class="btn btn-primary" id="admin-link" href="admin.html" data-i18n="openAdmin">ไปหน้า Admin</a>
             </div>
         </div>
+
+        <div id="welcome-banner-section"></div>
 
         <div class="tabs">
             <button class="tab-btn active" data-group="UIR" data-i18n="tab1">UIRx/c (640x480)</button>

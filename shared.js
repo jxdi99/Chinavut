@@ -67,10 +67,26 @@
     }
   };
 
-  App.logout = async function(){
-    const state = await AppStorage.loadState();
-    delete state.currentUser;
-    await AppStorage.saveState(state);
+  App.logout = async function () {
+    App.state.currentUser = null;
+    await AppStorage.saveState(App.state);
     window.location.href = 'login.html';
+  };
+
+  App.renderWelcomeBanner = function () {
+    const container = document.getElementById('welcome-banner-section');
+    if (!container) return;
+    
+    const u = App.state.currentUser;
+    if (u) {
+      container.innerHTML = `
+        <div class="welcome-banner">
+          <div class="welcome-dept">${u.dept} DEPARTMENT</div>
+          <div class="welcome-title">${App.t('welcome')} คุณ ${u.name}</div>
+        </div>
+      `;
+    } else {
+      container.innerHTML = '';
+    }
   };
 })();

@@ -202,12 +202,12 @@
     document.title = App.t('appTitle');
     document.getElementById('app-title').textContent = App.t('appTitle');
     document.getElementById('app-subtitle').textContent = App.t('subtitle');
-    const statusPill = document.getElementById('admin-status-pill');
-    if (statusPill) {
-      const u = state.currentUser;
-      statusPill.textContent = u ? `${App.t('welcome')} คุณ ${u.name} (${u.dept})` : App.t('adminOff');
-    }
+    
+    App.renderWelcomeBanner();
     App.applyLanguage();
+
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) logoutBtn.style.display = state.currentUser ? 'inline-block' : 'none';
   }
 
   App.renderAll = function () {

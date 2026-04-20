@@ -149,17 +149,19 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="container page-fade-in">
         <div class="topbar">
             <div class="brand">
-                <h1 id="page-title" data-i18n="makeQuote">📄 ใบเสนอราคา</h1>
+                <h1>RAZR LED Solution</h1>
                 <div class="subtitle" data-i18n="quoteSub">ระบบจัดทำใบเสนอราคา LED — RAZR Solution</div>
             </div>
             <div class="toolbar">
-                <a class="btn btn-secondary" href="index.html" data-i18n="backHome">← กลับหน้าหลัก</a>
+                <button class="btn btn-secondary" onclick="window.print()">Print PDF</button>
                 <button class="btn btn-secondary" id="logout-btn" data-i18n="adminLogout">Logout</button>
             </div>
         </div>
+
+        <div id="welcome-banner-section"></div>
 
         <div class="card">
             <div class="coming-soon-wrapper">
@@ -196,6 +198,7 @@
             const state = await AppStorage.loadState();
             App.state = state || { ui: { lang: 'th', theme: 'light' } };
             App.applyLanguage();
+            App.renderWelcomeBanner();
 
             const logoutBtn = document.getElementById('logout-btn');
             if (logoutBtn) logoutBtn.addEventListener('click', App.logout);
