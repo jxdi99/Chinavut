@@ -162,6 +162,15 @@
       else ratioText = `${App.t('ratioRaw')} (${ratio.toFixed(2)})`;
     }
 
+    const ratioFeedback = document.getElementById('aspect-ratio-feedback');
+    const ratioTextEl = document.getElementById('aspect-ratio-text');
+    if (ratioText) {
+      ratioTextEl.textContent = ratioText;
+      ratioFeedback.style.display = 'block';
+    } else {
+      ratioFeedback.style.display = 'none';
+    }
+
     document.getElementById('result-display').innerHTML = `
       <div class="result-row"><span>${App.t('screenSize')}</span><b>${screenW.toFixed(2)} x ${screenH.toFixed(2)} ${App.t('unitMeter')}</b></div>
       ${ratioText ? `<div class="result-row"><span>${App.t('aspectRatio')}</span><b style="color:var(--primary);">${ratioText}</b></div>` : ''}

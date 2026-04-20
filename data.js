@@ -187,7 +187,7 @@
       tab3: 'CIH (600x337.5)',
       selectLed: 'Select LED Display Model',
       qtyW: 'Cabinets (Width)',
-      qtyH: 'Cabinet Qty (Vertical)',
+      qtyH: 'Cabinets (Height)',
       controller: 'Select Controller',
       calcAgain: 'Recalculate',
       refresh: 'Refresh Data',
