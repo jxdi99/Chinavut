@@ -9,14 +9,6 @@
 
         const input = document.getElementById('employee-id');
         const submitBtn = document.getElementById('login-submit');
-        const badges = document.querySelectorAll('.id-badge');
-
-        badges.forEach(badge => {
-            badge.addEventListener('click', () => {
-                input.value = badge.dataset.id || badge.textContent;
-                input.focus();
-            });
-        });
 
         async function handleLogin() {
             const val = input.value.trim();
@@ -45,14 +37,14 @@
                 if (i === 2 || i === 4 || i === 5) res += '-';
                 res += clean[i];
             }
-            return res.substring(0, 13); // Max length HR-XX-X-XXX
+            return res.substring(0, 13); // Max length XX-XX-X-XXX
         }
 
         input.addEventListener('input', (e) => {
             const start = input.selectionStart;
             const end = input.selectionEnd;
             const formatted = formatId(input.value);
-            
+
             // Only update if changed to avoid cursor jumping issues in some cases
             if (input.value !== formatted) {
                 input.value = formatted;

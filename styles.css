@@ -149,3 +149,25 @@ td input,td select{width:100%;padding:8px 9px;border-radius:10px;font-size:.9rem
   .result-total{font-size:1.25rem}
   .brand h1{font-size:1.2rem}
 }
+
+/* Login Page */
+.login-card {
+  max-width: 400px;
+  margin: 100px auto;
+  padding: 40px;
+  text-align: center;
+}
+.login-card h2 {
+  margin-bottom: 24px;
+  color: var(--primary);
+}
+.back-home {
+  margin-top: 20px;
+  display: inline-block;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.back-home:hover {
+  color: var(--primary);
+}
