@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail — RAZR LED Solution</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        @media print {
+            body { padding: 0; background: #fff !important; }
+            .no-print { display: none !important; }
+        }
+
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .detail-header .logo {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+            letter-spacing: 2px;
+        }
+
+        .detail-header .model-info {
+            flex: 1;
+        }
+
+        .detail-header .model-info h2 {
+            margin: 0;
+            font-size: 1.3rem;
+            color: var(--primary);
+        }
+
+        .detail-header .model-info .sub {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .screen-preview {
+            position: relative;
+            background: linear-gradient(135deg, #0a1628, #1a2744);
+            border-radius: 16px;
+            margin-bottom: 28px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 280px;
+            border: 2px solid var(--border);
+        }
+
+        .screen-box {
+            border: 2px dashed rgba(124,140,255,0.5);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+            padding: 40px 60px;
+            color: rgba(255,255,255,0.7);
+            position: relative;
+        }
+
+        .screen-box .dim-label {
+            position: absolute;
+            color: rgba(124,140,255,0.9);
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .screen-box .dim-w { top: -22px; left: 50%; transform: translateX(-50%); }
+        .screen-box .dim-h { right: -70px; top: 50%; transform: translateY(-50%); }
+
+        .screen-box .inner-text {
+            font-size: 2rem;
+            font-weight: 800;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .screen-box .res-text {
+            font-size: 0.9rem;
+            color: rgba(124,140,255,0.6);
+        }
+
+        .spec-section-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .spec-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .spec-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .spec-table th {
+            text-align: center;
+            padding: 10px 12px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-2));
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .spec-table td {
+            padding: 9px 12px;
+            font-size: 0.88rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .spec-table tr:nth-child(even) td {
+            background: color-mix(in srgb, var(--bg) 60%, var(--card));
+        }
+
+        .spec-table td:first-child {
+            font-weight: 600;
+            color: var(--text);
+            width: 45%;
+        }
+
+        .spec-table td:last-child {
+            text-align: right;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .spec-table .highlight td {
+            background: color-mix(in srgb, var(--primary) 8%, transparent);
+        }
+
+        .detail-footer {
+            text-align: center;
+            padding: 16px;
+            color: var(--muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .spec-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container page-fade-in">
+        <div class="topbar no-print">
+            <div class="brand">
+                <h1>RAZR LED Solution</h1>
+                <div class="subtitle">Screen & Panel Details</div>
+            </div>
+            <div class="toolbar">
+                <button class="btn btn-secondary" onclick="window.print()">🖨️ Print PDF</button>
+                <button class="btn btn-primary" onclick="window.close()">← กลับ</button>
+            </div>
+        </div>
+
+        <div class="card" id="detail-content">
+            <div class="detail-header">
+                <div class="logo">R∕ZR</div>
+                <div class="model-info">
+                    <h2 id="detail-title">Loading...</h2>
+                    <div class="sub" id="detail-subtitle"></div>
+                </div>
+            </div>
+
+            <div class="screen-preview" id="screen-preview">
+                <div class="screen-box">
+                    <div class="dim-label dim-w" id="dim-w">—</div>
+                    <div class="dim-label dim-h" id="dim-h">—</div>
+                    <div class="inner-text" id="array-text">—</div>
+                    <div class="res-text" id="res-text">—</div>
+                </div>
+            </div>
+
+            <div class="spec-section-title">Screen and Panel Details</div>
+
+            <div class="spec-grid">
+                <div>
+                    <table class="spec-table">
+                        <thead><tr><th colspan="2">Product Details</th></tr></thead>
+                        <tbody id="product-details"></tbody>
+                    </table>
+                </div>
+                <div>
+                    <table class="spec-table">
+                        <thead><tr><th colspan="2">Display Information</th></tr></thead>
+                        <tbody id="display-info"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="detail-footer">
+                RAZR LED Solution Calculator Pro — Generated <span id="gen-date"></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="storage.js"></script>
+    <script src="shared.js"></script>
+    <script>
+        (function () {
+            const raw = sessionStorage.getItem('ledDetail');
+            if (!raw) {
+                document.getElementById('detail-content').innerHTML = '<p style="text-align:center;padding:60px;color:var(--muted);">ไม่พบข้อมูล กรุณาคำนวณจากหน้า Calculator ก่อนกดปุ่ม Detail</p>';
+                return;
+            }
+
+            const d = JSON.parse(raw);
+
+            // Header
+            const typeLabel = d.groupType === 'indoor' ? 'LED Indoor' : 'LED Outdoor';
+            document.getElementById('detail-title').textContent = `${typeLabel} — RAZR ${d.modelName}`;
+            document.getElementById('detail-subtitle').textContent = `จอกว้าง ${d.screenW.toFixed(2)} สูง ${d.screenH.toFixed(2)} เมตร`;
+
+            // Screen Preview
+            document.getElementById('dim-w').textContent = `${d.screenW.toFixed(2)} เมตร`;
+            document.getElementById('dim-h').textContent = `${d.screenH.toFixed(2)} เมตร`;
+            document.getElementById('array-text').textContent = `${d.wQty} x ${d.hQty}`;
+            document.getElementById('res-text').textContent = `${d.displayResW} x ${d.displayResH} px`;
+
+            // Product Details Table
+            function row(label, value, highlight) {
+                return `<tr ${highlight ? 'class="highlight"' : ''}><td>${label}</td><td>${value}</td></tr>`;
+            }
+
+            document.getElementById('product-details').innerHTML =
+                row('Pixel Pitch', `P${d.pixelPitch} mm.`) +
+                row('LED Type', `${typeLabel}`, true) +
+                row('Cabinet Size (WxH)', `${d.cabinetW} x ${d.cabinetH} mm.`, true) +
+                row('Cabinet Resolution (WxH)', `${d.resW} x ${d.resH} Pixel`) +
+                row('Refresh Rate', `3,840 Hz`, true) +
+                row('Material', 'Die-casting Aluminum', true) +
+                row('Maintenance', 'Service Front') +
+                row('Cabinet Weight', `${d.cabinetWeight} Kg.`) +
+                row('Typical Power (W/m²)', `${d.avgW} W`) +
+                row('Max Power (W/m²)', `${d.maxW} W`);
+
+            // Display Information Table
+            document.getElementById('display-info').innerHTML =
+                row('Panel Width', `${d.screenW.toFixed(2)} m`) +
+                row('Panel Height', `${d.screenH.toFixed(2)} m`) +
+                row('Screen Diagonal', `${d.diagonal.toFixed(3)} m²`, true) +
+                row('Cabinet Array', `${d.wQty} x ${d.hQty} Unit`, true) +
+                row('Total Cabinets', `${d.totalQty} Unit`) +
+                row('Display Resolution (WxH)', `${d.displayResW} x ${d.displayResH} Pixel`) +
+                row('Display Resolution (All)', `${d.totalPixels.toLocaleString()} Pixel`) +
+                row('Pixel Density (px/sq.m.)', `${d.pixelDensity.toLocaleString()} Pixel`, true) +
+                row('LED-Weight', `${d.totalWeight.toFixed(1)} Kg.`) +
+                row('LED Max Power', `${d.totalPowerMax.toLocaleString()} W`);
+
+            // Footer
+            document.getElementById('gen-date').textContent = new Date().toLocaleDateString('th-TH', {
+                year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+        })();
+    </script>
+</body>
+</html>

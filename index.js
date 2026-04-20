@@ -188,6 +188,32 @@
       ${accHtml}
       <div class="result-total">${App.t('total')}: ${prodPrice > 0 ? total.toLocaleString() + ' ' + App.t('unitBaht') : App.t('notQuoted2')}</div>
     `;
+
+    // Save current specs to sessionStorage for Detail page
+    const pixelPitch = led.name.match(/[\d.]+$/)?.[0] || '?';
+    sessionStorage.setItem('ledDetail', JSON.stringify({
+      modelName: led.name,
+      groupKey: activeGroup,
+      groupType: g.type,
+      pixelPitch,
+      cabinetW: g.w,
+      cabinetH: g.h,
+      cabinetWeight: g.weight,
+      resW: led.rw,
+      resH: led.rh,
+      avgW: led.avg,
+      maxW: led.max,
+      wQty, hQty, totalQty,
+      screenW, screenH, area,
+      displayResW: resW,
+      displayResH: resH,
+      totalPixels,
+      totalWeight: (totalQty * g.weight),
+      totalPowerMax: Math.round(area * led.max),
+      totalPowerAvg: Math.round(area * led.avg),
+      pixelDensity: area > 0 ? Math.round(totalPixels / area) : 0,
+      diagonal: Math.sqrt(screenW * screenW + screenH * screenH)
+    }));
   }
 
   async function switchGroup(groupKey) {
@@ -273,6 +299,14 @@
     snapToSize('height_m', false);
 
     document.getElementById('mode-qty').addEventListener('click', () => {
+      // Convert current size values to qty before switching
+      if (calcMode === 'size') {
+        const g = group();
+        const widthM = parseFloat(document.getElementById('width_m').value) || 0;
+        const heightM = parseFloat(document.getElementById('height_m').value) || 0;
+        if (widthM > 0) document.getElementById('w_qty').value = Math.max(1, Math.round((widthM * 1000) / g.w));
+        if (heightM > 0) document.getElementById('h_qty').value = Math.max(1, Math.round((heightM * 1000) / g.h));
+      }
       calcMode = 'qty';
       document.getElementById('mode-qty').classList.add('active');
       document.getElementById('mode-size').classList.remove('active');
@@ -282,6 +316,14 @@
     });
 
     document.getElementById('mode-size').addEventListener('click', () => {
+      // Convert current qty values to size before switching
+      if (calcMode === 'qty') {
+        const g = group();
+        const wQty = parseInt(document.getElementById('w_qty').value) || 0;
+        const hQty = parseInt(document.getElementById('h_qty').value) || 0;
+        if (wQty > 0) document.getElementById('width_m').value = ((wQty * g.w) / 1000).toFixed(2);
+        if (hQty > 0) document.getElementById('height_m').value = ((hQty * g.h) / 1000).toFixed(2);
+      }
       calcMode = 'size';
       document.getElementById('mode-size').classList.add('active');
       document.getElementById('mode-qty').classList.remove('active');
@@ -295,13 +337,23 @@
     await switchGroup('UIR');
 
     // keep texts consistent after initial render
-    document.getElementById('calc-refresh').addEventListener('click', async () => {
-      state = await AppStorage.loadState();
-      App.state = state;
-      App.applyLanguage();
-      initSelects();
+    document.getElementById('calc-reset').addEventListener('click', () => {
+      document.getElementById('w_qty').value = '';
+      document.getElementById('h_qty').value = '';
+      document.getElementById('width_m').value = '';
+      document.getElementById('height_m').value = '';
+      document.getElementById('extra-con-select').value = '-1';
+      document.getElementById('extra-con-qty').value = '0';
+      document.getElementById('acc-select').value = '-1';
+      document.getElementById('acc-qty').value = '0';
+      manualController = false;
       recalc();
-      App.showToast(App.t('saved'));
+      App.showToast('รีเซ็ตข้อมูลเรียบร้อย');
+    });
+
+    document.getElementById('detail-btn').addEventListener('click', () => {
+      recalc(); // ensure latest data is saved
+      window.open('detail.html', '_blank');
     });
   }
 
