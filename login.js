@@ -1,5 +1,5 @@
 (function () {
-    const EXAMPLES = ['HR-MK-4-025', 'HR-SP-7-007', 'HR-SP-7-009', 'HR-SP-7-010', 'HR-SV-6-014'];
+    const EXAMPLES = Object.keys(window.STAFF_DATA);
 
     async function init() {
         const state = await AppStorage.loadState();
@@ -12,12 +12,32 @@
 
         async function handleLogin() {
             const val = input.value.trim();
-            if (EXAMPLES.includes(val)) {
+            const staff = window.STAFF_DATA[val];
+            if (staff) {
                 // Success
-                App.showToast(`${App.t('welcome')} ID: ${val}`);
+                const cleanName = (fullName) => {
+                    let name = fullName;
+                    const prefixes = ['นาย ', 'นางสาว ', 'น.ส. ', 'น.ส.', 'นาง '];
+                    for (const p of prefixes) {
+                        if (name.startsWith(p)) {
+                            name = name.substring(p.length).trim();
+                            break;
+                        }
+                    }
+                    return name.split(/\s+/)[0];
+                };
 
-                // Store logged in user in state if needed
-                App.state.currentUser = { id: val, role: 'employee' };
+                const firstName = cleanName(staff.name);
+                App.showToast(`${App.t('welcome')} คุณ ${firstName}`);
+                
+                // Store logged in user in state
+                App.state.currentUser = { 
+                    id: val, 
+                    name: firstName, 
+                    nick: staff.nick, 
+                    dept: staff.dept,
+                    role: 'employee' 
+                };
                 await AppStorage.saveState(App.state);
 
                 setTimeout(() => {

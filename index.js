@@ -204,7 +204,8 @@
     document.getElementById('app-subtitle').textContent = App.t('subtitle');
     const statusPill = document.getElementById('admin-status-pill');
     if (statusPill) {
-      statusPill.textContent = state.currentUser ? `${state.currentUser.id} (${App.t('loginOk')})` : App.t('adminOff');
+      const u = state.currentUser;
+      statusPill.textContent = u ? `${App.t('welcome')} คุณ ${u.name} (${u.dept})` : App.t('adminOff');
     }
     App.applyLanguage();
   }

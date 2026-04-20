@@ -1,4 +1,22 @@
 (function () {
+  window.STAFF_DATA = {
+    'HR-MK-4-025': { name: 'นาย ดำรง สูงเรือง', nick: 'ดำ', dept: 'LED' },
+    'HR-SP-7-007': { name: 'นาย ภาวัต ศิริวัฒน์', nick: 'หน่อง', dept: 'LED' },
+    'HR-SP-7-009': { name: 'นาย ศิริศักดิ์ ทุมดี', nick: 'ศักดิ์', dept: 'LED' },
+    'HR-SP-7-010': { name: 'นาย สรศักดิ์ หัดกันยา', nick: 'เจได', dept: 'LED' },
+    'HR-SV-6-014': { name: 'นาย ลักษมัณต์ กันชาดี', nick: 'ปลาย', dept: 'LED' },
+    'HR-SP-0-000': { name: 'น.ส.สุทธิดา ผดุงฮะ', nick: 'นะ', dept: 'LED' },
+    'HR-ST-5-029': { name: 'นาย พิชิตชัย กุตัน', nick: 'กี้', dept: 'Store' },
+    'HR-SL-1-001': { name: 'นางสาว ไพรินทร์ ทัพด้วง', nick: 'ริน', dept: 'Sale' },
+    'HR-SL-1-006': { name: 'นาย ต้นตระกานต์ ไชยโคตรไพศาล', nick: 'ต้น', dept: 'Sale' },
+    'HR-SL-1-007': { name: 'นาย ประทีป อมรดิษฐ์', nick: 'โหน่ง', dept: 'Sale' },
+    'HR-SL-1-008': { name: 'นาย ภานุวัฒน์ หัวใจแก้ว', nick: 'โน๊ต', dept: 'Sale' },
+    'HR-SL-1-014': { name: 'นางสาว สกาวรัตน์ คงเกตุ', nick: 'กาว', dept: 'Sale' },
+    'HR-SL-1-017': { name: 'นาย ธนาพัฒน์ รุ้งเรืองรอง', nick: 'ตรังค์', dept: 'Sale' },
+    'HR-SL-1-020': { name: 'นางสาว อิสรี มาลีอังศุกุล', nick: 'ขิม', dept: 'Sale' },
+    'HR-SL-1-022': { name: 'นางสาว อาฑิตยา สิงหราช', nick: 'กิ๊ฟ', dept: 'Sale' }
+  };
+
   window.DEFAULT_DATA = {
     UIR: {
       w: 640, h: 480, weight: 7.8, type: 'indoor',
@@ -177,7 +195,8 @@
       exampleId: 'ข้อมูลตัวอย่าง:',
       loginTitlePage: 'เข้าสู่ระบบ (Employee)',
       welcome: 'ยินดีต้อนรับ',
-      invalidId: 'รหัสพนักงานไม่ถูกต้อง'
+      invalidId: 'รหัสพนักงานไม่ถูกต้อง',
+      dept: 'แผนก'
     },
     en: {
       appTitle: 'RAZR LED Solution Calculator Pro',
@@ -291,7 +310,8 @@
       exampleId: 'Example IDs:',
       loginTitlePage: 'Employee Login',
       welcome: 'Welcome',
-      invalidId: 'Invalid Employee ID'
+      invalidId: 'Invalid Employee ID',
+      dept: 'Dept'
     }
   };
 })();
