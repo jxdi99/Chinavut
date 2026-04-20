@@ -315,6 +315,8 @@
     document.getElementById('theme-toggle').addEventListener('click', App.toggleTheme);
     document.getElementById('login-btn').addEventListener('click', openLogin);
     document.getElementById('logout-btn').addEventListener('click', logout);
+    const globalLogout = document.getElementById('global-logout-btn');
+    if (globalLogout) globalLogout.addEventListener('click', App.logout);
     document.getElementById('login-submit').addEventListener('click', doLogin);
     document.getElementById('admin-save-btn').addEventListener('click', saveAll);
     document.getElementById('admin-reset-btn').addEventListener('click', resetToDefault);

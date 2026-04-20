@@ -157,6 +157,7 @@
             </div>
             <div class="toolbar">
                 <a class="btn btn-secondary" href="index.html" data-i18n="backHome">← กลับหน้าหลัก</a>
+                <button class="btn btn-secondary" id="logout-btn" data-i18n="adminLogout">Logout</button>
             </div>
         </div>
 
@@ -195,6 +196,9 @@
             const state = await AppStorage.loadState();
             App.state = state || { ui: { lang: 'th', theme: 'light' } };
             App.applyLanguage();
+
+            const logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) logoutBtn.addEventListener('click', App.logout);
         })();
     </script>
 </body>
