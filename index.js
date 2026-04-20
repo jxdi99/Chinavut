@@ -31,12 +31,12 @@
     conSel.onchange = () => { manualController = true; recalc(); };
 
     const extraConSel = document.getElementById('extra-con-select');
-    extraConSel.innerHTML = '<option value="-1">-- ไม่รับ Controller เพิ่ม --</option>' + 
+    extraConSel.innerHTML = `<option value="-1">${App.t('none')}</option>` + 
        currentData().controllers.map((it, idx) => `<option value="${idx}">${escapeHtml(it.name)} (Cap: ${(it.load / 1000000).toFixed(2)}M px)</option>`).join('');
     
     const accSel = document.getElementById('acc-select');
-    accSel.innerHTML = '<option value="-1">-- ไม่รับอุปกรณ์เสริม --</option>' + 
-       (currentData().accessories || []).map((it, idx) => `<option value="${idx}">${escapeHtml(it.name)} (${it.price.toLocaleString()} ฿)</option>`).join('');
+    accSel.innerHTML = `<option value="-1">${App.t('none')}</option>` + 
+       (currentData().accessories || []).map((it, idx) => `<option value="${idx}">${escapeHtml(it.name)} (${it.price.toLocaleString()} ${App.t('unitBaht')})</option>`).join('');
   }
 
   function setTabActive(groupKey) {
@@ -126,7 +126,7 @@
     if (extraConIdx >= 0 && extraConQty > 0) {
       const eCon = currentData().controllers[extraConIdx];
       extraConPrice = eCon.price * extraConQty;
-      extraConHtml = `<div class="result-row bg-highlight"><span>Controller ปลายทาง (${escapeHtml(eCon.name)} x${extraConQty})</span><b>${extraConPrice.toLocaleString()} บาท</b></div>`;
+      extraConHtml = `<div class="result-row bg-highlight"><span>${App.t('extraConLabel')} (${escapeHtml(eCon.name)} x${extraConQty})</span><b>${extraConPrice.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
     }
 
     const accIdx = Number(document.getElementById('acc-select').value);
@@ -136,7 +136,7 @@
     if (accIdx >= 0 && accQty > 0) {
       const aItem = currentData().accessories[accIdx];
       accPrice = aItem.price * accQty;
-      accHtml = `<div class="result-row bg-highlight"><span>อุปกรณ์เสริม (${escapeHtml(aItem.name)} x${accQty})</span><b>${accPrice.toLocaleString()} บาท</b></div>`;
+      accHtml = `<div class="result-row bg-highlight"><span>${App.t('accLabel')} (${escapeHtml(aItem.name)} x${accQty})</span><b>${accPrice.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
     }
 
     const prodPrice = totalQty * led.price;
@@ -148,20 +148,20 @@
     document.getElementById('recom-badge').className = 'badge' + (recIdx === -1 ? ' warn' : '');
 
     document.getElementById('result-display').innerHTML = `
-      <div class="result-row"><span>${App.t('screenSize')}</span><b>${screenW.toFixed(2)} x ${screenH.toFixed(2)} ม.</b></div>
-      <div class="result-row"><span>${App.t('area')}</span><b>${area.toFixed(3)} ตร.ม.</b></div>
+      <div class="result-row"><span>${App.t('screenSize')}</span><b>${screenW.toFixed(2)} x ${screenH.toFixed(2)} ${App.t('unitMeter')}</b></div>
+      <div class="result-row"><span>${App.t('area')}</span><b>${area.toFixed(3)} ${App.t('unitSqM')}</b></div>
       <div class="result-row"><span>${App.t('resolution')}</span><b>${resW} x ${resH} px</b></div>
       <div class="result-row"><span>${App.t('pixels')}</span><b>${totalPixels.toLocaleString()} Pixels</b></div>
-      <div class="result-row"><span>${App.t('weight')}</span><b>${(totalQty * g.weight).toFixed(1)} kg</b></div>
-      <div class="result-row"><span>${App.t('power')}</span><b>${Math.round(area * led.avg).toLocaleString()} / ${Math.round(area * led.max).toLocaleString()} Watts</b></div>
-      <div class="result-row"><span>${App.t('amps')}</span><b>${(area * led.max / 220 * 1.25).toFixed(2)} A</b></div>
-      <div class="result-row"><span>${App.t('elecCost')}</span><b>1 hour = ${(area * led.max / 1000 * 5).toFixed(2)} บาท </div>
-      <div class="result-row" style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);"><span>${App.t('productPrice')}</span><b>${prodPrice > 0 ? prodPrice.toLocaleString() + ' บาท' : App.t('notQuoted')}</b></div>
+      <div class="result-row"><span>${App.t('weight')}</span><b>${(totalQty * g.weight).toFixed(1)} ${App.t('unitKg')}</b></div>
+      <div class="result-row"><span>${App.t('power')}</span><b>${Math.round(area * led.avg).toLocaleString()} / ${Math.round(area * led.max).toLocaleString()} ${App.t('unitWatts')}</b></div>
+      <div class="result-row"><span>${App.t('amps')}</span><b>${(area * led.max / 220 * 1.25).toFixed(2)} ${App.t('unitAmps')}</b></div>
+      <div class="result-row"><span>${App.t('elecCost')}</span><b>${App.t('perHour')} ${(area * led.max / 1000 * 5).toFixed(2)} ${App.t('unitBaht')} </div>
+      <div class="result-row" style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);"><span>${App.t('productPrice')}</span><b>${prodPrice > 0 ? prodPrice.toLocaleString() + ' ' + App.t('unitBaht') : App.t('notQuoted')}</b></div>
       <div class="result-row"><span>${App.t('installPrice')}</span><b>${installText}</b></div>
-      <div class="result-row"><span>${App.t('controllerPrice')} (${escapeHtml(selectedCon?.name || '-')})</span><b>${selectedCon && selectedCon.price > 0 ? selectedCon.price.toLocaleString() + ' บาท' : 'N/A'}</b></div>
+      <div class="result-row"><span>${App.t('controllerPrice')} (${escapeHtml(selectedCon?.name || '-')})</span><b>${selectedCon && selectedCon.price > 0 ? selectedCon.price.toLocaleString() + ' ' + App.t('unitBaht') : App.t('na')}</b></div>
       ${extraConHtml}
       ${accHtml}
-      <div class="result-total">${App.t('total')}: ${prodPrice > 0 ? total.toLocaleString() + ' บาท' : App.t('notQuoted2')}</div>
+      <div class="result-total">${App.t('total')}: ${prodPrice > 0 ? total.toLocaleString() + ' ' + App.t('unitBaht') : App.t('notQuoted2')}</div>
     `;
   }
 

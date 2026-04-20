@@ -65,7 +65,7 @@
           <th>${App.t('controllerName')}</th>
           <th>${App.t('load')}</th>
           <th>${App.t('price')}</th>
-          <th>จัดการ</th>
+          <th>${App.t('manage')}</th>
         </tr>`;
       tbody.innerHTML = data().controllers.map((it, idx) => `
         <tr data-index="${idx}">
@@ -82,9 +82,9 @@
       thead.innerHTML = `
         <tr>
           <th style="width:40px;"></th>
-          <th>ชื่ออุปกรณ์เสริม</th>
+          <th>${App.t('accName')}</th>
           <th>${App.t('price')}</th>
-          <th>จัดการ</th>
+          <th>${App.t('manage')}</th>
         </tr>`;
       tbody.innerHTML = (data().accessories || []).map((it, idx) => `
         <tr data-index="${idx}">
@@ -107,7 +107,7 @@
           <th>${App.t('max')}</th>
           <th>${App.t('avg')}</th>
           <th>${App.t('pricePerCab')}</th>
-          <th>จัดการ</th>
+          <th>${App.t('manage')}</th>
         </tr>`;
       tbody.innerHTML = items.map((it, idx) => `
         <tr data-index="${idx}">
