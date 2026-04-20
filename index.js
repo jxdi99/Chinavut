@@ -147,8 +147,24 @@
       : App.t('noEnough');
     document.getElementById('recom-badge').className = 'badge' + (recIdx === -1 ? ' warn' : '');
 
+    let ratioText = '';
+    if (screenW > 0 && screenH > 0) {
+      const ratio = screenW / screenH;
+      if (ratio >= 1.77 && ratio <= 1.79) ratioText = App.t('exact16_9');
+      else if (ratio >= 1.80 && ratio <= 1.90) ratioText = App.t('wider16_9');
+      else if (ratio >= 1.70 && ratio <= 1.76) ratioText = App.t('taller16_9');
+      else if (ratio >= 1.59 && ratio <= 1.61) ratioText = App.t('exact16_10');
+      else if (ratio >= 1.62 && ratio <= 1.69) ratioText = App.t('wider16_10');
+      else if (ratio >= 1.50 && ratio <= 1.58) ratioText = App.t('taller16_10');
+      else if (ratio >= 2.30 && ratio <= 2.36) ratioText = App.t('exact21_9');
+      else if (ratio >= 2.37 && ratio <= 2.50) ratioText = App.t('wider21_9');
+      else if (ratio >= 2.10 && ratio <= 2.29) ratioText = App.t('taller21_9');
+      else ratioText = `${App.t('ratioRaw')} (${ratio.toFixed(2)})`;
+    }
+
     document.getElementById('result-display').innerHTML = `
       <div class="result-row"><span>${App.t('screenSize')}</span><b>${screenW.toFixed(2)} x ${screenH.toFixed(2)} ${App.t('unitMeter')}</b></div>
+      ${ratioText ? `<div class="result-row"><span>${App.t('aspectRatio')}</span><b style="color:var(--primary);">${ratioText}</b></div>` : ''}
       <div class="result-row"><span>${App.t('area')}</span><b>${area.toFixed(3)} ${App.t('unitSqM')}</b></div>
       <div class="result-row"><span>${App.t('resolution')}</span><b>${resW} x ${resH} px</b></div>
       <div class="result-row"><span>${App.t('pixels')}</span><b>${totalPixels.toLocaleString()} Pixels</b></div>

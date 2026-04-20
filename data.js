@@ -161,7 +161,18 @@
       unitWidth: 'กว้าง (เมตร)',
       unitHeight: 'สูง (เมตร)',
       manage: 'จัดการ',
-      accName: 'ชื่ออุปกรณ์เสริม'
+      accName: 'ชื่ออุปกรณ์เสริม',
+      aspectRatio: 'สัดส่วนจอ',
+      exact16_9: '16:9 พอดี',
+      wider16_9: 'ใกล้เคียง 16:9 (กว้างกว่าเล็กน้อย)',
+      taller16_9: 'ใกล้เคียง 16:9 (สูงกว่าเล็กน้อย)',
+      exact16_10: '16:10 พอดี',
+      wider16_10: 'ใกล้เคียง 16:10 (กว้างกว่าเล็กน้อย)',
+      taller16_10: 'ใกล้เคียง 16:10 (สูงกว่าเล็กน้อย)',
+      exact21_9: '21:9 พอดี',
+      wider21_9: 'ใกล้เคียง 21:9 (กว้างกว่าเล็กน้อย)',
+      taller21_9: 'ใกล้เคียง 21:9 (สูงกว่าเล็กน้อย)',
+      ratioRaw: 'อัตราส่วนจริง'
     },
     en: {
       appTitle: 'RAZR LED Solution Calculator Pro',
@@ -175,7 +186,7 @@
       tab2: 'UOSx (960x960)',
       tab3: 'CIH (600x337.5)',
       selectLed: 'Select LED Display Model',
-      qtyW: 'Cabinet Qty (Horizontal)',
+      qtyW: 'Cabinets (Width)',
       qtyH: 'Cabinet Qty (Vertical)',
       controller: 'Select Controller',
       calcAgain: 'Recalculate',
@@ -259,7 +270,18 @@
       unitWidth: 'Width (m)',
       unitHeight: 'Height (m)',
       manage: 'Manage',
-      accName: 'Accessory Name'
+      accName: 'Accessory Name',
+      aspectRatio: 'Aspect Ratio',
+      exact16_9: 'Exactly 16:9',
+      wider16_9: 'Close to 16:9 (Slightly wider)',
+      taller16_9: 'Close to 16:9 (Slightly taller)',
+      exact16_10: 'Exactly 16:10',
+      wider16_10: 'Close to 16:10 (Slightly wider)',
+      taller16_10: 'Close to 16:10 (Slightly taller)',
+      exact21_9: 'Exactly 21:9',
+      wider21_9: 'Close to 21:9 (Slightly wider)',
+      taller21_9: 'Close to 21:9 (Slightly taller)',
+      ratioRaw: 'Raw Ratio'
     }
   };
 })();
