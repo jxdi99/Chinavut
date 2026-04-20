@@ -1,5 +1,5 @@
 (function () {
-    const EXAMPLES = ['1001', '1002', '1003', '1004', '1005'];
+    const EXAMPLES = ['HR-MK-4-025', 'HR-SP-7-007', 'HR-SP-7-009', 'HR-SP-7-010', 'HR-SV-6-014'];
 
     async function init() {
         const state = await AppStorage.loadState();
@@ -13,7 +13,7 @@
 
         badges.forEach(badge => {
             badge.addEventListener('click', () => {
-                input.value = badge.textContent;
+                input.value = badge.dataset.id || badge.textContent;
                 input.focus();
             });
         });
@@ -23,7 +23,7 @@
             if (EXAMPLES.includes(val)) {
                 // Success
                 App.showToast(`${App.t('welcome')} ID: ${val}`);
-                
+
                 // Store logged in user in state if needed
                 App.state.currentUser = { id: val, role: 'employee' };
                 await AppStorage.saveState(App.state);
