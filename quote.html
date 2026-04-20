@@ -191,6 +191,7 @@
     <script src="shared.js"></script>
     <script>
         (async function () {
+            await App.checkAuth();
             const state = await AppStorage.loadState();
             App.state = state || { ui: { lang: 'th', theme: 'light' } };
             App.applyLanguage();

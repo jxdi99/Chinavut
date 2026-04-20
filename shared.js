@@ -58,4 +58,19 @@
     box.style.display = 'block';
     window.__toastTimer = setTimeout(() => { box.style.display = 'none'; }, 1800);
   };
+
+  App.checkAuth = async function(){
+    if (window.location.pathname.endsWith('login.html')) return;
+    const state = await AppStorage.loadState();
+    if (!state.currentUser) {
+      window.location.href = 'login.html';
+    }
+  };
+
+  App.logout = async function(){
+    const state = await AppStorage.loadState();
+    delete state.currentUser;
+    await AppStorage.saveState(state);
+    window.location.href = 'login.html';
+  };
 })();

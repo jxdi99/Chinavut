@@ -172,7 +172,12 @@
       exact21_9: '21:9 พอดี',
       wider21_9: 'ใกล้เคียง 21:9 (กว้างกว่าเล็กน้อย)',
       taller21_9: 'ใกล้เคียง 21:9 (สูงกว่าเล็กน้อย)',
-      ratioRaw: 'อัตราส่วนจริง'
+      ratioRaw: 'อัตราส่วนจริง',
+      empId: 'รหัสพนักงาน',
+      exampleId: 'ข้อมูลตัวอย่าง:',
+      loginTitlePage: 'เข้าสู่ระบบ (Employee)',
+      welcome: 'ยินดีต้อนรับ',
+      invalidId: 'รหัสพนักงานไม่ถูกต้อง'
     },
     en: {
       appTitle: 'RAZR LED Solution Calculator Pro',
@@ -281,7 +286,12 @@
       exact21_9: 'Exactly 21:9',
       wider21_9: 'Close to 21:9 (Slightly wider)',
       taller21_9: 'Close to 21:9 (Slightly taller)',
-      ratioRaw: 'Raw Ratio'
+      ratioRaw: 'Raw Ratio',
+      empId: 'Employee ID',
+      exampleId: 'Example IDs:',
+      loginTitlePage: 'Employee Login',
+      welcome: 'Welcome',
+      invalidId: 'Invalid Employee ID'
     }
   };
 })();

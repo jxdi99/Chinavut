@@ -1,19 +1,19 @@
-(function(){
+(function () {
   let state;
   let loggedIn = false;
   let selectedGroup = 'UIR';
   let saveTimer = null;
 
-  function data(){ return state.masterData; }
-  function group(){ return data()[selectedGroup]; }
+  function data() { return state.masterData; }
+  function group() { return data()[selectedGroup]; }
 
-  function escapeHtml(str){
+  function escapeHtml(str) {
     return String(str)
-      .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
-      .replaceAll('"','&quot;').replaceAll("'","&#39;");
+      .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;').replaceAll("'", "&#39;");
   }
 
-  function setStaticTexts(){
+  function setStaticTexts() {
     document.title = App.t('adminTitle');
     document.getElementById('admin-title').textContent = App.t('adminTitle');
     document.getElementById('admin-subtitle').textContent = App.t('adminSub');
@@ -21,15 +21,15 @@
     App.applyLanguage();
   }
 
-  function openLogin(){
+  function openLogin() {
     document.getElementById('login-modal').style.display = 'flex';
     document.getElementById('login-user').value = 'admin';
     document.getElementById('login-pass').value = '';
     setTimeout(() => document.getElementById('login-pass').focus(), 50);
   }
-  function closeLogin(){ document.getElementById('login-modal').style.display = 'none'; }
+  function closeLogin() { document.getElementById('login-modal').style.display = 'none'; }
 
-  function updateLoginUI(){
+  function updateLoginUI() {
     document.getElementById('login-status').textContent = loggedIn ? App.t('adminOn') : App.t('adminOff');
     document.getElementById('login-btn').style.display = loggedIn ? 'none' : 'inline-block';
     document.getElementById('logout-btn').style.display = loggedIn ? 'inline-block' : 'none';
@@ -43,17 +43,17 @@
     }
   }
 
-  async function persist(){
+  async function persist() {
     await AppStorage.saveState(state);
     App.showToast(App.t('saved'));
   }
 
-  function scheduleSave(){
+  function scheduleSave() {
     clearTimeout(saveTimer);
     saveTimer = setTimeout(async () => { await AppStorage.saveState(state); }, 250);
   }
 
-  function renderTable(){
+  function renderTable() {
     if (!loggedIn) return;
     const thead = document.getElementById('admin-thead');
     const tbody = document.getElementById('admin-tbody');
@@ -130,7 +130,7 @@
     if (selectedGroup !== 'controllers' && selectedGroup !== 'accessories' && !data()[selectedGroup]) selectedGroup = 'UIR';
   }
 
-  function addRow(){
+  function addRow() {
     if (!loggedIn) return;
     normalizeGroupKey();
     if (selectedGroup === 'controllers') {
@@ -145,28 +145,28 @@
     scheduleSave();
   }
 
-  function deleteItem(idx){
+  function deleteItem(idx) {
     if (!confirm(App.t('confirmDelete'))) return;
     group().items.splice(idx, 1);
     renderTable();
     scheduleSave();
   }
 
-  function deleteController(idx){
+  function deleteController(idx) {
     if (!confirm(App.t('confirmDeleteCon'))) return;
     data().controllers.splice(idx, 1);
     renderTable();
     scheduleSave();
   }
 
-  function deleteAccessory(idx){
+  function deleteAccessory(idx) {
     if (!confirm(App.t('confirmDelete'))) return;
     if (data().accessories) data().accessories.splice(idx, 1);
     renderTable();
     scheduleSave();
   }
 
-  function handleTableInput(e){
+  function handleTableInput(e) {
     const el = e.target;
     if (!(el instanceof HTMLInputElement)) return;
     const index = Number(el.dataset.index);
@@ -184,7 +184,7 @@
     scheduleSave();
   }
 
-  function handleTableAction(e){
+  function handleTableAction(e) {
     const btn = e.target.closest('button[data-action]');
     if (!btn) return;
     const idx = Number(btn.dataset.index);
@@ -197,7 +197,7 @@
   let draggedIndex = null;
   function initDragDrop() {
     const tbody = document.getElementById('admin-tbody');
-    
+
     tbody.addEventListener('mousedown', (e) => {
       if (e.target.classList.contains('drag-handle')) {
         const tr = e.target.closest('tr');
@@ -237,10 +237,10 @@
       const tr = e.target.closest('tr');
       if (!tr) return;
       tr.style.borderTop = '';
-      
+
       const targetIndex = Number(tr.dataset.index);
       if (draggedIndex === null || targetIndex === draggedIndex) return;
-      
+
       let arr;
       if (selectedGroup === 'controllers') {
         arr = data().controllers;
@@ -251,7 +251,7 @@
       }
       const item = arr.splice(draggedIndex, 1)[0];
       arr.splice(targetIndex, 0, item);
-      
+
       renderTable();
       scheduleSave();
     });
@@ -267,10 +267,10 @@
     });
   }
 
-  async function doLogin(){
+  async function doLogin() {
     const user = document.getElementById('login-user').value.trim();
     const pass = document.getElementById('login-pass').value;
-    if (user === 'admin' && pass === '123456') {
+    if (user === 'admin' && pass === 'CM212224') {
       loggedIn = true;
       closeLogin();
       updateLoginUI();
@@ -280,17 +280,17 @@
     alert(App.t('loginFail'));
   }
 
-  async function logout(){
+  async function logout() {
     loggedIn = false;
     updateLoginUI();
   }
 
-  async function saveAll(){
+  async function saveAll() {
     await persist();
     App.showToast(App.t('saved'));
   }
 
-  async function resetToDefault(){
+  async function resetToDefault() {
     if (!confirm(App.t('confirmReset'))) return;
     state.masterData = App.clone(DEFAULT_DATA);
     await AppStorage.saveState(state);
@@ -298,7 +298,8 @@
     App.showToast(App.t('resetDone'));
   }
 
-  async function boot(){
+  async function boot() {
+    await App.checkAuth();
     state = await AppStorage.loadState();
     state.ui = state.ui || { theme: 'light', lang: 'th' };
     state.masterData = state.masterData || App.clone(DEFAULT_DATA);

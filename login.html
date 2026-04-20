@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Login - RAZR LED Solution</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .login-card {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .login-card h2 {
+            margin-bottom: 24px;
+            color: var(--primary);
+        }
+
+        .example-ids {
+            margin-top: 30px;
+            padding: 15px;
+            background: color-mix(in srgb, var(--card) 95%, black);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        .example-ids h4 {
+            margin-bottom: 10px;
+            color: var(--muted);
+        }
+
+        .id-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .id-badge {
+            background: var(--border);
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .id-badge:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .back-home {
+            margin-top: 20px;
+            display: inline-block;
+            text-decoration: none;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .back-home:hover {
+            color: var(--primary);
+        }
+    </style>
+</head>
+
+<body data-theme="light">
+    <div class="container">
+        <div class="login-card card">
+            <h2 data-i18n="loginTitlePage">เข้าสู่ระบบ (Employee)</h2>
+
+            <div class="field">
+                <label data-i18n="empId">รหัสพนักงาน</label>
+                <input type="text" id="employee-id" placeholder="กรอกรหัสพนักงาน" autofocus>
+            </div>
+
+            <button class="btn btn-primary" id="login-submit" style="width: 100%; margin-top: 20px;"
+                data-i18n="loginBtn">เข้าสู่ระบบ</button>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="storage.js"></script>
+    <script src="shared.js"></script>
+    <script src="login.js"></script>
+</body>
+
+</html>

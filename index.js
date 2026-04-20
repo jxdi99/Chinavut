@@ -202,7 +202,10 @@
     document.title = App.t('appTitle');
     document.getElementById('app-title').textContent = App.t('appTitle');
     document.getElementById('app-subtitle').textContent = App.t('subtitle');
-    document.getElementById('admin-status-pill').textContent = App.t('adminOff');
+    const statusPill = document.getElementById('admin-status-pill');
+    if (statusPill) {
+      statusPill.textContent = state.currentUser ? `${state.currentUser.id} (${App.t('loginOk')})` : App.t('adminOff');
+    }
     App.applyLanguage();
   }
 
@@ -213,6 +216,7 @@
   };
 
   async function boot() {
+    await App.checkAuth();
     state = await AppStorage.loadState();
     state.ui = state.ui || { theme: 'light', lang: 'th' };
     state.masterData = state.masterData || App.clone(DEFAULT_DATA);
@@ -228,6 +232,11 @@
 
     document.getElementById('lang-toggle').addEventListener('click', App.toggleLang);
     document.getElementById('theme-toggle').addEventListener('click', App.toggleTheme);
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      logoutBtn.style.display = state.currentUser ? 'inline-block' : 'none';
+      logoutBtn.addEventListener('click', App.logout);
+    }
 
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => switchGroup(btn.dataset.group));
