@@ -37,6 +37,30 @@
             }
         }
 
+        function formatId(val) {
+            // Remove all non-alphanumeric
+            let clean = val.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            let res = '';
+            for (let i = 0; i < clean.length; i++) {
+                if (i === 2 || i === 4 || i === 5) res += '-';
+                res += clean[i];
+            }
+            return res.substring(0, 13); // Max length HR-XX-X-XXX
+        }
+
+        input.addEventListener('input', (e) => {
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const formatted = formatId(input.value);
+            
+            // Only update if changed to avoid cursor jumping issues in some cases
+            if (input.value !== formatted) {
+                input.value = formatted;
+                // Try to maintain cursor position (simple approach)
+                input.setSelectionRange(start + (formatted.length > input.value.length ? 1 : 0), end);
+            }
+        });
+
         submitBtn.addEventListener('click', handleLogin);
         input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') handleLogin();
