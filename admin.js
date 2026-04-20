@@ -271,7 +271,7 @@
   async function doLogin() {
     const user = document.getElementById('login-user').value.trim();
     const pass = document.getElementById('login-pass').value;
-    if (user === 'admin' && pass === 'CM212224') {
+    if (user === 'admin' && pass === '1') {
       loggedIn = true;
       closeLogin();
       updateLoginUI();
