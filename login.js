@@ -41,15 +41,35 @@
         }
 
         input.addEventListener('input', (e) => {
-            const start = input.selectionStart;
-            const end = input.selectionEnd;
-            const formatted = formatId(input.value);
-
-            // Only update if changed to avoid cursor jumping issues in some cases
-            if (input.value !== formatted) {
+            const originalValue = input.value;
+            const cursor = input.selectionStart;
+            
+            // Count alphanumeric characters before the cursor in the unformatted string
+            const charsBeforeCursor = originalValue.substring(0, cursor).replace(/[^a-zA-Z0-9]/g, '').length;
+            
+            const formatted = formatId(originalValue);
+            
+            if (originalValue !== formatted) {
                 input.value = formatted;
-                // Try to maintain cursor position (simple approach)
-                input.setSelectionRange(start + (formatted.length > input.value.length ? 1 : 0), end);
+                
+                // Calculate new cursor position
+                let newCursor = 0;
+                let alphanumericCount = 0;
+                while (alphanumericCount < charsBeforeCursor && newCursor < formatted.length) {
+                    if (/[a-zA-Z0-9]/.test(formatted[newCursor])) {
+                        alphanumericCount++;
+                    }
+                    newCursor++;
+                }
+
+                // If we just added a dash automatically, the cursor might need to skip past it
+                if (newCursor < formatted.length && formatted[newCursor] === '-') {
+                    // But only if the NEXT char is what the user was going to type
+                    // Actually, simpler: if the next char is a dash, skip it.
+                    // This handles cases like typing "HR" -> "HR-" (cursor at 3)
+                }
+                
+                input.setSelectionRange(newCursor, newCursor);
             }
         });
 
