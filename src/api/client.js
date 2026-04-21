@@ -1,39 +1,102 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Try to load credentials from VITE environment variables
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-// Initialize Supabase only if credentials exist
 export const supabase = (supabaseUrl && supabaseKey) 
   ? createClient(supabaseUrl, supabaseKey) 
   : null
 
-/**
- * Common Logic: Prefer Remote DB, Fallback to local
- */
-
 export const StaffAPI = {
+  async getAll() {
+    if (!supabase) return []
+    const { data, error } = await supabase.from('staff').select('*')
+    if (error) console.error('StaffAPI.getAll error:', error)
+    return data || []
+  },
   async getByEmpId(empId) {
     if (supabase) {
-      const { data } = await supabase.from('staff').select('*').eq('emp_id', empId).single()
-      return data
+      try {
+        const { data, error } = await supabase.from('staff').select('*').eq('emp_id', empId).single()
+        if (error) {
+          console.error('StaffAPI.getByEmpId error:', error)
+          return null
+        }
+        return data
+      } catch (err) {
+        console.error('StaffAPI connection failed:', err)
+        return null
+      }
     }
-    // Fallback: Check window.STAFF_DATA (from data.js)
-    return window.STAFF_DATA?.[empId] 
-      ? { emp_id: empId, ...window.STAFF_DATA[empId] } 
-      : null
+    return window.STAFF_DATA?.[empId] ? { emp_id: empId, ...window.STAFF_DATA[empId] } : null
   }
 }
 
 export const MasterDataAPI = {
-  async get() {
-    if (supabase) {
-      // In a real prod app, you'd fetch from multiple tables
-      // For this migration, we assume MasterData is a single JSON or fetched per request
-      const { data } = await supabase.from('app_config').select('state').eq('id', 'prod').single()
-      return data?.state
+  async fetchFull() {
+    if (!supabase) {
+      console.error('Supabase client not initialized. Check .env credentials.');
+      return null;
     }
-    return null // Caller should handle fallback to AppStorage.loadState()
+    try {
+      const [models, controllers, accessories] = await Promise.all([
+        supabase.from('led_models').select('*').order('name'),
+        supabase.from('controllers').select('*').order('name'),
+        supabase.from('accessories').select('*').order('name')
+      ]);
+
+      if (models.error) console.error('Supabase Error (led_models):', models.error);
+      if (controllers.error) console.error('Supabase Error (controllers):', controllers.error);
+      if (accessories.error) console.error('Supabase Error (accessories):', accessories.error);
+
+      if (models.error || controllers.error || accessories.error) {
+        return null;
+      }
+
+      // Reconstruct the grouped object format expected by the app
+      const groupedModels = {
+        UIR: { w: 640, h: 480, weight: 7.8, type: 'indoor', items: [] },
+        UOS: { w: 960, h: 960, weight: 26.5, type: 'outdoor', items: [] },
+        CIH: { w: 600, h: 337.5, weight: 4.0, type: 'indoor', items: [] }
+      };
+
+      (models.data || []).forEach(m => {
+        if (groupedModels[m.group_id]) {
+          groupedModels[m.group_id].items.push({
+            id: m.id,
+            name: m.name,
+            rw: m.rw,
+            rh: m.rh,
+            max: m.max_w,
+            avg: m.avg_w,
+            price: m.price
+          });
+        }
+      });
+
+      return {
+        ...groupedModels,
+        controllers: (controllers.data || []).map(c => ({
+          id: c.id,
+          name: c.name,
+          load: c.load_pixels,
+          price: c.price
+        })),
+        accessories: (accessories.data || []).map(a => ({
+          id: a.id,
+          name: a.name,
+          price: a.price
+        }))
+      };
+    } catch (err) {
+      console.error('DB Fetch Error:', err);
+      return null;
+    }
+  },
+
+  async updateItem(table, id, data) {
+    if (!supabase) return false;
+    const { error } = await supabase.from(table).update(data).eq('id', id);
+    return !error;
   }
 }

@@ -3,6 +3,7 @@
   let activeGroup = 'UIR';
   let manualController = false;
   let calcMode = 'qty';
+  let pricingMode = 'standard';
 
   function currentData() { return state.masterData; }
   function group() { return currentData()[activeGroup]; }
@@ -110,13 +111,25 @@
 
     let installPrice = 0;
     let installText = 'N/A';
-    if (g.type === 'indoor') {
-      const raw = area * 7000;
-      if (raw <= 50000) installPrice = 50000;
-      else installPrice = 50000 + (Math.ceil((raw - 50000) / 3000) * 3000);
-      installText = `${installPrice.toLocaleString()} บาท`;
+    let prodPrice = 0;
+
+    if (pricingMode === 'custom') {
+      const customPriceSqm = parseFloat(document.getElementById('custom-price-sqm').value) || 0;
+      const customInstall = parseFloat(document.getElementById('custom-install').value) || 0;
+      
+      prodPrice = area * customPriceSqm;
+      installPrice = customInstall;
+      installText = `${installPrice.toLocaleString()} บาท (กำหนดเอง)`;
     } else {
-      installText = 'N/A (Outdoor)';
+      prodPrice = area * led.price;
+      if (g.type === 'indoor') {
+        const raw = area * 7000;
+        if (raw <= 50000) installPrice = 50000;
+        else installPrice = 50000 + (Math.ceil((raw - 50000) / 3000) * 3000);
+        installText = `${installPrice.toLocaleString()} บาท`;
+      } else {
+        installText = 'N/A (Outdoor)';
+      }
     }
 
     const extraConIdx = Number(document.getElementById('extra-con-select').value);
@@ -139,7 +152,6 @@
       accHtml = `<div class="result-row bg-highlight"><span>${App.t('accLabel')} (${escapeHtml(aItem.name)} x${accQty})</span><b>${accPrice.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
     }
 
-    const prodPrice = totalQty * led.price;
     const total = prodPrice + installPrice + (selectedCon?.price || 0) + extraConPrice + accPrice;
 
     document.getElementById('recom-badge').textContent = recIdx !== -1
@@ -171,16 +183,21 @@
       ratioFeedback.style.display = 'none';
     }
 
+    const diagonalM = Math.sqrt(screenW * screenW + screenH * screenH);
+    const diagonalInch = diagonalM * 39.3701;
+
     document.getElementById('result-display').innerHTML = `
       <div class="result-row"><span>${App.t('screenSize')}</span><b>${screenW.toFixed(2)} x ${screenH.toFixed(2)} ${App.t('unitMeter')}</b></div>
+      <div class="result-row"><span>${App.t('totalCabLabel')}</span><b>${wQty} x ${hQty} = ${totalQty} ${App.t('unitUnits')}</b></div>
+      <div class="result-row"><span>${App.t('diagonalLabel')}</span><b>${diagonalInch.toFixed(1)} ${App.t('unitInch')}</b></div>
       ${ratioText ? `<div class="result-row"><span>${App.t('aspectRatio')}</span><b style="color:var(--primary);">${ratioText}</b></div>` : ''}
       <div class="result-row"><span>${App.t('area')}</span><b>${area.toFixed(3)} ${App.t('unitSqM')}</b></div>
-      <div class="result-row"><span>${App.t('resolution')}</span><b>${resW} x ${resH} px</b></div>
-      <div class="result-row"><span>${App.t('pixels')}</span><b>${totalPixels.toLocaleString()} Pixels</b></div>
+      <div class="result-row"><span>${App.t('resolution')}</span><b>${resW} x ${resH} ${App.t('unitPixels')}</b></div>
+      <div class="result-row"><span>${App.t('pixels')}</span><b>${totalPixels.toLocaleString()} ${App.t('pixels')}</b></div>
       <div class="result-row"><span>${App.t('weight')}</span><b>${(totalQty * g.weight).toFixed(1)} ${App.t('unitKg')}</b></div>
       <div class="result-row"><span>${App.t('power')}</span><b>${Math.round(area * led.avg).toLocaleString()} / ${Math.round(area * led.max).toLocaleString()} ${App.t('unitWatts')}</b></div>
       <div class="result-row"><span>${App.t('amps')}</span><b>${(area * led.max / 220 * 1.25).toFixed(2)} ${App.t('unitAmps')}</b></div>
-      <div class="result-row"><span>${App.t('elecCost')}</span><b>${App.t('perHour')} ${(area * led.max / 1000 * 5).toFixed(2)} ${App.t('unitBaht')} </div>
+      <div class="result-row"><span>${App.t('elecCost')}</span><b>${App.t('perHour')} ${(area * led.max / 1000 * 5).toFixed(2)} ${App.t('unitBaht')}</b></div>
       <div class="result-row" style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);"><span>${App.t('productPrice')}</span><b>${prodPrice > 0 ? prodPrice.toLocaleString() + ' ' + App.t('unitBaht') : App.t('notQuoted')}</b></div>
       <div class="result-row"><span>${App.t('installPrice')}</span><b>${installText}</b></div>
       <div class="result-row"><span>${App.t('controllerPrice')} (${escapeHtml(selectedCon?.name || '-')})</span><b>${selectedCon && selectedCon.price > 0 ? selectedCon.price.toLocaleString() + ' ' + App.t('unitBaht') : App.t('na')}</b></div>
@@ -193,6 +210,7 @@
     const pixelPitch = led.name.match(/[\d.]+$/)?.[0] || '?';
     sessionStorage.setItem('ledDetail', JSON.stringify({
       modelName: led.name,
+      modelData: led, // Pass the whole object for advanced specs
       groupKey: activeGroup,
       groupType: g.type,
       pixelPitch,
@@ -247,23 +265,30 @@
     state = await AppStorage.loadState();
     state.ui = state.ui || { theme: 'light', lang: 'th' };
     state.masterData = state.masterData || App.clone(DEFAULT_DATA);
-    if (!state.masterData.accessories) {
-      state.masterData.accessories = App.clone(DEFAULT_DATA.accessories);
-    }
-    state.loggedIn = false;
-
     App.state = state;
+
+    // Load data from DB first
+    const syncOk = await App.syncFromDB();
+    if (!syncOk) {
+      console.warn("Using local cache/default data.");
+    }
+    
+    state.loggedIn = false;
     await AppStorage.saveState(state); // ensure structure exists
 
     document.documentElement.setAttribute('data-theme', state.ui.theme || 'light');
 
-    document.getElementById('lang-toggle').addEventListener('click', App.toggleLang);
+    document.getElementById('lang-toggle').addEventListener('click', App.handleLangClick);
     document.getElementById('theme-toggle').addEventListener('click', App.toggleTheme);
     const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-      logoutBtn.style.display = state.currentUser ? 'inline-block' : 'none';
-      logoutBtn.addEventListener('click', App.logout);
-    }
+    const priceModeWrapper = document.getElementById('price-mode-wrapper');
+    const isLogged = !!state.currentUser;
+
+    if (logoutBtn) logoutBtn.style.display = isLogged ? 'inline-block' : 'none';
+    if (priceModeWrapper) priceModeWrapper.style.display = isLogged ? 'inline-flex' : 'none';
+    
+    if (logoutBtn) logoutBtn.addEventListener('click', App.logout);
+    App.renderWelcomeBanner();
 
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => switchGroup(btn.dataset.group));
@@ -280,6 +305,17 @@
     document.getElementById('extra-con-qty').addEventListener('input', recalc);
     document.getElementById('acc-select').addEventListener('change', recalc);
     document.getElementById('acc-qty').addEventListener('input', recalc);
+
+    document.getElementById('price-mode-toggle').addEventListener('change', (e) => {
+      const isCustom = e.target.checked;
+      pricingMode = isCustom ? 'custom' : 'standard';
+      document.getElementById('price-mode-label').textContent = isCustom ? 'พนักงาน' : 'มาตรฐาน';
+      document.getElementById('input-custom-price').style.display = isCustom ? 'block' : 'none';
+      recalc();
+    });
+
+    document.getElementById('custom-price-sqm').addEventListener('input', recalc);
+    document.getElementById('custom-install').addEventListener('input', recalc);
 
     function snapToSize(elId, useW) {
       document.getElementById(elId).addEventListener('blur', (e) => {

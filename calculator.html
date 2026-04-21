@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAZR LED Solution Calculator Pro</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <div class="container page-fade-in">
+        <div class="topbar">
+            <div class="brand">
+                <h1 id="app-title">RAZR LED Solution Calculator Pro</h1>
+                <div class="subtitle" id="app-subtitle">คำนวณสเปก, ราคา, และจัดการสินค้าได้จากหน้า Admin</div>
+            </div>
+            <div class="toolbar">
+                <div class="ios-toggle-wrap" id="price-mode-wrapper" style="display:none;">
+                    <span class="ios-toggle-label" id="price-mode-label">มาตรฐาน</span>
+                    <label class="ios-toggle" for="price-mode-toggle">
+                        <input type="checkbox" id="price-mode-toggle">
+                        <span class="ios-toggle-track"></span>
+                    </label>
+                </div>
+                <div class="lang-toggle-pill" id="lang-toggle">
+                    <button class="lang-opt active" data-lang="th">TH</button>
+                    <button class="lang-opt" data-lang="en">EN</button>
+                </div>
+                <button class="btn btn-secondary" id="theme-toggle" data-i18n="theme">ธีม: สว่าง</button>
+                <button class="btn btn-secondary" id="logout-btn" data-i18n="adminLogout"
+                    style="display:none;">Logout</button>
+            </div>
+        </div>
+
+        <div id="welcome-banner-section"></div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-group="UIR" data-i18n="tab1">UIRx/c (640x480)</button>
+            <button class="tab-btn" data-group="CIH" data-i18n="tab3">CIH (600x337.5)</button>
+            <button class="tab-btn" data-group="UOS" data-i18n="tab2">UOSx (960x960)</button>
+        </div>
+
+        <div class="card">
+            <div class="grid-main">
+                <div>
+                    <div class="field">
+                        <label data-i18n="selectLed">เลือกรุ่น LED Display</label>
+                        <select id="led-select"></select>
+                    </div>
+
+
+                    <div class="mode-toggle" style="margin-top:12px;">
+                        <button id="mode-qty" class="active" data-i18n="modeQty">จำนวนตู้</button>
+                        <button id="mode-size" data-i18n="modeSize">เมตร (กว้าง*สูง)</button>
+                    </div>
+
+                    <div id="input-qty">
+                        <div class="row">
+                            <div class="field">
+                                <label data-i18n="qtyW">จำนวนตู้ (แนวนอน)</label>
+                                <input type="number" id="w_qty" data-i18n-placeholder="qtyWPlaceholder"
+                                    placeholder="เช่น 5" min="0">
+                            </div>
+                            <div class="field">
+                                <label data-i18n="qtyH">จำนวนตู้ (แนวตั้ง)</label>
+                                <input type="number" id="h_qty" data-i18n-placeholder="qtyHPlaceholder"
+                                    placeholder="เช่น 4" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="input-size" style="display:none;">
+                        <div class="row">
+                            <div class="field">
+                                <label data-i18n="unitWidth">กว้าง (เมตร)</label>
+                                <input type="number" id="width_m" data-i18n-placeholder="widthPlaceholder">
+                            </div>
+                            <div class="field">
+                                <label data-i18n="unitHeight">สูง (เมตร)</label>
+                                <input type="number" id="height_m" data-i18n-placeholder="heightPlaceholder">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="input-custom-price"
+                        style="display:none; margin-top:12px; padding:12px; background:color-mix(in srgb, var(--primary) 5%, transparent); border:1px solid color-mix(in srgb, var(--primary) 20%, transparent); border-radius:8px;">
+                        <div class="row">
+                            <div class="field">
+                                <label data-i18n="customPriceLabel">ราคา LED ต่อ ตร.ม.</label>
+                                <input type="number" id="custom-price-sqm"
+                                    data-i18n-placeholder="customPricePlaceholder" placeholder="เช่น 6000" min="0">
+                            </div>
+                            <div class="field">
+                                <label data-i18n="customInstallLabel">ค่าติดตั้งเหมาจ่าย</label>
+                                <input type="number" id="custom-install"
+                                    data-i18n-placeholder="customInstallPlaceholder" placeholder="ไม่ระบุ = 0" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="aspect-ratio-feedback"
+                        style="margin-top: 12px; margin-bottom: 8px; font-size: 0.95rem; padding: 8px 12px; background: color-mix(in srgb, var(--primary) 10%, transparent); border-left: 3px solid var(--primary); border-radius: 4px; display: none;">
+                        <span data-i18n="aspectRatio">สัดส่วนจอ</span>: <b id="aspect-ratio-text"
+                            style="color:var(--primary);"></b>
+                    </div>
+
+                    <div class="field" style="margin-top:8px;">
+                        <label data-i18n="controller">เลือก Controller</label>
+                        <div id="recom-badge" class="badge" data-i18n="recText">ระบบแนะนำรุ่นที่เหมาะสม</div>
+                        <select id="con-select"></select>
+                    </div>
+
+                    <div class="field"
+                        style="margin-top:16px; padding:12px; background:color-mix(in srgb, var(--card) 90%, transparent); border:1px dashed var(--border); border-radius:12px;">
+                        <label data-i18n="extraController">Controller เพิ่มเติม / อุปกรณ์เสริม</label>
+                        <div style="display:flex; gap:8px; margin-bottom:10px;">
+                            <div style="flex:2;">
+                                <select id="extra-con-select">
+                                    <option value="-1" data-i18n="none">-- ไม่รับ --</option>
+                                </select>
+                            </div>
+                            <div style="flex:1;">
+                                <input type="number" id="extra-con-qty" data-i18n-placeholder="qtyPlaceholder"
+                                    placeholder="Qty" min="0" value="0">
+                            </div>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <div style="flex:2;">
+                                <select id="acc-select">
+                                    <option value="-1" data-i18n="none">-- ไม่รับ --</option>
+                                </select>
+                            </div>
+                            <div style="flex:1;">
+                                <input type="number" id="acc-qty" data-i18n-placeholder="qtyPlaceholder"
+                                    placeholder="Qty" min="0" value="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="footer-actions" style="justify-content:flex-start;margin-top:18px;">
+                        <button class="btn btn-secondary" id="calc-reset" data-i18n="reset">🔄 รีเซ็ตข้อมูล</button>
+                        <button class="btn btn-success" id="detail-btn" data-i18n="detailBtn">📋 Detail(Demo)</button>
+                        <a class="btn btn-quote" id="quote-link" href="quote.html" data-i18n="makeQuote">📄
+                            ทำใบเสนอราคา</a>
+                    </div>
+                </div>
+
+                <div class="result" id="result-display"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/data.js"></script>
+    <script type="module" src="js/storage.js"></script>
+    <script type="module" src="js/shared.js"></script>
+    <script type="module" src="js/calculator.js"></script>
+</body>
+
+</html>

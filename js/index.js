@@ -1,6 +1,6 @@
-(function () {
-    const EXAMPLES = Object.keys(window.STAFF_DATA);
+import { StaffAPI } from '../src/api/client.js';
 
+(function () {
     async function init() {
         const state = await AppStorage.loadState();
         App.state = state;
@@ -12,7 +12,11 @@
 
         async function handleLogin() {
             const val = input.value.trim();
-            const staff = window.STAFF_DATA[val];
+            if (!val) return;
+
+            App.showToast(App.t('calculating'));
+            const staff = await StaffAPI.getByEmpId(val);
+            
             if (staff) {
                 // Success
                 const cleanName = (fullName) => {
@@ -41,7 +45,7 @@
                 await AppStorage.saveState(App.state);
 
                 setTimeout(() => {
-                    window.location.href = 'index.html';
+                    window.location.href = 'calculator.html';
                 }, 1000);
             } else {
                 // Failure

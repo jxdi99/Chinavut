@@ -2,12 +2,13 @@ import { resolve } from 'path'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
+  base: '/calculator_LED/',
   build: {
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
-        admin: resolve(__dirname, 'admin.html'),
-        login: resolve(__dirname, 'login.html'),
+        calculator: resolve(__dirname, 'calculator.html'),
+        admin: resolve(__dirname, 'backend/index.html'),
         quote: resolve(__dirname, 'quote.html'),
         detail: resolve(__dirname, 'detail.html'),
       },
