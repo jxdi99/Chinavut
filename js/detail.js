@@ -281,13 +281,41 @@
         if (btnBack) btnBack.textContent = t('cancel');
     }
 
+    /* ── Mobile scaling ────────────────────────────────────────── */
+    function applyMobileScale() {
+        const page = document.getElementById('pdf-content');
+        if (!page) return;
+
+        const winW = window.innerWidth;
+        const a4W = page.offsetWidth || 794; // approx 210mm
+        const padding = 20; // safe margin
+
+        if (winW < a4W + padding) {
+            const scale = (winW - padding) / a4W;
+            page.style.transform = `scale(${scale})`;
+            // Adjust margin to handle the vertical jump caused by scaling
+            const scaledH = page.offsetHeight * scale;
+            const viewport = document.getElementById('page-viewport');
+            if (viewport) viewport.style.height = (scaledH + 100) + 'px';
+        } else {
+            page.style.transform = 'none';
+            const viewport = document.getElementById('page-viewport');
+            if (viewport) viewport.style.height = 'auto';
+        }
+    }
+
     /* ── Full render ───────────────────────────────────────────── */
     function render() {
         applyLang();
         renderTable();
         // Preview uses pixel dims — call after layout paint
-        requestAnimationFrame(renderPreview);
+        requestAnimationFrame(() => {
+            renderPreview();
+            applyMobileScale();
+        });
     }
+
+    window.addEventListener('resize', applyMobileScale);
 
     /* ── Language toggle ───────────────────────────────────────── */
     document.getElementById('lang-toggle').addEventListener('click', function (e) {

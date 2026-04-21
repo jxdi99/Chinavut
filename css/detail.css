@@ -48,6 +48,25 @@ body {
     display: flex;
     gap: 10px;
     align-items: center;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 600px) {
+    .toolbar {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        justify-content: space-between;
+        padding: 6px 10px;
+    }
+    .lang-pill { padding: 2px; }
+    .lang-btn { padding: 4px 8px; font-size: 0.75rem; }
+    .btn-pdf, .btn-back { padding: 6px 10px; font-size: 0.75rem; }
 }
 
 .lang-pill {
@@ -110,8 +129,21 @@ body {
 }
 
 /* ══════════════════════════════════════════════
-   A4 PAGE
-   ══════════════════════════════════════════════ */
+    PAGE VIEWPORT
+    ══════════════════════════════════════════════ */
+.page-viewport {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    overflow-x: hidden;
+    padding-top: 60px; /* space for toolbar */
+}
+
+@media (max-width: 600px) {
+    .page-viewport {
+        padding-top: 50px;
+    }
+}
 .a4-page {
     width: var(--a4-w);
     min-height: var(--a4-h);
@@ -122,7 +154,8 @@ body {
     flex-direction: column;
     color: var(--text);
     overflow: hidden;
-    /* ← key: nothing escapes the page */
+    transform-origin: top center;
+    transition: transform 0.2s ease-out;
 }
 
 /* ── Header ── */

@@ -24,8 +24,9 @@
         <button class="btn-back" onclick="window.location.href='calculator.html'">← กลับหน้าคำนวณ</button>
     </div>
 
-    <!-- ═══ A4 PAGE ═══ -->
-    <div class="a4-page" id="pdf-content">
+    <!-- ═══ PAGE VIEWPORT (for scale-to-fit) ═══ -->
+    <div class="page-viewport" id="page-viewport">
+        <div class="a4-page" id="pdf-content">
 
         <!-- HEADER -->
         <header class="doc-header">
@@ -112,7 +113,8 @@
             </div>
         </footer>
 
-    </div><!-- /a4-page -->
+        </div><!-- /a4-page -->
+    </div><!-- /page-viewport -->
 
     <script type="module" src="js/data.js"></script>
     <script type="module" src="js/storage.js"></script>
