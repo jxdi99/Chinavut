@@ -243,9 +243,6 @@
             { l: t('totalCab'), v: fmt(d.totalQty), u: t('unitUnits') },
             { l: t('displayRes'), v: `${d.displayResW || 0}×${d.displayResH || 0}`, u: t('unitPixels') },
             { l: t('displayResAll'), v: fmt(totalPx), u: t('unitPixels') },
-            { l: t('pxDensity'), v: fmt(d.pixelDensity), u: t('unitPixels') },
-            { l: t('totalWeight'), v: fmt(d.totalWeight, 1), u: t('unitKg') },
-            { l: t('totalPower'), v: fmt(d.totalPowerMax), u: t('unitWatts') },
         ];
 
         const rows = Math.max(LEFT.length, RIGHT.length);

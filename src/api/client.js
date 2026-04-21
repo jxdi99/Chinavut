@@ -69,7 +69,11 @@ export const MasterDataAPI = {
             rh: m.rh,
             max: m.max_w,
             avg: m.avg_w,
-            price: m.price
+            price: m.price,
+            brightness: m.brightness,
+            refresh_rate: m.refresh_rate,
+            material: m.material,
+            maintenance: m.maintenance
           });
         }
       });
