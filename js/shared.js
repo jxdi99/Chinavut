@@ -145,14 +145,14 @@ import { MasterDataAPI } from "../src/api/client.js";
     if (window.location.pathname.includes("/backend")) return;
     const state = await AppStorage.loadState();
     if (!state.currentUser) {
-      window.location.href = "index.html";
+      window.location.href = "./index.html";
     }
   };
 
   App.logout = async function () {
     App.state.currentUser = null;
     await AppStorage.saveState(App.state);
-    window.location.href = "index.html";
+    window.location.href = "./index.html";
   };
 
   App.renderWelcomeBanner = function () {

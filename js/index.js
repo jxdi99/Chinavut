@@ -32,6 +32,7 @@ import { StaffAPI } from '../src/api/client.js';
                 };
 
                 const firstName = cleanName(staff.name);
+                console.log('Login Success:', staff);
                 App.showToast(`${App.t('welcome')} คุณ ${firstName}`);
                 
                 // Store logged in user in state
@@ -45,10 +46,12 @@ import { StaffAPI } from '../src/api/client.js';
                 await AppStorage.saveState(App.state);
 
                 setTimeout(() => {
-                    window.location.href = 'calculator.html';
+                    // Use ./ to ensure it stays in the subfolder on GitHub Pages
+                    window.location.href = './calculator.html';
                 }, 1000);
             } else {
                 // Failure
+                console.warn('Login Failed: Employee ID not found', val);
                 App.showToast(App.t('invalidId'));
             }
         }
