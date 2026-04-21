@@ -54,40 +54,18 @@ import { StaffAPI } from '../src/api/client.js';
         }
 
         function formatId(val) {
-            // Only allow alphanumeric and uppercase it, no hyphens
-            return val.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            // Keep it simple: Uppercase everything, but don't remove hyphens or symbols
+            return val.toUpperCase();
         }
 
         input.addEventListener('input', (e) => {
             const originalValue = input.value;
-            const cursor = input.selectionStart;
-            
-            // Count alphanumeric characters before the cursor in the unformatted string
-            const charsBeforeCursor = originalValue.substring(0, cursor).replace(/[^a-zA-Z0-9]/g, '').length;
-            
             const formatted = formatId(originalValue);
-            
             if (originalValue !== formatted) {
+                const start = input.selectionStart;
+                const end = input.selectionEnd;
                 input.value = formatted;
-                
-                // Calculate new cursor position
-                let newCursor = 0;
-                let alphanumericCount = 0;
-                while (alphanumericCount < charsBeforeCursor && newCursor < formatted.length) {
-                    if (/[a-zA-Z0-9]/.test(formatted[newCursor])) {
-                        alphanumericCount++;
-                    }
-                    newCursor++;
-                }
-
-                // If we just added a dash automatically, the cursor might need to skip past it
-                if (newCursor < formatted.length && formatted[newCursor] === '-') {
-                    // But only if the NEXT char is what the user was going to type
-                    // Actually, simpler: if the next char is a dash, skip it.
-                    // This handles cases like typing "HR" -> "HR-" (cursor at 3)
-                }
-                
-                input.setSelectionRange(newCursor, newCursor);
+                input.setSelectionRange(start, end);
             }
         });
 
