@@ -32,11 +32,11 @@
 body {
     background: #cfd8e8;
     font-family: 'IBM Plex Sans Thai', sans-serif;
-    display: flex;
-    flex-direction: column;
     align-items: center;
     padding: 20px 0 60px;
     min-height: 100vh;
+    min-width: 840px; /* match viewport width */
+    overflow-x: hidden;
 }
 
 /* ── Toolbar ── */
@@ -126,24 +126,12 @@ body {
 
 .btn-back:hover {
     background: #eff3fc;
+    background: #eff3fc;
 }
 
 /* ══════════════════════════════════════════════
-    PAGE VIEWPORT
-    ══════════════════════════════════════════════ */
-.page-viewport {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    overflow-x: hidden;
-    padding-top: 60px; /* space for toolbar */
-}
-
-@media (max-width: 600px) {
-    .page-viewport {
-        padding-top: 50px;
-    }
-}
+   A4 PAGE
+   ══════════════════════════════════════════════ */
 .a4-page {
     width: var(--a4-w);
     min-height: var(--a4-h);
@@ -154,8 +142,6 @@ body {
     flex-direction: column;
     color: var(--text);
     overflow: hidden;
-    transform-origin: top center;
-    transition: transform 0.2s ease-out;
 }
 
 /* ── Header ── */
