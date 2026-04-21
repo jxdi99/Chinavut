@@ -193,10 +193,10 @@
         </div>
     </div>
 
-    <script src="js/data.js"></script>
-    <script src="js/storage.js"></script>
-    <script src="js/shared.js"></script>
-    <script>
+    <script type="module" src="js/data.js"></script>
+    <script type="module" src="js/storage.js"></script>
+    <script type="module" src="js/shared.js"></script>
+    <script type="module">
         (async function () {
             await App.checkAuth();
             const langToggle = document.getElementById('lang-toggle');
