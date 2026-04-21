@@ -54,14 +54,8 @@ import { StaffAPI } from '../src/api/client.js';
         }
 
         function formatId(val) {
-            // Remove all non-alphanumeric
-            let clean = val.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-            let res = '';
-            for (let i = 0; i < clean.length; i++) {
-                if (i === 2 || i === 4 || i === 5) res += '-';
-                res += clean[i];
-            }
-            return res.substring(0, 13); // Max length XX-XX-X-XXX
+            // Only allow alphanumeric and uppercase it, no hyphens
+            return val.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
         }
 
         input.addEventListener('input', (e) => {
