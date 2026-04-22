@@ -113,24 +113,51 @@
     let installText = 'N/A';
     let prodPrice = 0;
 
+    // Custom cost breakdown fields
+    let customSteelPrice = 0, customAlumPrice = 0, customLoadCabPrice = 0;
+    let customCablePrice = 0, customDemoPrice = 0, customFoundPrice = 0;
+    let customBreakdownHtml = '';
+
     if (pricingMode === 'custom') {
       const customPriceSqm = parseFloat(document.getElementById('custom-price-sqm').value) || 0;
       const customInstall = parseFloat(document.getElementById('custom-install').value) || 0;
+      customSteelPrice = parseFloat(document.getElementById('custom-steel').value) || 0;
+      customAlumPrice = parseFloat(document.getElementById('custom-alum').value) || 0;
+      customLoadCabPrice = parseFloat(document.getElementById('custom-load-cab').value) || 0;
+      customCablePrice = parseFloat(document.getElementById('custom-cable').value) || 0;
+      customDemoPrice = parseFloat(document.getElementById('custom-demo').value) || 0;
+      customFoundPrice = parseFloat(document.getElementById('custom-foundation').value) || 0;
       
       prodPrice = area * customPriceSqm;
       installPrice = customInstall;
-      installText = `${installPrice.toLocaleString()} บาท (กำหนดเอง)`;
+      installText = `${installPrice.toLocaleString()} ${App.t('unitBaht')}`;
+
+      // Build breakdown rows (only show items with value > 0)
+      const breakdownItems = [
+        { label: App.t('customSteelLabel'), value: customSteelPrice },
+        { label: App.t('customAlumLabel'), value: customAlumPrice },
+        { label: App.t('customLoadCabLabel'), value: customLoadCabPrice },
+        { label: App.t('customCableLabel'), value: customCablePrice },
+        { label: App.t('customDemoLabel'), value: customDemoPrice },
+        { label: App.t('customFoundLabel'), value: customFoundPrice },
+      ];
+      customBreakdownHtml = breakdownItems
+        .filter(item => item.value > 0)
+        .map(item => `<div class="result-row bg-highlight"><span>${escapeHtml(item.label)}</span><b>${item.value.toLocaleString()} ${App.t('unitBaht')}</b></div>`)
+        .join('');
     } else {
       prodPrice = area * led.price;
       if (g.type === 'indoor') {
         const raw = area * 7000;
         if (raw <= 50000) installPrice = 50000;
         else installPrice = 50000 + (Math.ceil((raw - 50000) / 3000) * 3000);
-        installText = `${installPrice.toLocaleString()} บาท`;
+        installText = `${installPrice.toLocaleString()} ${App.t('unitBaht')}`;
       } else {
         installText = 'N/A (Outdoor)';
       }
     }
+
+    const customExtrasTotal = customSteelPrice + customAlumPrice + customLoadCabPrice + customCablePrice + customDemoPrice + customFoundPrice;
 
     const extraConIdx = Number(document.getElementById('extra-con-select').value);
     const extraConQty = Number(document.getElementById('extra-con-qty').value) || 0;
@@ -152,7 +179,7 @@
       accHtml = `<div class="result-row bg-highlight"><span>${App.t('accLabel')} (${escapeHtml(aItem.name)} x${accQty})</span><b>${accPrice.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
     }
 
-    const total = prodPrice + installPrice + (selectedCon?.price || 0) + extraConPrice + accPrice;
+    const total = prodPrice + installPrice + customExtrasTotal + (selectedCon?.price || 0) + extraConPrice + accPrice;
 
     document.getElementById('recom-badge').textContent = recIdx !== -1
       ? `${App.t('recommend')} ${currentData().controllers[recIdx].name}`
@@ -200,6 +227,7 @@
       <div class="result-row"><span>${App.t('elecCost')}</span><b>${App.t('perHour')} ${(area * led.max / 1000 * 5).toFixed(2)} ${App.t('unitBaht')}</b></div>
       <div class="result-row" style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);"><span>${App.t('productPrice')}</span><b>${prodPrice > 0 ? prodPrice.toLocaleString() + ' ' + App.t('unitBaht') : App.t('notQuoted')}</b></div>
       <div class="result-row"><span>${App.t('installPrice')}</span><b>${installText}</b></div>
+      ${customBreakdownHtml}
       <div class="result-row"><span>${App.t('controllerPrice')} (${escapeHtml(selectedCon?.name || '-')})</span><b>${selectedCon && selectedCon.price > 0 ? selectedCon.price.toLocaleString() + ' ' + App.t('unitBaht') : App.t('na')}</b></div>
       ${extraConHtml}
       ${accHtml}
@@ -256,6 +284,12 @@
         accQty,
         customPriceSqm: document.getElementById('custom-price-sqm').value,
         customInstall: document.getElementById('custom-install').value,
+        customSteel: document.getElementById('custom-steel').value,
+        customAlum: document.getElementById('custom-alum').value,
+        customLoadCab: document.getElementById('custom-load-cab').value,
+        customCable: document.getElementById('custom-cable').value,
+        customDemo: document.getElementById('custom-demo').value,
+        customFoundation: document.getElementById('custom-foundation').value,
       };
       // We don't await here to avoid blocking UI during every keystroke
       AppStorage.saveState(App.state);
@@ -344,6 +378,12 @@
 
     document.getElementById('custom-price-sqm').addEventListener('input', recalc);
     document.getElementById('custom-install').addEventListener('input', recalc);
+    document.getElementById('custom-steel').addEventListener('input', recalc);
+    document.getElementById('custom-alum').addEventListener('input', recalc);
+    document.getElementById('custom-load-cab').addEventListener('input', recalc);
+    document.getElementById('custom-cable').addEventListener('input', recalc);
+    document.getElementById('custom-demo').addEventListener('input', recalc);
+    document.getElementById('custom-foundation').addEventListener('input', recalc);
 
     function snapToSize(elId, useW) {
       document.getElementById(elId).addEventListener('blur', (e) => {
@@ -423,6 +463,12 @@
       document.getElementById('input-custom-price').style.display = isCustom ? 'block' : 'none';
       document.getElementById('custom-price-sqm').value = li.customPriceSqm || '';
       document.getElementById('custom-install').value = li.customInstall || '';
+      document.getElementById('custom-steel').value = li.customSteel || '';
+      document.getElementById('custom-alum').value = li.customAlum || '';
+      document.getElementById('custom-load-cab').value = li.customLoadCab || '';
+      document.getElementById('custom-cable').value = li.customCable || '';
+      document.getElementById('custom-demo').value = li.customDemo || '';
+      document.getElementById('custom-foundation').value = li.customFoundation || '';
 
       await switchGroup(activeGroup);
       
@@ -449,6 +495,17 @@
       document.getElementById('extra-con-qty').value = '0';
       document.getElementById('acc-select').value = '-1';
       document.getElementById('acc-qty').value = '0';
+      
+      // Reset custom fields
+      document.getElementById('custom-price-sqm').value = '';
+      document.getElementById('custom-install').value = '';
+      document.getElementById('custom-steel').value = '';
+      document.getElementById('custom-alum').value = '';
+      document.getElementById('custom-load-cab').value = '';
+      document.getElementById('custom-cable').value = '';
+      document.getElementById('custom-demo').value = '';
+      document.getElementById('custom-foundation').value = '';
+
       manualController = false;
       recalc();
       App.showToast('รีเซ็ตข้อมูลเรียบร้อย');
