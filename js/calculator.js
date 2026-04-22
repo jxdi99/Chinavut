@@ -265,35 +265,8 @@
       diagonal: Math.sqrt(screenW * screenW + screenH * screenH)
     }));
 
-    // Auto-save inputs to AppState for persistence across reloads
-    if (App.state) {
-      App.state.lastInputs = {
-        activeGroup,
-        calcMode,
-        pricingMode,
-        ledIndex,
-        wQty: document.getElementById('w_qty').value,
-        hQty: document.getElementById('h_qty').value,
-        widthM: document.getElementById('width_m').value,
-        heightM: document.getElementById('height_m').value,
-        conIndex: document.getElementById('con-select').value,
-        manualController,
-        extraConIndex: extraConIdx,
-        extraConQty,
-        accIndex: accIdx,
-        accQty,
-        customPriceSqm: document.getElementById('custom-price-sqm').value,
-        customInstall: document.getElementById('custom-install').value,
-        customSteel: document.getElementById('custom-steel').value,
-        customAlum: document.getElementById('custom-alum').value,
-        customLoadCab: document.getElementById('custom-load-cab').value,
-        customCable: document.getElementById('custom-cable').value,
-        customDemo: document.getElementById('custom-demo').value,
-        customFoundation: document.getElementById('custom-foundation').value,
-      };
-      // We don't await here to avoid blocking UI during every keystroke
-      AppStorage.saveState(App.state);
-    }
+    // Final totals
+    updateTotalDisplays(totals);
   }
 
   async function switchGroup(groupKey) {
@@ -438,52 +411,7 @@
 
     renderHeaderAndText();
 
-    // Restore last inputs if they exist
-    if (state.lastInputs) {
-      const li = state.lastInputs;
-      activeGroup = li.activeGroup || 'UIR';
-      calcMode = li.calcMode || 'qty';
-      pricingMode = li.pricingMode || 'standard';
-      manualController = li.manualController || false;
-
-      // Update UI elements
-      document.getElementById('mode-qty').classList.toggle('active', calcMode === 'qty');
-      document.getElementById('mode-size').classList.toggle('active', calcMode === 'size');
-      document.getElementById('input-qty').style.display = calcMode === 'qty' ? 'block' : 'none';
-      document.getElementById('input-size').style.display = calcMode === 'size' ? 'block' : 'none';
-
-      document.getElementById('w_qty').value = li.wQty || '';
-      document.getElementById('h_qty').value = li.hQty || '';
-      document.getElementById('width_m').value = li.widthM || '';
-      document.getElementById('height_m').value = li.heightM || '';
-      
-      const isCustom = (pricingMode === 'custom');
-      document.getElementById('price-mode-toggle').checked = isCustom;
-      document.getElementById('price-mode-label').textContent = isCustom ? 'พนักงาน' : 'มาตรฐาน';
-      document.getElementById('input-custom-price').style.display = isCustom ? 'block' : 'none';
-      document.getElementById('custom-price-sqm').value = li.customPriceSqm || '';
-      document.getElementById('custom-install').value = li.customInstall || '';
-      document.getElementById('custom-steel').value = li.customSteel || '';
-      document.getElementById('custom-alum').value = li.customAlum || '';
-      document.getElementById('custom-load-cab').value = li.customLoadCab || '';
-      document.getElementById('custom-cable').value = li.customCable || '';
-      document.getElementById('custom-demo').value = li.customDemo || '';
-      document.getElementById('custom-foundation').value = li.customFoundation || '';
-
-      await switchGroup(activeGroup);
-      
-      // Secondary selects (need to set after switchGroup/initSelects)
-      document.getElementById('led-select').value = li.ledIndex || 0;
-      document.getElementById('con-select').value = li.conIndex || 0;
-      document.getElementById('extra-con-select').value = li.extraConIndex || '-1';
-      document.getElementById('extra-con-qty').value = li.extraConQty || '0';
-      document.getElementById('acc-select').value = li.accIndex || '-1';
-      document.getElementById('acc-qty').value = li.accQty || '0';
-      
-      recalc();
-    } else {
-      await switchGroup('UIR');
-    }
+    await switchGroup('UIR');
 
     // keep texts consistent after initial render
     document.getElementById('calc-reset').addEventListener('click', () => {

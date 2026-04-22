@@ -151,6 +151,7 @@ import { MasterDataAPI } from "../src/api/client.js";
 
   App.logout = async function () {
     App.state.currentUser = null;
+    App.state.lastInputs = null;
     await AppStorage.saveState(App.state);
     window.location.href = "./index.html";
   };
