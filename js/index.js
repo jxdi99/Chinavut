@@ -75,7 +75,6 @@ import { StaffAPI } from '../src/api/client.js';
         input.addEventListener('input', (e) => {
             const originalValue = input.value;
             const formatted = formatId(originalValue);
-            console.log('ID Formatting:', { originalValue, formatted });
             
             if (originalValue !== formatted) {
                 // Calculate cursor position by counting non-hyphen characters

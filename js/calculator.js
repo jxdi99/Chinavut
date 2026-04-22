@@ -170,24 +170,26 @@
     const con1Price = (selectedCon?.price || 0) * conQty;
     const con1Html = selectedCon ? `<div class="result-row bg-highlight"><span>${App.t('controllerPrice')} (${escapeHtml(selectedCon.name)} x${conQty})</span><b>${con1Price.toLocaleString()} ${App.t('unitBaht')}</b></div>` : '';
 
-    // Controller 2 (Select Only, Qty = 1)
+    // Controller 2 (Select + Qty)
     const con2Idx = Number(document.getElementById('con2-select').value);
     let con2Price = 0;
     let con2Html = '';
     if (con2Idx >= 0) {
       const c2 = currentData().controllers[con2Idx];
-      con2Price = c2.price;
-      con2Html = `<div class="result-row bg-highlight"><span>Controller 2 (${escapeHtml(c2.name)})</span><b>${con2Price.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
+      const con2Qty = Number(document.getElementById('con2-qty').value) || 1;
+      con2Price = c2.price * con2Qty;
+      con2Html = `<div class="result-row bg-highlight"><span>Controller 2 (${escapeHtml(c2.name)} x${con2Qty})</span><b>${con2Price.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
     }
 
-    // Controller 3 (Select Only, Qty = 1)
+    // Controller 3 (Select + Qty)
     const con3Idx = Number(document.getElementById('con3-select').value);
     let con3Price = 0;
     let con3Html = '';
     if (con3Idx >= 0) {
       const c3 = currentData().controllers[con3Idx];
-      con3Price = c3.price;
-      con3Html = `<div class="result-row bg-highlight"><span>Controller 3 (${escapeHtml(c3.name)})</span><b>${con3Price.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
+      const con3Qty = Number(document.getElementById('con3-qty').value) || 1;
+      con3Price = c3.price * con3Qty;
+      con3Html = `<div class="result-row bg-highlight"><span>Controller 3 (${escapeHtml(c3.name)} x${con3Qty})</span><b>${con3Price.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
     }
 
     // Accessory (Select Only, Qty = 1)
@@ -360,7 +362,9 @@
 
     document.getElementById('con-qty').addEventListener('input', recalc);
     document.getElementById('con2-select').addEventListener('change', recalc);
+    document.getElementById('con2-qty').addEventListener('input', recalc);
     document.getElementById('con3-select').addEventListener('change', recalc);
+    document.getElementById('con3-qty').addEventListener('input', recalc);
     document.getElementById('acc-select').addEventListener('change', recalc);
 
     document.getElementById('price-mode-toggle').addEventListener('change', (e) => {
@@ -443,7 +447,9 @@
       document.getElementById('height_m').value = '';
       document.getElementById('con-qty').value = '1';
       document.getElementById('con2-select').value = '-1';
+      document.getElementById('con2-qty').value = '1';
       document.getElementById('con3-select').value = '-1';
+      document.getElementById('con3-qty').value = '1';
       document.getElementById('acc-select').value = '-1';
       
       // Reset custom fields
