@@ -57,15 +57,20 @@ import { StaffAPI } from '../src/api/client.js';
         }
 
         function formatId(val) {
-            let raw = val.toUpperCase().replace(/-/g, '');
-            if (raw.startsWith('HRSP')) {
+            // Remove all non-alphanumeric for processing
+            let raw = val.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            
+            // If it matches the long ID pattern (starts with letters and is long enough)
+            if (raw.length >= 5 && /^[A-Z]/.test(raw)) {
                 let res = '';
-                if (raw.length > 0) res += raw.substring(0, 2); // HR
-                if (raw.length > 2) res += '-' + raw.substring(2, 4); // SP
-                if (raw.length > 4) res += '-' + raw.substring(4, 5); // 7
-                if (raw.length > 5) res += '-' + raw.substring(5, 8); // 009
+                res += raw.substring(0, 2); // 1st part (2 chars)
+                if (raw.length > 2) res += '-' + raw.substring(2, 4); // 2nd part (2 chars)
+                if (raw.length > 4) res += '-' + raw.substring(4, 5); // 3rd part (1 char)
+                if (raw.length > 5) res += '-' + raw.substring(5, 8); // 4th part (3 chars)
                 return res;
             }
+            
+            // For short IDs (like '08') or while still typing short
             return val.toUpperCase();
         }
 
