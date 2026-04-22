@@ -447,22 +447,22 @@ body {
 
 /* Column width budget:
    Total usable = 190mm (210mm - 2×10mm padding)
-   We split: 35% | 15% | 35% | 15%
-   Label cols are wide enough for Thai text; value cols right-aligned */
+   We split: 28% | 22% | 28% | 22%
+   Label cols for Thai text; value cols wider for better readability */
 .col-label-l {
-    width: 35%;
+    width: 28%;
 }
 
 .col-val-l {
-    width: 15%;
+    width: 22%;
 }
 
 .col-label-r {
-    width: 35%;
+    width: 28%;
 }
 
 .col-val-r {
-    width: 15%;
+    width: 22%;
 }
 
 .spec-table thead th {
