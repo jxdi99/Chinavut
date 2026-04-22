@@ -365,52 +365,67 @@
       state.ui.theme || "light",
     );
 
-    document
-      .getElementById("lang-toggle")
-      .addEventListener("click", App.toggleLang);
-    document
-      .getElementById("theme-toggle")
-      .addEventListener("click", App.toggleTheme);
-    document
-      .getElementById("admin-logout-btn")
-      .addEventListener("click", logout);
+    const langToggle = document.getElementById("lang-toggle");
+    if (langToggle) langToggle.addEventListener("click", App.toggleLang);
+
+    const themeToggle = document.getElementById("theme-toggle");
+    if (themeToggle) themeToggle.addEventListener("click", App.toggleTheme);
+
+    const logoutBtn = document.getElementById("admin-logout-btn");
+    if (logoutBtn) logoutBtn.addEventListener("click", logout);
+
     const globalLogout = document.getElementById("global-logout-btn");
     if (globalLogout) globalLogout.addEventListener("click", App.logout);
-    document.getElementById("login-submit").addEventListener("click", doLogin);
-    document
-      .getElementById("admin-save-btn")
-      .addEventListener("click", saveAll);
-    document
-      .getElementById("admin-reset-btn")
-      .addEventListener("click", resetToDefault);
-    document.getElementById("admin-add-btn").addEventListener("click", addRow);
-    document.getElementById("admin-group").addEventListener("change", (e) => {
-      selectedGroup = e.target.value;
-      renderTable();
-    });
 
-    document
-      .getElementById("admin-tbody")
-      .addEventListener("input", handleTableInput);
-    document
-      .getElementById("admin-tbody")
-      .addEventListener("click", handleTableAction);
+    const loginSubmit = document.getElementById("login-submit");
+    if (loginSubmit) loginSubmit.addEventListener("click", doLogin);
 
-    document.getElementById("home-link").href = "index.html";
+    const saveBtn = document.getElementById("admin-save-btn");
+    if (saveBtn) saveBtn.addEventListener("click", saveAll);
+
+    const resetBtn = document.getElementById("admin-reset-btn");
+    if (resetBtn) resetBtn.addEventListener("click", resetToDefault);
+
+    const addBtn = document.getElementById("admin-add-btn");
+    if (addBtn) addBtn.addEventListener("click", addRow);
+
+    const groupSelect = document.getElementById("admin-group");
+    if (groupSelect)
+      groupSelect.addEventListener("change", (e) => {
+        selectedGroup = e.target.value;
+        renderTable();
+      });
+
+    const tbody = document.getElementById("admin-tbody");
+    if (tbody) {
+      tbody.addEventListener("input", handleTableInput);
+      tbody.addEventListener("click", handleTableAction);
+    }
+
+    const homeLink = document.getElementById("home-link");
+    if (homeLink) homeLink.href = "index.html";
+
     setStaticTexts();
     updateLoginUI();
 
     const modal = document.getElementById("admin-login-modal");
     window.addEventListener("click", (e) => {
-      if (e.target === modal) closeLogin();
+      if (modal && e.target === modal) closeLogin();
     });
 
-    document.getElementById("login-pass").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") doLogin();
-    });
+    const loginPass = document.getElementById("login-pass");
+    if (loginPass) {
+      loginPass.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") doLogin();
+      });
+    }
 
-    selectedGroup = "UIR";
-    document.getElementById("admin-group").value = selectedGroup;
+    const adminGroup = document.getElementById("admin-group");
+    if (adminGroup) {
+      selectedGroup = "UIR";
+      adminGroup.value = selectedGroup;
+    }
+
     renderTable();
     initDragDrop();
   }
