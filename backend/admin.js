@@ -395,6 +395,19 @@
     App.showToast(App.t("saved"));
   }
 
+  async function syncFromDB() {
+    if (!loggedIn) return;
+    const syncSuccess = await App.syncFromDB();
+    if (syncSuccess) {
+      state.masterData = App.state.masterData;
+      await AppStorage.saveState(state);
+      renderTable();
+      App.showToast("ดึงข้อมูลจาก Database เรียบร้อยแล้ว");
+    } else {
+      alert("ไม่สามารถดึงข้อมูลจาก Database ได้");
+    }
+  }
+
   async function resetToDefault() {
     if (!confirm(App.t("confirmReset"))) return;
     state.masterData = App.clone(DEFAULT_DATA);
@@ -411,6 +424,17 @@
     if (!state.masterData.accessories) {
       state.masterData.accessories = App.clone(DEFAULT_DATA.accessories);
     }
+
+    // Try to sync from Supabase first
+    try {
+      const syncSuccess = await App.syncFromDB();
+      if (syncSuccess) {
+        state.masterData = App.state.masterData;
+      }
+    } catch (err) {
+      console.warn("Supabase sync not available, using local data");
+    }
+
     App.state = state;
     await AppStorage.saveState(state);
 
@@ -436,6 +460,9 @@
 
     const saveBtn = document.getElementById("admin-save-btn");
     if (saveBtn) saveBtn.addEventListener("click", saveAll);
+
+    const syncBtn = document.getElementById("admin-sync-btn");
+    if (syncBtn) syncBtn.addEventListener("click", syncFromDB);
 
     const resetBtn = document.getElementById("admin-reset-btn");
     if (resetBtn) resetBtn.addEventListener("click", resetToDefault);

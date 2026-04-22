@@ -408,13 +408,14 @@ textarea:focus {
 }
 
 .table-wrap {
-  overflow-x: auto
+  overflow-x: auto;
+  overflow-y: visible;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 900px
+  min-width: 2000px;
 }
 
 th,
@@ -422,21 +423,45 @@ td {
   border: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
   padding: 8px;
   text-align: left;
-  font-size: .88rem
+  font-size: .88rem;
+  white-space: nowrap;
 }
 
 th {
   background: color-mix(in srgb, var(--bg) 72%, var(--card));
   position: sticky;
-  top: 0
+  top: 0;
+}
+
+th:first-child,
+td:first-child,
+th:nth-child(2),
+td:nth-child(2) {
+  position: sticky;
+  z-index: 1;
+  background: color-mix(in srgb, var(--bg) 72%, var(--card));
+}
+
+th:first-child,
+td:first-child {
+  left: 0;
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+  left: 45px;
 }
 
 td input,
 td select {
   width: 100%;
+  min-width: 80px;
   padding: 8px 9px;
   border-radius: 10px;
-  font-size: .9rem
+  font-size: .9rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
 }
 
 .mini-btn {
