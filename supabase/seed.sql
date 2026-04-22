@@ -138,8 +138,8 @@ ALTER TABLE led_models ENABLE ROW LEVEL SECURITY;
 ALTER TABLE controllers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE accessories ENABLE ROW LEVEL SECURITY;
 
--- Simple policy: Everyone can READ, only Authenticated (Admins) can WRITE
-CREATE POLICY "Public Read" ON staff FOR SELECT USING (true);
-CREATE POLICY "Public Read" ON led_models FOR SELECT USING (true);
-CREATE POLICY "Public Read" ON controllers FOR SELECT USING (true);
-CREATE POLICY "Public Read" ON accessories FOR SELECT USING (true);
+-- Simple policy: Allow READ/WRITE for now since admin login is local
+CREATE POLICY "Public Read/Write" ON staff FOR ALL USING (true);
+CREATE POLICY "Public Read/Write" ON led_models FOR ALL USING (true);
+CREATE POLICY "Public Read/Write" ON controllers FOR ALL USING (true);
+CREATE POLICY "Public Read/Write" ON accessories FOR ALL USING (true);
