@@ -149,7 +149,7 @@
       ];
       customBreakdownHtml = breakdownItems
         .filter(item => item.value > 0)
-        .map(item => `<div class="result-row bg-highlight"><span>${escapeHtml(item.label)}</span><b>${item.value.toLocaleString()} ${App.t('unitBaht')}</b></div>`)
+        .map(item => `<div class="result-row"><span>${escapeHtml(item.label)}</span><b>${item.value.toLocaleString()} ${App.t('unitBaht')}</b></div>`)
         .join('');
     } else {
       prodPrice = area * led.price;
@@ -168,7 +168,7 @@
     // Controller 1 (Primary) with Qty
     const conQty = Number(document.getElementById('con-qty').value) || 1;
     const con1Price = (selectedCon?.price || 0) * conQty;
-    const con1Html = selectedCon ? `<div class="result-row bg-highlight"><span>${App.t('controllerPrice')} (${escapeHtml(selectedCon.name)} x${conQty})</span><b>${con1Price.toLocaleString()} ${App.t('unitBaht')}</b></div>` : '';
+    const con1Html = selectedCon ? `<div class="result-row"><span>${App.t('controllerPrice')} (${escapeHtml(selectedCon.name)} x${conQty})</span><b>${con1Price.toLocaleString()} ${App.t('unitBaht')}</b></div>` : '';
 
     // Controller 2 (Select Only, Qty = 1)
     const con2Idx = Number(document.getElementById('con2-select').value);
@@ -177,7 +177,7 @@
     if (con2Idx >= 0) {
       const c2 = currentData().controllers[con2Idx];
       con2Price = c2.price;
-      con2Html = `<div class="result-row bg-highlight"><span>Controller 2 (${escapeHtml(c2.name)})</span><b>${con2Price.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
+      con2Html = `<div class="result-row"><span>Controller 2 (${escapeHtml(c2.name)})</span><b>${con2Price.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
     }
 
     // Controller 3 (Select Only, Qty = 1)
@@ -187,7 +187,7 @@
     if (con3Idx >= 0) {
       const c3 = currentData().controllers[con3Idx];
       con3Price = c3.price;
-      con3Html = `<div class="result-row bg-highlight"><span>Controller 3 (${escapeHtml(c3.name)})</span><b>${con3Price.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
+      con3Html = `<div class="result-row"><span>Controller 3 (${escapeHtml(c3.name)})</span><b>${con3Price.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
     }
 
     // Accessory (Select Only, Qty = 1)
@@ -197,7 +197,7 @@
     if (accIdx >= 0) {
       const aItem = currentData().accessories[accIdx];
       accPrice = aItem.price;
-      accHtml = `<div class="result-row bg-highlight"><span>${App.t('accLabel')} (${escapeHtml(aItem.name)})</span><b>${accPrice.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
+      accHtml = `<div class="result-row"><span>${App.t('accLabel')} (${escapeHtml(aItem.name)})</span><b>${accPrice.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
     }
 
     const total = prodPrice + installPrice + customExtrasTotal + con1Price + con2Price + con3Price + accPrice;
@@ -239,7 +239,7 @@
       <div class="result-row"><span>${App.t('totalCabLabel')}</span><b>${wQty} x ${hQty} = ${totalQty} ${App.t('unitUnits')}</b></div>
       <div class="result-row"><span>${App.t('diagonalLabel')}</span><b>${diagonalInch.toFixed(1)} ${App.t('unitInch')}</b></div>
       ${ratioText ? `<div class="result-row"><span>${App.t('aspectRatio')}</span><b style="color:var(--primary);">${ratioText}</b></div>` : ''}
-      <div class="result-row"><span>${App.t('area')}</span><b>${area.toFixed(3)} ${App.t('unitSqM')}</b></div>
+      <div class="result-row"><span>${App.t('area')}</span><b>${Number(area.toFixed(4))} ${App.t('unitSqM')}</b></div>
       <div class="result-row"><span>${App.t('resolution')}</span><b>${resW} x ${resH} ${App.t('unitPixels')}</b></div>
       <div class="result-row"><span>${App.t('pixels')}</span><b>${totalPixels.toLocaleString()} ${App.t('pixels')}</b></div>
       <div class="result-row"><span>${App.t('weight')}</span><b>${(totalQty * g.weight).toFixed(1)} ${App.t('unitKg')}</b></div>
@@ -247,12 +247,12 @@
       <div class="result-row"><span>${App.t('amps')}</span><b>${(area * led.max / 220 * 1.25).toFixed(2)} ${App.t('unitAmps')}</b></div>
       <div class="result-row"><span>${App.t('elecCost')}</span><b>${App.t('perHour')} ${(area * led.max / 1000 * 5).toFixed(2)} ${App.t('unitBaht')}</b></div>
       <div class="result-row" style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);"><span>${App.t('productPrice')}</span><b>${prodPrice > 0 ? prodPrice.toLocaleString() + ' ' + App.t('unitBaht') : App.t('notQuoted')}</b></div>
-      <div class="result-row"><span>${App.t('installPrice')}</span><b>${installText}</b></div>
-      ${customBreakdownHtml}
       ${con1Html}
       ${con2Html}
       ${con3Html}
       ${accHtml}
+      <div class="result-row"><span>${App.t('installPrice')}</span><b>${installText}</b></div>
+      ${customBreakdownHtml}
       <div class="result-total">${App.t('total')}: ${prodPrice > 0 ? total.toLocaleString() + ' ' + App.t('unitBaht') : App.t('notQuoted2')}</div>
       <div class="result-note">
         <b>${App.t('calcNoteTitle')}</b> ${App.t('calcNoteDesc')}
