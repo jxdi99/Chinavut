@@ -21,6 +21,25 @@ import { MasterDataAPI } from "../src/api/client.js";
     }
   };
 
+  App.syncToDB = async function () {
+    try {
+      if (!App.state || !App.state.masterData) {
+        console.error("No state to sync");
+        return false;
+      }
+      const result = await MasterDataAPI.syncToDb(App.state.masterData);
+      if (result) {
+        App.showToast("บันทึกไปยัง Database เรียบร้อยแล้ว");
+      } else {
+        console.error("Failed to sync to database");
+      }
+      return result;
+    } catch (err) {
+      console.error("Sync to DB Error:", err);
+      return false;
+    }
+  };
+
   App.t = function (key) {
     const lang = App.state?.ui?.lang || "th";
     return (

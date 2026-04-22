@@ -65,7 +65,7 @@
 
   async function persist() {
     await AppStorage.saveState(state);
-    App.showToast(App.t("saved"));
+    await App.syncToDB();
   }
 
   function scheduleSave() {
