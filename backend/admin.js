@@ -415,5 +415,14 @@
     initDragDrop();
   }
 
-  boot();
+  // Wait for App and AppStorage to be ready
+  function waitForDeps() {
+    if (typeof App !== "undefined" && typeof AppStorage !== "undefined") {
+      boot();
+    } else {
+      setTimeout(waitForDeps, 50);
+    }
+  }
+
+  waitForDeps();
 })();
