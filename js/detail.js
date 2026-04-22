@@ -141,7 +141,7 @@
         const screenH = d.screenH || 1.92;
 
         // scale so everything fits
-        const usableH = sectionH - GROUND_PX - 20;
+        const usableH = sectionH - GROUND_PX - 45; // Increased top clearance to 45px to avoid label overlap
         const usableW = sectionW - 60;
         const sceneH = Math.max(HUMAN_M, screenH + FLOOR_LIFT);
         const sceneW = HUMAN_M / 3 + GAP_M + screenW;

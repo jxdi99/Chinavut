@@ -222,7 +222,7 @@ body {
     border-radius: 10px;
     padding: 12px;
     position: relative;
-    height: 210px;
+    height: 240px;
     /* fixed height — never grows */
     margin-bottom: 10px;
     flex-shrink: 0;
@@ -283,9 +283,9 @@ body {
 /* Product label top */
 .screen-product-label {
     position: absolute;
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 12px;
+    right: 12px;
+    /* Changed from centered to top-right to avoid overlap with large screens */
     font-size: .65rem;
     font-weight: 600;
     color: var(--navy);
