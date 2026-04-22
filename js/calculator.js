@@ -204,6 +204,9 @@
       ${extraConHtml}
       ${accHtml}
       <div class="result-total">${App.t('total')}: ${prodPrice > 0 ? total.toLocaleString() + ' ' + App.t('unitBaht') : App.t('notQuoted2')}</div>
+      <div class="result-note">
+        <b>${App.t('calcNoteTitle')}</b> ${App.t('calcNoteDesc')}
+      </div>
     `;
 
     // Save current specs to sessionStorage for Detail page

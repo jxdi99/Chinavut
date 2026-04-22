@@ -218,6 +218,8 @@
       qtyPlaceholder: "จำนวน",
       unitWidth: "กว้าง (เมตร)",
       unitHeight: "สูง (เมตร)",
+      calcNoteTitle: "หมายเหตุ:",
+      calcNoteDesc: "ราคาดังกล่าวเป็นราคารวมค่าติดตั้งและค่าใช้จ่ายอื่นๆ ที่เกี่ยวข้องแล้ว อย่างไรก็ตาม ราคานี้เป็นเพียงการประเมินเบื้องต้น อาจมีการเปลี่ยนแปลงได้ตามรายละเอียดหน้างานและเงื่อนไขเพิ่มเติม",
     },
     en: {
       appTitle: "RAZR LED Solution Calculator Pro",
@@ -402,6 +404,8 @@
       qtyPlaceholder: "Qty",
       unitWidth: "Width (Meter)",
       unitHeight: "Height (Meter)",
+      calcNoteTitle: "Note:",
+      calcNoteDesc: "The above price includes installation and other related expenses. However, this is only a preliminary estimate and may change according to site details and additional conditions.",
     },
   };
 })();
