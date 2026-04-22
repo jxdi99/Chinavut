@@ -354,12 +354,16 @@ textarea:focus {
 .result-note {
   margin-top: 16px;
   font-size: 0.85rem;
-  color: var(--secondary);
+  color: var(--muted);
   line-height: 1.5;
   padding: 12px;
-  background: color-mix(in srgb, var(--secondary) 8%, transparent);
+  background: color-mix(in srgb, var(--secondary) 10%, transparent);
   border-left: 3px solid var(--secondary);
   border-radius: 6px;
+}
+
+.result-note b {
+  color: var(--secondary);
 }
 
 .badge {
