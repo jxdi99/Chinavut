@@ -468,5 +468,13 @@
     });
   }
 
-  boot();
+  function waitForDeps() {
+    if (typeof App !== 'undefined' && typeof AppStorage !== 'undefined') {
+      boot();
+    } else {
+      setTimeout(waitForDeps, 50);
+    }
+  }
+
+  waitForDeps();
 })();
