@@ -32,6 +32,8 @@
 body {
     background: #cfd8e8;
     font-family: 'IBM Plex Sans Thai', sans-serif;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     padding: 20px 0 60px;
     min-height: 100vh;
