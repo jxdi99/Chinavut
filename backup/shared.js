@@ -1,19 +1,19 @@
-(function(){
+(function () {
   window.App = window.App || {};
   App.clone = obj => JSON.parse(JSON.stringify(obj));
 
-  App.t = function(key){
+  App.t = function (key) {
     const lang = App.state?.ui?.lang || 'th';
     return (window.I18N[lang] && window.I18N[lang][key]) || window.I18N.th[key] || key;
   };
 
-  App.applyTheme = function(theme){
+  App.applyTheme = function (theme) {
     document.documentElement.setAttribute('data-theme', theme);
     const btn = document.getElementById('theme-toggle');
     if (btn) btn.textContent = theme === 'dark' ? `${App.t('theme')}: ${App.t('dark')}` : `${App.t('theme')}: ${App.t('light')}`;
   };
 
-  App.applyLanguage = function(){
+  App.applyLanguage = function () {
     const lang = App.state.ui.lang;
     document.documentElement.lang = lang === 'en' ? 'en' : 'th';
     document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -27,25 +27,25 @@
     App.applyTheme(App.state.ui.theme);
   };
 
-  App.setLang = async function(lang){
+  App.setLang = async function (lang) {
     App.state.ui.lang = lang;
     await AppStorage.saveState(App.state);
     App.applyLanguage();
     if (typeof App.renderAll === 'function') App.renderAll();
   };
 
-  App.toggleTheme = async function(){
+  App.toggleTheme = async function () {
     App.state.ui.theme = App.state.ui.theme === 'dark' ? 'light' : 'dark';
     await AppStorage.saveState(App.state);
     App.applyTheme(App.state.ui.theme);
   };
 
-  App.toggleLang = async function(){
+  App.toggleLang = async function () {
     const next = App.state.ui.lang === 'th' ? 'en' : 'th';
     await App.setLang(next);
   };
 
-  App.showToast = function(msg){
+  App.showToast = function (msg) {
     if (window.__toastTimer) clearTimeout(window.__toastTimer);
     let box = document.getElementById('toast');
     if (!box) {
@@ -59,7 +59,7 @@
     window.__toastTimer = setTimeout(() => { box.style.display = 'none'; }, 1800);
   };
 
-  App.checkAuth = async function(){
+  App.checkAuth = async function () {
     if (window.location.pathname.endsWith('login.html')) return;
     const state = await AppStorage.loadState();
     if (!state.currentUser) {
@@ -76,7 +76,7 @@
   App.renderWelcomeBanner = function () {
     const container = document.getElementById('welcome-banner-section');
     if (!container) return;
-    
+
     const u = App.state.currentUser;
     if (u) {
       container.innerHTML = `

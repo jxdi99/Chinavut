@@ -413,7 +413,7 @@
       qtyHPlaceholder: "e.g. 4",
       widthPlaceholder: "Width (m)",
       heightPlaceholder: "Height (m)",
-      customPricePlaceholder: "e.g. 6000",
+      customPricePlaceholder: "e.g. 3000",
       customInstallPlaceholder: "Empty = 0",
       qtyPlaceholder: "Qty",
       unitWidth: "Width (Meter)",

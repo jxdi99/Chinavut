@@ -6,15 +6,16 @@ import { AppStorage } from '../../storage.js'
     await App.checkAuth();
     App.applyLanguage();
 
-    const loginInput = document.getElementById('emp-id-input');
+    const loginInput = document.getElementById('employee-id');
     const loginBtn = document.getElementById('login-submit');
 
-    // Auto-formatting logic from previous session
+    // Auto-formatting logic: hrsp7009 → HR-SP-7-009
     loginInput.addEventListener('input', (e) => {
         let val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-        if (val.length > 10) val = val.substring(0, 10);
+        if (val.length > 8) val = val.substring(0, 8);
         
         let formatted = val;
+        // Format as XX-XX-X-XXX
         if (val.length > 2) formatted = val.substring(0, 2) + '-' + val.substring(2);
         if (val.length > 4) formatted = formatted.substring(0, 5) + '-' + formatted.substring(5);
         if (val.length > 5) formatted = formatted.substring(0, 7) + '-' + formatted.substring(7);
