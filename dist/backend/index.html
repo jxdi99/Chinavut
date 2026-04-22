@@ -1,25 +1,31 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RAZR LED Admin</title>
-  <link rel="stylesheet" crossorigin href="/assets/styles-XVULy1iy.css">
+  <title>RAZR LED Admin</title>
+  <script type="module" crossorigin src="/calculator_LED/assets/admin-BOqXaoQk.js"></script>
+  <link rel="modulepreload" crossorigin href="/calculator_LED/assets/shared-C1HfS9Ki.js">
+  <link rel="stylesheet" crossorigin href="/calculator_LED/assets/styles-DIc31TLr.css">
 </head>
+
 <body>
   <div class="container page-fade-in">
     <div class="topbar">
       <div class="brand">
         <h1 id="admin-title">Admin: จัดการ Master Data</h1>
-        <div class="subtitle" id="admin-subtitle">แก้ไขสินค้า/Controller ได้ทันที และบันทึกลงฐานข้อมูลของเบราว์เซอร์</div>
+        <div class="subtitle" id="admin-subtitle">แก้ไขสินค้า/Controller ได้ทันที และบันทึกลงฐานข้อมูลของเบราว์เซอร์
+        </div>
       </div>
       <div class="toolbar">
-        <button class="btn btn-secondary" id="lang-toggle" data-i18n="lang">TH / EN</button>
+        <div class="lang-toggle-pill" id="lang-toggle">
+          <button class="lang-opt active" data-lang="th">TH</button>
+          <button class="lang-opt" data-lang="en">EN</button>
+        </div>
         <button class="btn btn-secondary" id="theme-toggle" data-i18n="themeLabel">ธีม: สว่าง</button>
         <a class="btn btn-primary" id="home-link" href="/" data-i18n="backHome">กลับหน้า Calculator</a>
-        <button class="btn btn-dark" id="login-btn" data-i18n="adminLogin">Login Admin</button>
-        <button class="btn btn-secondary" id="logout-btn" style="display:none;" data-i18n="adminLogout">ออกจากระบบ Admin</button>
-        <button class="btn btn-danger" id="global-logout-btn" data-i18n="adminLogout">Logout</button>
+        <button class="btn btn-danger" id="admin-logout-btn" data-i18n="adminLogout">ออกจากระบบ</button>
       </div>
     </div>
 
@@ -39,11 +45,12 @@
         </div>
         <div class="field">
           <label>&nbsp;</label>
-          <button class="btn btn-secondary" id="admin-add-btn" style="width:100%;" data-i18n="addRow">+ เพิ่มแถวใหม่</button>
+          <button class="btn btn-secondary" id="admin-add-btn" style="width:100%;" data-i18n="addRow">+
+            เพิ่มแถวใหม่</button>
         </div>
       </div>
 
-      <div class="panel" id="admin-panel">
+      <div class="panel" id="admin-panel" style="display:block;">
         <div class="panel-head">
           <div class="small-muted" data-i18n="adminPanelInfo">แก้ไขข้อมูลในตารางได้ทันที ระบบจะบันทึกให้อัตโนมัติ</div>
           <div class="toolbar">
@@ -62,28 +69,26 @@
     </div>
   </div>
 
-  <div class="modal" id="login-modal">
+  <!-- Admin Login Modal (ต้อง login ก่อนถึงจะใช้งานได้) -->
+  <div class="modal" id="admin-login-modal" style="display:flex;">
     <div class="modal-box">
-      <h3 style="margin:0 0 6px;color:var(--primary);" data-i18n="loginTitle">Admin Login</h3>
-      <div class="small-muted" data-i18n="loginDesc">ล็อกอินนี้เก็บไว้ในโค้ด ไม่ต้องใช้ฐานข้อมูล</div>
+      <h3 style="margin:0 0 6px;color:var(--primary);">🔒 Admin Login</h3>
+      <div class="small-muted">กรุณาล็อกอินเพื่อเข้าใช้งานระบบจัดการข้อมูล</div>
       <div class="field" style="margin-top:14px;">
-        <label data-i18n="username">Username</label>
-        <input type="text" id="login-user" autocomplete="username">
+        <label>Username</label>
+        <input type="text" id="login-user" value="admin" autocomplete="username">
       </div>
       <div class="field">
-        <label data-i18n="password">Password</label>
-        <input type="password" id="login-pass" autocomplete="current-password">
+        <label>Password</label>
+        <input type="password" id="login-pass" autocomplete="current-password" placeholder="กรอกรหัสผ่าน">
       </div>
       <div class="footer-actions">
-        <button class="btn btn-secondary" id="login-cancel" onclick="document.getElementById('login-modal').style.display='none'" data-i18n="cancel">ยกเลิก</button>
-        <button class="btn btn-primary" id="login-submit" data-i18n="loginBtn">เข้าสู่ระบบ</button>
+        <a class="btn btn-secondary" href="/">ยกเลิก</a>
+        <button class="btn btn-primary" id="login-submit">เข้าสู่ระบบ</button>
       </div>
     </div>
   </div>
-
-  <script src="/data.js"></script>
-  <script src="/storage.js"></script>
-  <script src="/shared.js"></script>
-  <script src="./admin.js"></script>
+
 </body>
+
 </html>

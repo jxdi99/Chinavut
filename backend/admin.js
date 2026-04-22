@@ -1,116 +1,147 @@
 (function () {
   let state;
   let loggedIn = false;
-  let selectedGroup = 'UIR';
+  let selectedGroup = "UIR";
   let saveTimer = null;
 
-  function data() { return state.masterData; }
-  function group() { return data()[selectedGroup]; }
+  function data() {
+    return state.masterData;
+  }
+  function group() {
+    return data()[selectedGroup];
+  }
 
   function escapeHtml(str) {
     return String(str)
-      .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;').replaceAll("'", "&#39;");
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
   }
 
   function setStaticTexts() {
-    document.title = App.t('adminTitle');
-    document.getElementById('admin-title').textContent = App.t('adminTitle');
-    document.getElementById('admin-subtitle').textContent = App.t('adminSub');
-    document.getElementById('admin-group-label').textContent = App.t('targetGroup');
+    document.title = App.t("adminTitle");
+    document.getElementById("admin-title").textContent = App.t("adminTitle");
+    document.getElementById("admin-subtitle").textContent = App.t("adminSub");
+    document.getElementById("admin-group-label").textContent =
+      App.t("targetGroup");
     App.applyLanguage();
   }
 
   function openLogin() {
-    document.getElementById('login-modal').style.display = 'flex';
-    document.getElementById('login-user').value = 'admin';
-    document.getElementById('login-pass').value = '';
-    setTimeout(() => document.getElementById('login-pass').focus(), 50);
+    document.getElementById("admin-login-modal").style.display = "flex";
+    document.getElementById("login-user").value = "admin";
+    document.getElementById("login-pass").value = "";
+    setTimeout(() => document.getElementById("login-pass").focus(), 50);
   }
-  function closeLogin() { document.getElementById('login-modal').style.display = 'none'; }
+  function closeLogin() {
+    document.getElementById("admin-login-modal").style.display = "none";
+  }
 
   function updateLoginUI() {
     App.renderWelcomeBanner();
-    
-    document.getElementById('login-btn').style.display = loggedIn ? 'none' : 'inline-block';
-    document.getElementById('logout-btn').style.display = loggedIn ? 'inline-block' : 'none';
-    document.getElementById('admin-panel').style.display = loggedIn ? 'block' : 'none';
-    document.getElementById('admin-add-btn').style.display = loggedIn ? 'inline-block' : 'none';
-    document.getElementById('admin-save-btn').style.display = loggedIn ? 'inline-block' : 'none';
-    document.getElementById('admin-reset-btn').style.display = loggedIn ? 'inline-block' : 'inline-block';
+
+    document.getElementById("admin-logout-btn").style.display = loggedIn
+      ? "inline-block"
+      : "none";
+    document.getElementById("admin-panel").style.display = loggedIn
+      ? "block"
+      : "none";
+    document.getElementById("admin-add-btn").style.display = loggedIn
+      ? "inline-block"
+      : "none";
+    document.getElementById("admin-save-btn").style.display = loggedIn
+      ? "inline-block"
+      : "none";
+    document.getElementById("admin-reset-btn").style.display = loggedIn
+      ? "inline-block"
+      : "inline-block";
     if (loggedIn) {
-      document.getElementById('admin-group').value = selectedGroup;
+      document.getElementById("admin-group").value = selectedGroup;
       renderTable();
     }
   }
 
   async function persist() {
     await AppStorage.saveState(state);
-    App.showToast(App.t('saved'));
+    App.showToast(App.t("saved"));
   }
 
   function scheduleSave() {
     clearTimeout(saveTimer);
-    saveTimer = setTimeout(async () => { await AppStorage.saveState(state); }, 250);
+    saveTimer = setTimeout(async () => {
+      await AppStorage.saveState(state);
+    }, 250);
   }
 
   function renderTable() {
     if (!loggedIn) return;
-    const thead = document.getElementById('admin-thead');
-    const tbody = document.getElementById('admin-tbody');
+    const thead = document.getElementById("admin-thead");
+    const tbody = document.getElementById("admin-tbody");
 
-    if (selectedGroup === 'controllers') {
+    if (selectedGroup === "controllers") {
       thead.innerHTML = `
         <tr>
           <th style="width:40px;"></th>
-          <th>${App.t('controllerName')}</th>
-          <th>${App.t('load')}</th>
-          <th>${App.t('price')}</th>
-          <th>${App.t('manage')}</th>
+          <th>${App.t("controllerName")}</th>
+          <th>${App.t("load")}</th>
+          <th>${App.t("price")}</th>
+          <th>${App.t("manage")}</th>
         </tr>`;
-      tbody.innerHTML = data().controllers.map((it, idx) => `
+      tbody.innerHTML = data()
+        .controllers.map(
+          (it, idx) => `
         <tr data-index="${idx}">
           <td class="drag-handle" style="cursor:grab; text-align:center; font-size:1.2rem; color:var(--muted); user-select:none;">☰</td>
           <td><input data-kind="controller" data-field="name" data-index="${idx}" type="text" value="${escapeHtml(it.name)}"></td>
           <td><input data-kind="controller" data-field="load" data-index="${idx}" type="number" value="${it.load}"></td>
           <td><input data-kind="controller" data-field="price" data-index="${idx}" type="number" value="${it.price}"></td>
           <td>
-            <button class="mini-btn delete" data-action="delete-controller" data-index="${idx}">${App.t('delete')}</button>
+            <button class="mini-btn delete" data-action="delete-controller" data-index="${idx}">${App.t("delete")}</button>
           </td>
         </tr>
-      `).join('');
-    } else if (selectedGroup === 'accessories') {
+      `,
+        )
+        .join("");
+    } else if (selectedGroup === "accessories") {
       thead.innerHTML = `
         <tr>
           <th style="width:40px;"></th>
-          <th>${App.t('accName')}</th>
-          <th>${App.t('price')}</th>
-          <th>${App.t('manage')}</th>
+          <th>${App.t("accName")}</th>
+          <th>${App.t("price")}</th>
+          <th>${App.t("manage")}</th>
         </tr>`;
-      tbody.innerHTML = (data().accessories || []).map((it, idx) => `
+      tbody.innerHTML = (data().accessories || [])
+        .map(
+          (it, idx) => `
         <tr data-index="${idx}">
           <td class="drag-handle" style="cursor:grab; text-align:center; font-size:1.2rem; color:var(--muted); user-select:none;">☰</td>
           <td><input data-kind="accessory" data-field="name" data-index="${idx}" type="text" value="${escapeHtml(it.name)}"></td>
           <td><input data-kind="accessory" data-field="price" data-index="${idx}" type="number" value="${it.price}"></td>
           <td>
-            <button class="mini-btn delete" data-action="delete-accessory" data-index="${idx}">${App.t('delete')}</button>
+            <button class="mini-btn delete" data-action="delete-accessory" data-index="${idx}">${App.t("delete")}</button>
           </td>
         </tr>
-      `).join('');
+      `,
+        )
+        .join("");
     } else {
       const items = group().items;
       thead.innerHTML = `
         <tr>
           <th style="width:40px;"></th>
-          <th>${App.t('name')}</th>
-          <th>${App.t('rw')}</th>
-          <th>${App.t('rh')}</th>
-          <th>${App.t('max')}</th>
-          <th>${App.t('avg')}</th>
-          <th>${App.t('pricePerCab')}</th>
-          <th>${App.t('manage')}</th>
+          <th>${App.t("name")}</th>
+          <th>${App.t("rw")}</th>
+          <th>${App.t("rh")}</th>
+          <th>${App.t("max")}</th>
+          <th>${App.t("avg")}</th>
+          <th>${App.t("pricePerCab")}</th>
+          <th>${App.t("manage")}</th>
         </tr>`;
-      tbody.innerHTML = items.map((it, idx) => `
+      tbody.innerHTML = items
+        .map(
+          (it, idx) => `
         <tr data-index="${idx}">
           <td class="drag-handle" style="cursor:grab; text-align:center; font-size:1.2rem; color:var(--muted); user-select:none;">☰</td>
           <td><input data-kind="item" data-field="name" data-index="${idx}" type="text" value="${escapeHtml(it.name)}"></td>
@@ -120,48 +151,62 @@
           <td><input data-kind="item" data-field="avg" data-index="${idx}" type="number" value="${it.avg}"></td>
           <td><input data-kind="item" data-field="price" data-index="${idx}" type="number" value="${it.price}"></td>
           <td>
-            <button class="mini-btn delete" data-action="delete-item" data-index="${idx}">${App.t('delete')}</button>
+            <button class="mini-btn delete" data-action="delete-item" data-index="${idx}">${App.t("delete")}</button>
           </td>
         </tr>
-      `).join('');
+      `,
+        )
+        .join("");
     }
   }
 
   function normalizeGroupKey() {
-    if (selectedGroup !== 'controllers' && selectedGroup !== 'accessories' && !data()[selectedGroup]) selectedGroup = 'UIR';
+    if (
+      selectedGroup !== "controllers" &&
+      selectedGroup !== "accessories" &&
+      !data()[selectedGroup]
+    )
+      selectedGroup = "UIR";
   }
 
   function addRow() {
     if (!loggedIn) return;
     normalizeGroupKey();
-    if (selectedGroup === 'controllers') {
-      data().controllers.push({ name: 'NEW', load: 1000000, price: 0 });
-    } else if (selectedGroup === 'accessories') {
+    if (selectedGroup === "controllers") {
+      data().controllers.push({ name: "NEW", load: 1000000, price: 0 });
+    } else if (selectedGroup === "accessories") {
       if (!data().accessories) data().accessories = [];
-      data().accessories.push({ name: 'NEW ACCESSORY', price: 0 });
+      data().accessories.push({ name: "NEW ACCESSORY", price: 0 });
     } else {
-      group().items.push({ name: 'NEW MODEL', rw: 0, rh: 0, max: 0, avg: 0, price: 0 });
+      group().items.push({
+        name: "NEW MODEL",
+        rw: 0,
+        rh: 0,
+        max: 0,
+        avg: 0,
+        price: 0,
+      });
     }
     renderTable();
     scheduleSave();
   }
 
   function deleteItem(idx) {
-    if (!confirm(App.t('confirmDelete'))) return;
+    if (!confirm(App.t("confirmDelete"))) return;
     group().items.splice(idx, 1);
     renderTable();
     scheduleSave();
   }
 
   function deleteController(idx) {
-    if (!confirm(App.t('confirmDeleteCon'))) return;
+    if (!confirm(App.t("confirmDeleteCon"))) return;
     data().controllers.splice(idx, 1);
     renderTable();
     scheduleSave();
   }
 
   function deleteAccessory(idx) {
-    if (!confirm(App.t('confirmDelete'))) return;
+    if (!confirm(App.t("confirmDelete"))) return;
     if (data().accessories) data().accessories.splice(idx, 1);
     renderTable();
     scheduleSave();
@@ -175,77 +220,80 @@
     const kind = el.dataset.kind;
     if (!field || Number.isNaN(index)) return;
 
-    if (kind === 'item' && group().items[index]) {
-      group().items[index][field] = field === 'name' ? el.value : Number(el.value || 0);
-    } else if (kind === 'controller' && data().controllers[index]) {
-      data().controllers[index][field] = field === 'name' ? el.value : Number(el.value || 0);
-    } else if (kind === 'accessory' && data().accessories[index]) {
-      data().accessories[index][field] = field === 'name' ? el.value : Number(el.value || 0);
+    if (kind === "item" && group().items[index]) {
+      group().items[index][field] =
+        field === "name" ? el.value : Number(el.value || 0);
+    } else if (kind === "controller" && data().controllers[index]) {
+      data().controllers[index][field] =
+        field === "name" ? el.value : Number(el.value || 0);
+    } else if (kind === "accessory" && data().accessories[index]) {
+      data().accessories[index][field] =
+        field === "name" ? el.value : Number(el.value || 0);
     }
     scheduleSave();
   }
 
   function handleTableAction(e) {
-    const btn = e.target.closest('button[data-action]');
+    const btn = e.target.closest("button[data-action]");
     if (!btn) return;
     const idx = Number(btn.dataset.index);
     const action = btn.dataset.action;
-    if (action === 'delete-item') deleteItem(idx);
-    if (action === 'delete-controller') deleteController(idx);
-    if (action === 'delete-accessory') deleteAccessory(idx);
+    if (action === "delete-item") deleteItem(idx);
+    if (action === "delete-controller") deleteController(idx);
+    if (action === "delete-accessory") deleteAccessory(idx);
   }
 
   let draggedIndex = null;
   function initDragDrop() {
-    const tbody = document.getElementById('admin-tbody');
+    const tbody = document.getElementById("admin-tbody");
 
-    tbody.addEventListener('mousedown', (e) => {
-      if (e.target.classList.contains('drag-handle')) {
-        const tr = e.target.closest('tr');
-        if (tr) tr.setAttribute('draggable', 'true');
+    tbody.addEventListener("mousedown", (e) => {
+      if (e.target.classList.contains("drag-handle")) {
+        const tr = e.target.closest("tr");
+        if (tr) tr.setAttribute("draggable", "true");
       }
     });
 
-    tbody.addEventListener('mouseup', (e) => {
-      const tr = e.target.closest('tr');
-      if (tr && tr.hasAttribute('draggable')) tr.removeAttribute('draggable');
+    tbody.addEventListener("mouseup", (e) => {
+      const tr = e.target.closest("tr");
+      if (tr && tr.hasAttribute("draggable")) tr.removeAttribute("draggable");
     });
 
-    tbody.addEventListener('dragstart', (e) => {
-      const tr = e.target.closest('tr');
+    tbody.addEventListener("dragstart", (e) => {
+      const tr = e.target.closest("tr");
       if (!tr) return;
       draggedIndex = Number(tr.dataset.index);
-      e.dataTransfer.effectAllowed = 'move';
-      tr.style.opacity = '0.6';
+      e.dataTransfer.effectAllowed = "move";
+      tr.style.opacity = "0.6";
     });
 
-    tbody.addEventListener('dragover', (e) => {
+    tbody.addEventListener("dragover", (e) => {
       e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      const tr = e.target.closest('tr');
+      e.dataTransfer.dropEffect = "move";
+      const tr = e.target.closest("tr");
       if (tr && Number(tr.dataset.index) !== draggedIndex) {
-        tr.style.borderTop = '3px solid var(--primary)';
+        tr.style.borderTop = "3px solid var(--primary)";
       }
     });
 
-    tbody.addEventListener('dragleave', (e) => {
-      const tr = e.target.closest('tr');
-      if (tr) tr.style.borderTop = '';
+    tbody.addEventListener("dragleave", (e) => {
+      const tr = e.target.closest("tr");
+      if (tr) tr.style.borderTop = "";
     });
 
-    tbody.addEventListener('drop', (e) => {
+    tbody.addEventListener("drop", (e) => {
       e.preventDefault();
-      const tr = e.target.closest('tr');
+      const tr = e.target.closest("tr");
       if (!tr) return;
-      tr.style.borderTop = '';
+      tr.style.borderTop = "";
 
       const targetIndex = Number(tr.dataset.index);
       if (draggedIndex === null || targetIndex === draggedIndex) return;
 
       let arr;
-      if (selectedGroup === 'controllers') {
+      if (selectedGroup === "controllers") {
         arr = data().controllers;
-      } else if (selectedGroup === 'accessories') {
+      } else if (selectedGroup === "accessories") {
         arr = data().accessories;
       } else {
         arr = group().items;
@@ -257,28 +305,30 @@
       scheduleSave();
     });
 
-    tbody.addEventListener('dragend', (e) => {
-      const tr = e.target.closest('tr');
+    tbody.addEventListener("dragend", (e) => {
+      const tr = e.target.closest("tr");
       if (tr) {
-        tr.style.opacity = '1';
-        tr.removeAttribute('draggable');
+        tr.style.opacity = "1";
+        tr.removeAttribute("draggable");
       }
-      Array.from(tbody.querySelectorAll('tr')).forEach(r => r.style.borderTop = '');
+      Array.from(tbody.querySelectorAll("tr")).forEach(
+        (r) => (r.style.borderTop = ""),
+      );
       draggedIndex = null;
     });
   }
 
   async function doLogin() {
-    const user = document.getElementById('login-user').value.trim();
-    const pass = document.getElementById('login-pass').value;
-    if (user === 'admin' && pass === '1') {
+    const user = document.getElementById("login-user").value.trim();
+    const pass = document.getElementById("login-pass").value;
+    if (user === "admin" && pass === "1") {
       loggedIn = true;
       closeLogin();
       updateLoginUI();
-      App.showToast(App.t('loginOk'));
+      App.showToast(App.t("loginOk"));
       return;
     }
-    alert(App.t('loginFail'));
+    alert(App.t("loginFail"));
   }
 
   async function logout() {
@@ -288,21 +338,21 @@
 
   async function saveAll() {
     await persist();
-    App.showToast(App.t('saved'));
+    App.showToast(App.t("saved"));
   }
 
   async function resetToDefault() {
-    if (!confirm(App.t('confirmReset'))) return;
+    if (!confirm(App.t("confirmReset"))) return;
     state.masterData = App.clone(DEFAULT_DATA);
     await AppStorage.saveState(state);
     renderTable();
-    App.showToast(App.t('resetDone'));
+    App.showToast(App.t("resetDone"));
   }
 
   async function boot() {
     await App.checkAuth();
     state = await AppStorage.loadState();
-    state.ui = state.ui || { theme: 'light', lang: 'th' };
+    state.ui = state.ui || { theme: "light", lang: "th" };
     state.masterData = state.masterData || App.clone(DEFAULT_DATA);
     if (!state.masterData.accessories) {
       state.masterData.accessories = App.clone(DEFAULT_DATA.accessories);
@@ -310,41 +360,57 @@
     App.state = state;
     await AppStorage.saveState(state);
 
-    document.documentElement.setAttribute('data-theme', state.ui.theme || 'light');
+    document.documentElement.setAttribute(
+      "data-theme",
+      state.ui.theme || "light",
+    );
 
-    document.getElementById('lang-toggle').addEventListener('click', App.toggleLang);
-    document.getElementById('theme-toggle').addEventListener('click', App.toggleTheme);
-    document.getElementById('login-btn').addEventListener('click', openLogin);
-    document.getElementById('logout-btn').addEventListener('click', logout);
-    const globalLogout = document.getElementById('global-logout-btn');
-    if (globalLogout) globalLogout.addEventListener('click', App.logout);
-    document.getElementById('login-submit').addEventListener('click', doLogin);
-    document.getElementById('admin-save-btn').addEventListener('click', saveAll);
-    document.getElementById('admin-reset-btn').addEventListener('click', resetToDefault);
-    document.getElementById('admin-add-btn').addEventListener('click', addRow);
-    document.getElementById('admin-group').addEventListener('change', (e) => {
+    document
+      .getElementById("lang-toggle")
+      .addEventListener("click", App.toggleLang);
+    document
+      .getElementById("theme-toggle")
+      .addEventListener("click", App.toggleTheme);
+    document
+      .getElementById("admin-logout-btn")
+      .addEventListener("click", logout);
+    const globalLogout = document.getElementById("global-logout-btn");
+    if (globalLogout) globalLogout.addEventListener("click", App.logout);
+    document.getElementById("login-submit").addEventListener("click", doLogin);
+    document
+      .getElementById("admin-save-btn")
+      .addEventListener("click", saveAll);
+    document
+      .getElementById("admin-reset-btn")
+      .addEventListener("click", resetToDefault);
+    document.getElementById("admin-add-btn").addEventListener("click", addRow);
+    document.getElementById("admin-group").addEventListener("change", (e) => {
       selectedGroup = e.target.value;
       renderTable();
     });
 
-    document.getElementById('admin-tbody').addEventListener('input', handleTableInput);
-    document.getElementById('admin-tbody').addEventListener('click', handleTableAction);
+    document
+      .getElementById("admin-tbody")
+      .addEventListener("input", handleTableInput);
+    document
+      .getElementById("admin-tbody")
+      .addEventListener("click", handleTableAction);
 
-    document.getElementById('home-link').href = 'index.html';
+    document.getElementById("home-link").href = "index.html";
     setStaticTexts();
     updateLoginUI();
 
-    const modal = document.getElementById('login-modal');
-    window.addEventListener('click', (e) => {
+    const modal = document.getElementById("admin-login-modal");
+    window.addEventListener("click", (e) => {
       if (e.target === modal) closeLogin();
     });
 
-    document.getElementById('login-pass').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') doLogin();
+    document.getElementById("login-pass").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") doLogin();
     });
 
-    selectedGroup = 'UIR';
-    document.getElementById('admin-group').value = selectedGroup;
+    selectedGroup = "UIR";
+    document.getElementById("admin-group").value = selectedGroup;
     renderTable();
     initDragDrop();
   }

@@ -145,7 +145,9 @@
             box-shadow: 0 8px 28px rgba(124, 140, 255, .2);
         }
     </style>
-  <link rel="stylesheet" crossorigin href="/assets/styles-XVULy1iy.css">
+  <script type="module" crossorigin src="/calculator_LED/assets/quote-DvRa6s3p.js"></script>
+  <link rel="modulepreload" crossorigin href="/calculator_LED/assets/shared-C1HfS9Ki.js">
+  <link rel="stylesheet" crossorigin href="/calculator_LED/assets/styles-DIc31TLr.css">
 </head>
 
 <body>
@@ -156,6 +158,10 @@
                 <div class="subtitle" data-i18n="quoteSub">ระบบจัดทำใบเสนอราคา LED — RAZR Solution</div>
             </div>
             <div class="toolbar">
+                <div class="lang-toggle-pill" id="lang-toggle">
+                    <button class="lang-opt active" data-lang="th">TH</button>
+                    <button class="lang-opt" data-lang="en">EN</button>
+                </div>
                 <button class="btn btn-secondary" onclick="window.print()">Print PDF</button>
                 <button class="btn btn-secondary" id="logout-btn" data-i18n="adminLogout">Logout</button>
             </div>
@@ -166,8 +172,8 @@
         <div class="card">
             <div class="coming-soon-wrapper">
                 <div class="coming-soon-icon">🚀</div>
-                <div class="coming-soon-title">Coming Soon</div>
-                <p class="coming-soon-desc">
+                <div class="coming-soon-title" data-i18n="comingSoon">Coming Soon</div>
+                <p class="coming-soon-desc" data-i18n="comingSoonDesc">
                     ระบบจัดทำใบเสนอราคาอัตโนมัติ กำลังอยู่ระหว่างการพัฒนา<br>
                     เร็วๆ นี้คุณจะสามารถสร้างใบเสนอราคาได้อย่างง่ายดาย
                 </p>
@@ -182,28 +188,13 @@
                 <div class="progress-bar-wrapper">
                     <div class="progress-bar-fill"></div>
                 </div>
-                <div class="progress-label">กำลังพัฒนา... 35%</div>
+                <div class="progress-label" data-i18n="developing">กำลังพัฒนา... 35%</div>
 
-                <a class="btn btn-primary back-btn" href="index.html">← กลับไปคำนวณ LED</a>
+                <a class="btn btn-primary back-btn" href="calculator.html" data-i18n="backToCalc">← กลับไปคำนวณ LED</a>
             </div>
         </div>
     </div>
-
-    <script src="data.js"></script>
-    <script src="storage.js"></script>
-    <script src="shared.js"></script>
-    <script>
-        (async function () {
-            await App.checkAuth();
-            const state = await AppStorage.loadState();
-            App.state = state || { ui: { lang: 'th', theme: 'light' } };
-            App.applyLanguage();
-            App.renderWelcomeBanner();
-
-            const logoutBtn = document.getElementById('logout-btn');
-            if (logoutBtn) logoutBtn.addEventListener('click', App.logout);
-        })();
-    </script>
+
 </body>
 
 </html>
