@@ -469,7 +469,11 @@
 
     document.getElementById('detail-btn').addEventListener('click', () => {
       recalc(); // ensure latest data is saved
-      window.open('detail.html', '_blank');
+      const newWindow = window.open('detail.html', '_blank', 'width=1000,height=600');
+      if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+        // If popup blocked, navigate in current tab
+        window.location.href = 'detail.html';
+      }
     });
   }
 
