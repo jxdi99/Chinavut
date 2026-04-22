@@ -132,11 +132,23 @@
         <tr>
           <th style="width:40px;"></th>
           <th>${App.t("name")}</th>
-          <th>${App.t("rw")}</th>
-          <th>${App.t("rh")}</th>
-          <th>${App.t("max")}</th>
-          <th>${App.t("avg")}</th>
+          <th>RW</th>
+          <th>RH</th>
+          <th>Max W</th>
+          <th>Avg W</th>
           <th>${App.t("pricePerCab")}</th>
+          <th>Brightness</th>
+          <th>Refresh</th>
+          <th>Material</th>
+          <th>Maintenance</th>
+          <th>Ingress</th>
+          <th>LED Type</th>
+          <th>Beam Angle</th>
+          <th>Color Temp</th>
+          <th>Processing</th>
+          <th>Life Hours</th>
+          <th>Video Support</th>
+          <th>Display Type</th>
           <th>${App.t("manage")}</th>
         </tr>`;
       tbody.innerHTML = items
@@ -145,11 +157,23 @@
         <tr data-index="${idx}">
           <td class="drag-handle" style="cursor:grab; text-align:center; font-size:1.2rem; color:var(--muted); user-select:none;">☰</td>
           <td><input data-kind="item" data-field="name" data-index="${idx}" type="text" value="${escapeHtml(it.name)}"></td>
-          <td><input data-kind="item" data-field="rw" data-index="${idx}" type="number" value="${it.rw}"></td>
-          <td><input data-kind="item" data-field="rh" data-index="${idx}" type="number" value="${it.rh}"></td>
-          <td><input data-kind="item" data-field="max" data-index="${idx}" type="number" value="${it.max}"></td>
-          <td><input data-kind="item" data-field="avg" data-index="${idx}" type="number" value="${it.avg}"></td>
-          <td><input data-kind="item" data-field="price" data-index="${idx}" type="number" value="${it.price}"></td>
+          <td><input data-kind="item" data-field="rw" data-index="${idx}" type="number" value="${it.rw || 0}"></td>
+          <td><input data-kind="item" data-field="rh" data-index="${idx}" type="number" value="${it.rh || 0}"></td>
+          <td><input data-kind="item" data-field="max" data-index="${idx}" type="number" value="${it.max || 0}"></td>
+          <td><input data-kind="item" data-field="avg" data-index="${idx}" type="number" value="${it.avg || 0}"></td>
+          <td><input data-kind="item" data-field="price" data-index="${idx}" type="number" value="${it.price || 0}"></td>
+          <td><input data-kind="item" data-field="brightness" data-index="${idx}" type="number" value="${it.brightness || 0}"></td>
+          <td><input data-kind="item" data-field="refresh_rate" data-index="${idx}" type="number" value="${it.refresh_rate || 0}"></td>
+          <td><input data-kind="item" data-field="material" data-index="${idx}" type="text" value="${escapeHtml(it.material || "")}"></td>
+          <td><input data-kind="item" data-field="maintenance" data-index="${idx}" type="text" value="${escapeHtml(it.maintenance || "")}"></td>
+          <td><input data-kind="item" data-field="ingress_protection" data-index="${idx}" type="text" value="${escapeHtml(it.ingress_protection || "")}"></td>
+          <td><input data-kind="item" data-field="led_type" data-index="${idx}" type="text" value="${escapeHtml(it.led_type || "")}"></td>
+          <td><input data-kind="item" data-field="beam_angle" data-index="${idx}" type="text" value="${escapeHtml(it.beam_angle || "")}"></td>
+          <td><input data-kind="item" data-field="color_temperature" data-index="${idx}" type="text" value="${escapeHtml(it.color_temperature || "")}"></td>
+          <td><input data-kind="item" data-field="processing_depth" data-index="${idx}" type="text" value="${escapeHtml(it.processing_depth || "")}"></td>
+          <td><input data-kind="item" data-field="life_hours" data-index="${idx}" type="number" value="${it.life_hours || 0}"></td>
+          <td><input data-kind="item" data-field="video_support" data-index="${idx}" type="text" value="${escapeHtml(it.video_support || "")}"></td>
+          <td><input data-kind="item" data-field="display_type" data-index="${idx}" type="text" value="${escapeHtml(it.display_type || "")}"></td>
           <td>
             <button class="mini-btn delete" data-action="delete-item" data-index="${idx}">${App.t("delete")}</button>
           </td>
@@ -185,6 +209,18 @@
         max: 0,
         avg: 0,
         price: 0,
+        brightness: 0,
+        refresh_rate: 0,
+        material: "",
+        maintenance: "",
+        ingress_protection: "",
+        led_type: "",
+        beam_angle: "",
+        color_temperature: "",
+        processing_depth: "",
+        life_hours: 0,
+        video_support: "",
+        display_type: "",
       });
     }
     renderTable();
@@ -220,15 +256,33 @@
     const kind = el.dataset.kind;
     if (!field || Number.isNaN(index)) return;
 
+    // Fields that should be stored as text
+    const textFields = [
+      "name",
+      "material",
+      "maintenance",
+      "ingress_protection",
+      "led_type",
+      "beam_angle",
+      "color_temperature",
+      "processing_depth",
+      "video_support",
+      "display_type",
+    ];
+    const isTextField = textFields.includes(field);
+
     if (kind === "item" && group().items[index]) {
-      group().items[index][field] =
-        field === "name" ? el.value : Number(el.value || 0);
+      group().items[index][field] = isTextField
+        ? el.value
+        : Number(el.value || 0);
     } else if (kind === "controller" && data().controllers[index]) {
-      data().controllers[index][field] =
-        field === "name" ? el.value : Number(el.value || 0);
+      data().controllers[index][field] = isTextField
+        ? el.value
+        : Number(el.value || 0);
     } else if (kind === "accessory" && data().accessories[index]) {
-      data().accessories[index][field] =
-        field === "name" ? el.value : Number(el.value || 0);
+      data().accessories[index][field] = isTextField
+        ? el.value
+        : Number(el.value || 0);
     }
     scheduleSave();
   }

@@ -83,6 +83,14 @@ export const MasterDataAPI = {
             refresh_rate: m.refresh_rate,
             material: m.material,
             maintenance: m.maintenance,
+            ingress_protection: m.ingress_protection,
+            led_type: m.led_type,
+            beam_angle: m.beam_angle,
+            color_temperature: m.color_temperature,
+            processing_depth: m.processing_depth,
+            life_hours: m.life_hours,
+            video_support: m.video_support,
+            display_type: m.display_type,
           });
         }
       });
@@ -136,6 +144,14 @@ export const MasterDataAPI = {
               refresh_rate: item.refresh_rate || 0,
               material: item.material || "",
               maintenance: item.maintenance || "",
+              ingress_protection: item.ingress_protection || "",
+              led_type: item.led_type || "",
+              beam_angle: item.beam_angle || "",
+              color_temperature: item.color_temperature || "",
+              processing_depth: item.processing_depth || "",
+              life_hours: item.life_hours || 0,
+              video_support: item.video_support || "",
+              display_type: item.display_type || "",
             });
           });
         }
