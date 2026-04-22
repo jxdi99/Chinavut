@@ -288,9 +288,6 @@
       pixelDensity: area > 0 ? Math.round(totalPixels / area) : 0,
       diagonal: Math.sqrt(screenW * screenW + screenH * screenH)
     }));
-
-    // Final totals
-    updateTotalDisplays(totals);
   }
 
   async function switchGroup(groupKey) {
