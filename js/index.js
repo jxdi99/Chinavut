@@ -57,7 +57,15 @@ import { StaffAPI } from '../src/api/client.js';
         }
 
         function formatId(val) {
-            // Keep it simple: Uppercase everything, but don't remove hyphens or symbols
+            let raw = val.toUpperCase().replace(/-/g, '');
+            if (raw.startsWith('HRSP')) {
+                let res = '';
+                if (raw.length > 0) res += raw.substring(0, 2); // HR
+                if (raw.length > 2) res += '-' + raw.substring(2, 4); // SP
+                if (raw.length > 4) res += '-' + raw.substring(4, 5); // 7
+                if (raw.length > 5) res += '-' + raw.substring(5, 8); // 009
+                return res;
+            }
             return val.toUpperCase();
         }
 
