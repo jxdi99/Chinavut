@@ -142,35 +142,41 @@
                     </div>
 
                     <div class="field" style="margin-top:8px;">
-                        <label data-i18n="controller">เลือก Controller</label>
+                        <label data-i18n="controller">เลือก Controller (หลัก)</label>
                         <div id="recom-badge" class="badge" data-i18n="recText">ระบบแนะนำรุ่นที่เหมาะสม</div>
-                        <select id="con-select"></select>
+                        <div style="display:flex; gap:8px;">
+                            <div style="flex:2;">
+                                <select id="con-select"></select>
+                            </div>
+                            <div style="flex:1;">
+                                <input type="number" id="con-qty" placeholder="Qty" min="1" value="1">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="field"
                         style="margin-top:16px; padding:12px; background:color-mix(in srgb, var(--card) 90%, transparent); border:1px dashed var(--border); border-radius:12px;">
                         <label data-i18n="extraController">Controller เพิ่มเติม / อุปกรณ์เสริม</label>
-                        <div style="display:flex; gap:8px; margin-bottom:10px;">
-                            <div style="flex:2;">
-                                <select id="extra-con-select">
-                                    <option value="-1" data-i18n="none">-- ไม่รับ --</option>
-                                </select>
-                            </div>
-                            <div style="flex:1;">
-                                <input type="number" id="extra-con-qty" data-i18n-placeholder="qtyPlaceholder"
-                                    placeholder="Qty" min="0" value="0">
-                            </div>
+                        
+                        <!-- Controller 2 -->
+                        <div style="margin-bottom:8px;">
+                            <select id="con2-select">
+                                <option value="-1" data-i18n="none">-- ไม่รับ --</option>
+                            </select>
                         </div>
-                        <div style="display:flex; gap:8px;">
-                            <div style="flex:2;">
-                                <select id="acc-select">
-                                    <option value="-1" data-i18n="none">-- ไม่รับ --</option>
-                                </select>
-                            </div>
-                            <div style="flex:1;">
-                                <input type="number" id="acc-qty" data-i18n-placeholder="qtyPlaceholder"
-                                    placeholder="Qty" min="0" value="0">
-                            </div>
+                        
+                        <!-- Controller 3 -->
+                        <div style="margin-bottom:8px;">
+                            <select id="con3-select">
+                                <option value="-1" data-i18n="none">-- ไม่รับ --</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Accessory -->
+                        <div>
+                            <select id="acc-select">
+                                <option value="-1" data-i18n="none">-- ไม่รับ --</option>
+                            </select>
                         </div>
                     </div>
 

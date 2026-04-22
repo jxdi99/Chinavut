@@ -27,16 +27,22 @@
       if (defaultIdx !== -1) ledSel.value = defaultIdx;
     }
 
+    const conItems = currentData().controllers.map((it, idx) => `<option value="${idx}">${escapeHtml(it.name)} (Cap: ${(it.load / 1000000).toFixed(2)}M px)</option>`).join('');
+    
     const conSel = document.getElementById('con-select');
-    conSel.innerHTML = currentData().controllers.map((it, idx) => `<option value="${idx}">${escapeHtml(it.name)} (Cap: ${(it.load / 1000000).toFixed(2)}M px)</option>`).join('');
+    conSel.innerHTML = conItems;
     conSel.onchange = () => { manualController = true; recalc(); };
 
-    const extraConSel = document.getElementById('extra-con-select');
-    extraConSel.innerHTML = `<option value="-1">${App.t('none')}</option>` + 
-       currentData().controllers.map((it, idx) => `<option value="${idx}">${escapeHtml(it.name)} (Cap: ${(it.load / 1000000).toFixed(2)}M px)</option>`).join('');
+    const noneOpt = `<option value="-1">${App.t('none')}</option>`;
+    
+    const con2Sel = document.getElementById('con2-select');
+    con2Sel.innerHTML = noneOpt + conItems;
+    
+    const con3Sel = document.getElementById('con3-select');
+    con3Sel.innerHTML = noneOpt + conItems;
     
     const accSel = document.getElementById('acc-select');
-    accSel.innerHTML = `<option value="-1">${App.t('none')}</option>` + 
+    accSel.innerHTML = noneOpt + 
        (currentData().accessories || []).map((it, idx) => `<option value="${idx}">${escapeHtml(it.name)} (${it.price.toLocaleString()} ${App.t('unitBaht')})</option>`).join('');
   }
 
@@ -159,27 +165,42 @@
 
     const customExtrasTotal = customSteelPrice + customAlumPrice + customLoadCabPrice + customCablePrice + customDemoPrice + customFoundPrice;
 
-    const extraConIdx = Number(document.getElementById('extra-con-select').value);
-    const extraConQty = Number(document.getElementById('extra-con-qty').value) || 0;
-    let extraConPrice = 0;
-    let extraConHtml = '';
-    if (extraConIdx >= 0 && extraConQty > 0) {
-      const eCon = currentData().controllers[extraConIdx];
-      extraConPrice = eCon.price * extraConQty;
-      extraConHtml = `<div class="result-row bg-highlight"><span>${App.t('extraConLabel')} (${escapeHtml(eCon.name)} x${extraConQty})</span><b>${extraConPrice.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
+    // Controller 1 (Primary) with Qty
+    const conQty = Number(document.getElementById('con-qty').value) || 1;
+    const con1Price = (selectedCon?.price || 0) * conQty;
+    const con1Html = selectedCon ? `<div class="result-row bg-highlight"><span>${App.t('controllerPrice')} (${escapeHtml(selectedCon.name)} x${conQty})</span><b>${con1Price.toLocaleString()} ${App.t('unitBaht')}</b></div>` : '';
+
+    // Controller 2 (Select Only, Qty = 1)
+    const con2Idx = Number(document.getElementById('con2-select').value);
+    let con2Price = 0;
+    let con2Html = '';
+    if (con2Idx >= 0) {
+      const c2 = currentData().controllers[con2Idx];
+      con2Price = c2.price;
+      con2Html = `<div class="result-row bg-highlight"><span>Controller 2 (${escapeHtml(c2.name)})</span><b>${con2Price.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
     }
 
+    // Controller 3 (Select Only, Qty = 1)
+    const con3Idx = Number(document.getElementById('con3-select').value);
+    let con3Price = 0;
+    let con3Html = '';
+    if (con3Idx >= 0) {
+      const c3 = currentData().controllers[con3Idx];
+      con3Price = c3.price;
+      con3Html = `<div class="result-row bg-highlight"><span>Controller 3 (${escapeHtml(c3.name)})</span><b>${con3Price.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
+    }
+
+    // Accessory (Select Only, Qty = 1)
     const accIdx = Number(document.getElementById('acc-select').value);
-    const accQty = Number(document.getElementById('acc-qty').value) || 0;
     let accPrice = 0;
     let accHtml = '';
-    if (accIdx >= 0 && accQty > 0) {
+    if (accIdx >= 0) {
       const aItem = currentData().accessories[accIdx];
-      accPrice = aItem.price * accQty;
-      accHtml = `<div class="result-row bg-highlight"><span>${App.t('accLabel')} (${escapeHtml(aItem.name)} x${accQty})</span><b>${accPrice.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
+      accPrice = aItem.price;
+      accHtml = `<div class="result-row bg-highlight"><span>${App.t('accLabel')} (${escapeHtml(aItem.name)})</span><b>${accPrice.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
     }
 
-    const total = prodPrice + installPrice + customExtrasTotal + (selectedCon?.price || 0) + extraConPrice + accPrice;
+    const total = prodPrice + installPrice + customExtrasTotal + con1Price + con2Price + con3Price + accPrice;
 
     document.getElementById('recom-badge').textContent = recIdx !== -1
       ? `${App.t('recommend')} ${currentData().controllers[recIdx].name}`
@@ -228,8 +249,9 @@
       <div class="result-row" style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);"><span>${App.t('productPrice')}</span><b>${prodPrice > 0 ? prodPrice.toLocaleString() + ' ' + App.t('unitBaht') : App.t('notQuoted')}</b></div>
       <div class="result-row"><span>${App.t('installPrice')}</span><b>${installText}</b></div>
       ${customBreakdownHtml}
-      <div class="result-row"><span>${App.t('controllerPrice')} (${escapeHtml(selectedCon?.name || '-')})</span><b>${selectedCon && selectedCon.price > 0 ? selectedCon.price.toLocaleString() + ' ' + App.t('unitBaht') : App.t('na')}</b></div>
-      ${extraConHtml}
+      ${con1Html}
+      ${con2Html}
+      ${con3Html}
       ${accHtml}
       <div class="result-total">${App.t('total')}: ${prodPrice > 0 ? total.toLocaleString() + ' ' + App.t('unitBaht') : App.t('notQuoted2')}</div>
       <div class="result-note">
@@ -336,10 +358,10 @@
     document.getElementById('width_m').addEventListener('input', recalc);
     document.getElementById('height_m').addEventListener('input', recalc);
 
-    document.getElementById('extra-con-select').addEventListener('change', recalc);
-    document.getElementById('extra-con-qty').addEventListener('input', recalc);
+    document.getElementById('con-qty').addEventListener('input', recalc);
+    document.getElementById('con2-select').addEventListener('change', recalc);
+    document.getElementById('con3-select').addEventListener('change', recalc);
     document.getElementById('acc-select').addEventListener('change', recalc);
-    document.getElementById('acc-qty').addEventListener('input', recalc);
 
     document.getElementById('price-mode-toggle').addEventListener('change', (e) => {
       const isCustom = e.target.checked;
@@ -419,10 +441,10 @@
       document.getElementById('h_qty').value = '';
       document.getElementById('width_m').value = '';
       document.getElementById('height_m').value = '';
-      document.getElementById('extra-con-select').value = '-1';
-      document.getElementById('extra-con-qty').value = '0';
+      document.getElementById('con-qty').value = '1';
+      document.getElementById('con2-select').value = '-1';
+      document.getElementById('con3-select').value = '-1';
       document.getElementById('acc-select').value = '-1';
-      document.getElementById('acc-qty').value = '0';
       
       // Reset custom fields
       document.getElementById('custom-price-sqm').value = '';
