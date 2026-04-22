@@ -60,28 +60,44 @@ import { StaffAPI } from '../src/api/client.js';
             // Remove all non-alphanumeric for processing
             let raw = val.toUpperCase().replace(/[^A-Z0-9]/g, '');
             
-            // If it matches the long ID pattern (starts with letters and is long enough)
-            if (raw.length >= 5 && /^[A-Z]/.test(raw)) {
+            // If it starts with letters, apply the pattern XX-XX-X-XXX
+            if (raw.length >= 3 && /^[A-Z]/.test(raw)) {
                 let res = '';
-                res += raw.substring(0, 2); // 1st part (2 chars)
-                if (raw.length > 2) res += '-' + raw.substring(2, 4); // 2nd part (2 chars)
-                if (raw.length > 4) res += '-' + raw.substring(4, 5); // 3rd part (1 char)
-                if (raw.length > 5) res += '-' + raw.substring(5, 8); // 4th part (3 chars)
+                res += raw.substring(0, 2); 
+                if (raw.length > 2) res += '-' + raw.substring(2, 4); 
+                if (raw.length > 4) res += '-' + raw.substring(4, 5); 
+                if (raw.length > 5) res += '-' + raw.substring(5, 8);
                 return res;
             }
-            
-            // For short IDs (like '08') or while still typing short
             return val.toUpperCase();
         }
 
         input.addEventListener('input', (e) => {
             const originalValue = input.value;
             const formatted = formatId(originalValue);
+            
             if (originalValue !== formatted) {
-                const start = input.selectionStart;
-                const end = input.selectionEnd;
+                // Calculate cursor position by counting non-hyphen characters
+                const cursor = input.selectionStart;
+                const beforeCursor = originalValue.substring(0, cursor).replace(/-/g, '').length;
+                
                 input.value = formatted;
-                input.setSelectionRange(start, end);
+                
+                // Find new cursor position that matches the count of real characters
+                let newCursor = 0;
+                let realCount = 0;
+                while (realCount < beforeCursor && newCursor < formatted.length) {
+                    if (formatted[newCursor] !== '-') {
+                        realCount++;
+                    }
+                    newCursor++;
+                }
+                // Also skip any hyphens immediately following the character we just typed
+                while (newCursor < formatted.length && formatted[newCursor] === '-') {
+                    newCursor++;
+                }
+                
+                input.setSelectionRange(newCursor, newCursor);
             }
         });
 
