@@ -447,22 +447,22 @@ body {
 
 /* Column width budget:
    Total usable = 190mm (210mm - 2×10mm padding)
-   We split: 38% | 12% | 38% | 12%
+   We split: 35% | 15% | 35% | 15%
    Label cols are wide enough for Thai text; value cols right-aligned */
 .col-label-l {
-    width: 38%;
+    width: 35%;
 }
 
 .col-val-l {
-    width: 12%;
+    width: 15%;
 }
 
 .col-label-r {
-    width: 38%;
+    width: 35%;
 }
 
 .col-val-r {
-    width: 12%;
+    width: 15%;
 }
 
 .spec-table thead th {
@@ -481,11 +481,11 @@ body {
     padding: 4px 6px;
     border: 1px solid var(--border);
     vertical-align: middle;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 0;
-    /* forces text-overflow to work in table-layout:fixed */
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    word-wrap: break-word;
+    line-height: 1.2;
 }
 
 /* Label cells — bold dark */
