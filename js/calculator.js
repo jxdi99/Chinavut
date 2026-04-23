@@ -33,6 +33,7 @@
     conSel.innerHTML = conItems;
     conSel.onchange = () => { manualController = true; recalc(); };
 
+    const isLogged = !!(state && state.currentUser);
     const noneOpt = `<option value="-1">${App.t('none')}</option>`;
     
     const con2Sel = document.getElementById('con2-select');
@@ -43,7 +44,10 @@
     
     const accSel = document.getElementById('acc-select');
     accSel.innerHTML = noneOpt + 
-       (currentData().accessories || []).map((it, idx) => `<option value="${idx}">${escapeHtml(it.name)} (${it.price.toLocaleString()} ${App.t('unitBaht')})</option>`).join('');
+       (currentData().accessories || []).map((it, idx) => {
+         const priceStr = isLogged ? ` (${it.price.toLocaleString()} ${App.t('unitBaht')})` : '';
+         return `<option value="${idx}">${escapeHtml(it.name)}${priceStr}</option>`;
+       }).join('');
   }
 
   function setTabActive(groupKey) {
@@ -234,6 +238,24 @@
     const diagonalM = Math.sqrt(screenW * screenW + screenH * screenH);
     const diagonalInch = diagonalM * 39.3701;
 
+    const isLogged = !!(state && state.currentUser);
+    
+    const moneyRows = isLogged ? `
+      <div class="result-row"><span>${App.t('elecCost')}</span><b>${App.t('perHour')} ${(area * led.max / 1000 * 5).toFixed(2)} ${App.t('unitBaht')}</b></div>
+      <div class="result-row" style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);"><span>${App.t('productPrice')}</span><b>${prodPrice > 0 ? prodPrice.toLocaleString() + ' ' + App.t('unitBaht') : App.t('notQuoted')}</b></div>
+      ${con1Html}
+      ${con2Html}
+      ${con3Html}
+      ${accHtml}
+      <div class="result-row"><span>${App.t('installPrice')}</span><b>${installText}</b></div>
+      ${customBreakdownHtml}
+      <div class="result-total">${App.t('total')}: ${prodPrice > 0 ? total.toLocaleString() + ' ' + App.t('unitBaht') : App.t('notQuoted2')}</div>
+    ` : `
+      <div class="result-row" style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); color: var(--primary); text-align: center; justify-content: center;">
+         <b>สนใจสั่งซื้อ หรือสอบถามราคา กรุณาติดต่อฝ่ายขาย RAZR</b>
+      </div>
+    `;
+
     document.getElementById('result-display').innerHTML = `
       <div class="result-row"><span>${App.t('screenSize')}</span><b>${screenW.toFixed(2)} x ${screenH.toFixed(2)} ${App.t('unitMeter')}</b></div>
       <div class="result-row"><span>${App.t('totalCabLabel')}</span><b>${wQty} x ${hQty} = ${totalQty} ${App.t('unitUnits')}</b></div>
@@ -245,15 +267,7 @@
       <div class="result-row"><span>${App.t('weight')}</span><b>${(totalQty * g.weight).toFixed(1)} ${App.t('unitKg')}</b></div>
       <div class="result-row"><span>${App.t('power')}</span><b>${Math.round(area * led.avg).toLocaleString()} / ${Math.round(area * led.max).toLocaleString()} ${App.t('unitWatts')}</b></div>
       <div class="result-row"><span>${App.t('amps')}</span><b>${(area * led.max / 220 * 1.25).toFixed(2)} ${App.t('unitAmps')}</b></div>
-      <div class="result-row"><span>${App.t('elecCost')}</span><b>${App.t('perHour')} ${(area * led.max / 1000 * 5).toFixed(2)} ${App.t('unitBaht')}</b></div>
-      <div class="result-row" style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);"><span>${App.t('productPrice')}</span><b>${prodPrice > 0 ? prodPrice.toLocaleString() + ' ' + App.t('unitBaht') : App.t('notQuoted')}</b></div>
-      ${con1Html}
-      ${con2Html}
-      ${con3Html}
-      ${accHtml}
-      <div class="result-row"><span>${App.t('installPrice')}</span><b>${installText}</b></div>
-      ${customBreakdownHtml}
-      <div class="result-total">${App.t('total')}: ${prodPrice > 0 ? total.toLocaleString() + ' ' + App.t('unitBaht') : App.t('notQuoted2')}</div>
+      ${moneyRows}
       <div class="result-note">
         <b>${App.t('calcNoteTitle')}</b> ${App.t('calcNoteDesc')}
       </div>
@@ -315,7 +329,8 @@
   };
 
   async function boot() {
-    await App.checkAuth();
+    // DO NOT checkAuth() here, to allow public access.
+    // await App.checkAuth();
     state = await AppStorage.loadState();
     state.ui = state.ui || { theme: 'light', lang: 'th' };
     state.masterData = state.masterData || App.clone(DEFAULT_DATA);
@@ -342,6 +357,28 @@
     if (priceModeWrapper) priceModeWrapper.style.display = isLogged ? 'inline-flex' : 'none';
     
     if (logoutBtn) logoutBtn.addEventListener('click', App.logout);
+    
+    const quoteLink = document.getElementById('quote-link');
+    if (quoteLink) quoteLink.style.display = isLogged ? 'inline-flex' : 'none';
+
+    const detailBtn = document.getElementById('detail-btn');
+    if (detailBtn) detailBtn.style.display = isLogged ? 'inline-block' : 'none';
+
+    const homeLink = document.getElementById('home-link');
+    if (homeLink) {
+      if (isLogged) {
+        homeLink.href = "dashboard.html";
+        homeLink.setAttribute('data-i18n', 'dashboardHome');
+        homeLink.innerHTML = App.t('dashboardHome');
+      } else {
+        homeLink.href = "index.html";
+        homeLink.removeAttribute('data-i18n');
+        homeLink.innerHTML = "🔐 พนักงาน Login";
+        homeLink.classList.remove('btn-primary');
+        homeLink.classList.add('btn-secondary');
+      }
+    }
+    
     App.renderWelcomeBanner();
 
     document.querySelectorAll('.tab-btn').forEach(btn => {
