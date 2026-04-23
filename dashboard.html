@@ -192,16 +192,19 @@
 
         const user = state.currentUser;
         
-        // กำหนด Role ให้ผู้ใช้แบบอัตโนมัติ (ชั่วคราว) โดยอิงจากแผนก (Dept)
-        // ถ้าเป็นแผนก LED หรือ DEV ให้ถือว่าเป็น 'dev' / 'admin'
-        // ถ้าเป็นแผนกอื่น ให้ถือว่าเป็น 'sale'
-        let userRole = 'sale';
-        if (user.dept === 'LED' || user.dept === 'DEV') userRole = 'dev';
-        else if (user.dept === 'Store') userRole = 'store';
+        // ใช้ 'role' และ 'position' จาก Database โดยตรง (ถ้ามี)
+        // ถ้ายะงไม่มี ให้คำนวณจากแผนก (Dept) แทน
+        let userRole = user.role ? user.role.toLowerCase() : 'sale';
+        if (!user.role) {
+          if (user.dept === 'LED' || user.dept === 'DEV') userRole = 'dev';
+          else if (user.dept === 'Store') userRole = 'store';
+        }
+        
+        const positionDisplay = user.position ? user.position : user.dept;
         
         // อัปเดตข้อมูลบนหน้าเว็บ
         document.getElementById('user-name-display').textContent = user.name || user.id;
-        document.getElementById('user-dept-display').textContent = user.dept || '-';
+        document.getElementById('user-dept-display').textContent = positionDisplay || '-';
         document.getElementById('user-role-display').textContent = userRole.toUpperCase();
         
         if (userRole === 'dev' || userRole === 'admin') {
