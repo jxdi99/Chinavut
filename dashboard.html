@@ -193,10 +193,10 @@
         const user = state.currentUser;
         
         // กำหนด Role ให้ผู้ใช้แบบอัตโนมัติ (ชั่วคราว) โดยอิงจากแผนก (Dept)
-        // ถ้าเป็นแผนก LED ให้ถือว่าเป็น 'dev' / 'admin'
+        // ถ้าเป็นแผนก LED หรือ DEV ให้ถือว่าเป็น 'dev' / 'admin'
         // ถ้าเป็นแผนกอื่น ให้ถือว่าเป็น 'sale'
         let userRole = 'sale';
-        if (user.dept === 'LED') userRole = 'dev';
+        if (user.dept === 'LED' || user.dept === 'DEV') userRole = 'dev';
         else if (user.dept === 'Store') userRole = 'store';
         
         // อัปเดตข้อมูลบนหน้าเว็บ
