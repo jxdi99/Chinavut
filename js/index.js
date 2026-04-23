@@ -10,51 +10,99 @@ import { StaffAPI } from '../src/api/client.js';
         const input = document.getElementById('employee-id');
         const submitBtn = document.getElementById('login-submit');
 
+        let isSignUpMode = false;
+        
+        document.getElementById('toggle-signup').addEventListener('click', (e) => {
+            e.preventDefault();
+            isSignUpMode = !isSignUpMode;
+            if (isSignUpMode) {
+                submitBtn.textContent = 'ลงทะเบียน (Sign Up)';
+                e.target.textContent = 'กลับไปหน้าเข้าสู่ระบบ (Login)';
+            } else {
+                submitBtn.textContent = App.t('loginBtn') || 'เข้าสู่ระบบ';
+                e.target.textContent = 'ตั้งรหัสผ่านใหม่ (Sign Up)';
+            }
+        });
+
         async function handleLogin() {
             const val = input.value.trim();
-            if (!val) return;
+            const password = document.getElementById('password').value;
+            if (!val || !password) {
+                App.showToast('กรุณากรอกรหัสพนักงานและรหัสผ่าน');
+                return;
+            }
 
             App.showToast(App.t('calculating'));
-            const staff = await StaffAPI.getByEmpId(val);
             
-            if (staff) {
-                // Success
-                const cleanName = (fullName) => {
-                    let name = fullName;
-                    const prefixes = ['นาย ', 'นางสาว ', 'น.ส. ', 'น.ส.', 'นาง '];
-                    for (const p of prefixes) {
-                        if (name.startsWith(p)) {
-                            name = name.substring(p.length).trim();
-                            break;
-                        }
-                    }
-                    return name.split(/\s+/)[0];
-                };
-
-                const firstName = cleanName(staff.name);
-                console.log('Login Success:', staff);
-                App.showToast(`${App.t('welcome')} คุณ ${firstName}`);
-                
-                // Store logged in user in state
-                App.state.currentUser = { 
-                    id: val, 
-                    name: firstName, 
-                    nick: staff.nick, 
-                    role: staff.role ? staff.role.toLowerCase() : 'employee',
-                    position: staff.position,
-                    status: staff.status 
-                };
-                await AppStorage.saveState(App.state);
-
-                setTimeout(() => {
-                    // Use ./ to ensure it stays in the subfolder on GitHub Pages
-                    window.location.href = './dashboard.html';
-                }, 1000);
-            } else {
-                // Failure
-                console.warn('Login Failed: Employee ID not found', val);
-                App.showToast(App.t('invalidId'));
+            // Validate if empId exists in staff table FIRST
+            const staff = await StaffAPI.getByEmpId(val);
+            if (!staff) {
+                App.showToast('ไม่พบรหัสพนักงานนี้ในระบบ');
+                return;
             }
+            
+            // Construct pseudo-email for Supabase Auth
+            const authEmail = `${val.toLowerCase()}@razr.local`;
+            const { supabase } = await import('../src/api/client.js');
+            
+            if (isSignUpMode) {
+                // Sign Up Flow
+                const { data, error } = await supabase.auth.signUp({
+                    email: authEmail,
+                    password: password,
+                });
+                if (error) {
+                    console.error('Sign Up Error:', error);
+                    App.showToast('ลงทะเบียนล้มเหลว: ' + error.message);
+                    return;
+                }
+                App.showToast('ลงทะเบียนสำเร็จ! กำลังเข้าสู่ระบบ...');
+                // Switch back to login mode implicitly since signup automatically logs in if email confirm is off
+            } else {
+                // Login Flow
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: authEmail,
+                    password: password,
+                });
+                if (error) {
+                    console.error('Login Error:', error);
+                    App.showToast('รหัสผ่านไม่ถูกต้อง หรือคุณยังไม่ได้ตั้งรหัสผ่าน');
+                    return;
+                }
+            }
+
+            // Authentication Success (Login or Signup)
+            const cleanName = (fullName) => {
+                let name = fullName;
+                const prefixes = ['นาย ', 'นางสาว ', 'น.ส. ', 'น.ส.', 'นาง '];
+                for (const p of prefixes) {
+                    if (name.startsWith(p)) {
+                        name = name.substring(p.length).trim();
+                        break;
+                    }
+                }
+                return name.split(/\s+/)[0];
+            };
+
+            const firstName = cleanName(staff.name);
+            console.log('Login Success:', staff);
+            App.showToast(`${App.t('welcome')} คุณ ${firstName}`);
+            
+            // Store logged in user in state
+            App.state.currentUser = { 
+                id: val, 
+                name: firstName, 
+                nick: staff.nick, 
+                role: staff.role ? staff.role.toLowerCase() : 'employee',
+                position: staff.position,
+                status: staff.status 
+            };
+            await AppStorage.saveState(App.state);
+
+            setTimeout(() => {
+                // Use ./ to ensure it stays in the subfolder on GitHub Pages
+                window.location.href = './dashboard.html';
+            }, 1000);
         }
 
         function formatId(val) {

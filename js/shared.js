@@ -152,6 +152,16 @@ import { MasterDataAPI } from "../src/api/client.js";
   };
 
   App.logout = async function () {
+    if (App.state.currentUser) {
+      try {
+        const { supabase } = await import("../src/api/client.js");
+        if (supabase) {
+          await supabase.auth.signOut();
+        }
+      } catch (e) {
+        console.error("Supabase signout failed", e);
+      }
+    }
     App.state.currentUser = null;
     App.state.lastInputs = null;
     await AppStorage.saveState(App.state);

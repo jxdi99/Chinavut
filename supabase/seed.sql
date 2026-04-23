@@ -134,14 +134,22 @@ INSERT INTO accessories (name, price) VALUES
 ON CONFLICT (name) DO NOTHING;
 
 -- 4. ENABLE RLS (Security Best Practices)
--- Note: For an internal tool, you can start with authenticated access or specific roles.
+-- Turn on Row Level Security for all public tables
 ALTER TABLE staff ENABLE ROW LEVEL SECURITY;
 ALTER TABLE led_models ENABLE ROW LEVEL SECURITY;
 ALTER TABLE controllers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE accessories ENABLE ROW LEVEL SECURITY;
 
--- Simple policy: Allow READ/WRITE for now since admin login is local
-CREATE POLICY "Public Read/Write" ON staff FOR ALL USING (true);
-CREATE POLICY "Public Read/Write" ON led_models FOR ALL USING (true);
-CREATE POLICY "Public Read/Write" ON controllers FOR ALL USING (true);
-CREATE POLICY "Public Read/Write" ON accessories FOR ALL USING (true);
+-- Policy 1: Allow EVERYONE (including anonymous) to READ the data
+-- This is necessary so the Public Calculator can load master data without login.
+CREATE POLICY "Allow public read access" ON staff FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON led_models FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON controllers FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON accessories FOR SELECT USING (true);
+
+-- Policy 2: Allow ONLY AUTHENTICATED users to INSERT/UPDATE/DELETE
+-- Anyone who logs in via Email/Password gets the 'authenticated' role in Supabase.
+CREATE POLICY "Allow authenticated full access" ON staff FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Allow authenticated full access" ON led_models FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Allow authenticated full access" ON controllers FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Allow authenticated full access" ON accessories FOR ALL USING (auth.role() = 'authenticated');
