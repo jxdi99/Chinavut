@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RAZR Portal Dashboard</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    /* Dashboard Specific Styles */
+    .dashboard-container {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .dashboard-welcome h1 {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+    
+    .dashboard-role-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      background: var(--primary);
+      color: white;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    
+    .menu-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 30px 24px;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    
+    .menu-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+      border-color: var(--primary);
+    }
+    
+    .menu-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      background: rgba(37, 99, 235, 0.1);
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    
+    .menu-card:hover .menu-icon {
+      background: var(--primary);
+      color: white;
+      transform: scale(1.1);
+      transition: all 0.3s ease;
+    }
+    
+    .menu-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    
+    .menu-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    
+    /* Initially hide restricted menus */
+    .role-restricted {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="topbar">
+    <div class="brand">
+      <h1 style="font-size: 1.2rem; margin: 0;">RAZR LED Portal</h1>
+    </div>
+    <div class="toolbar">
+      <button class="btn btn-secondary" id="theme-toggle">ธีม: สว่าง</button>
+      <button class="btn btn-danger" id="logout-btn">ออกจากระบบ</button>
+    </div>
+  </div>
+
+  <div class="dashboard-container page-fade-in">
+    <div class="dashboard-header">
+      <div class="dashboard-welcome">
+        <h1>ยินดีต้อนรับ, <span id="user-name-display">ผู้ใช้งาน</span></h1>
+        <div style="color: var(--muted); margin-top: 8px;">
+          แผนก: <span id="user-dept-display">-</span> | ตำแหน่ง: <span id="user-role-display" class="dashboard-role-badge">Sale</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-grid" id="menu-grid">
+      <!-- Calculator (Everyone) -->
+      <a href="calculator.html" class="menu-card" id="menu-calc">
+        <div class="menu-icon">🧮</div>
+        <div class="menu-title">คำนวณราคา LED</div>
+        <div class="menu-desc">โปรแกรมคำนวณราคาจอ LED, Controller และอุปกรณ์เสริมแบบ Real-time</div>
+      </a>
+
+      <!-- Quotation (Everyone) -->
+      <a href="quote.html" class="menu-card" id="menu-quote">
+        <div class="menu-icon">📄</div>
+        <div class="menu-title">ใบเสนอราคา</div>
+        <div class="menu-desc">สร้างและพิมพ์ใบเสนอราคาเบื้องต้นสำหรับลูกค้า</div>
+      </a>
+
+      <!-- Admin / Master Data (Dev/Admin only) -->
+      <a href="backend/index.html" class="menu-card role-restricted" data-allowed="admin,dev" id="menu-admin">
+        <div class="menu-icon">⚙️</div>
+        <div class="menu-title">จัดการข้อมูล (Admin)</div>
+        <div class="menu-desc">เพิ่ม/ลบ/แก้ไข ราคาสินค้า, จอ LED, Controller ในฐานข้อมูล</div>
+      </a>
+
+      <!-- Stock Management (Coming Soon - Dev/Admin/Store only) -->
+      <a href="#" class="menu-card role-restricted" data-allowed="admin,dev,store" id="menu-stock" onclick="alert('ระบบจัดการสต๊อกสินค้า อยู่ระหว่างการพัฒนา'); return false;">
+        <div class="menu-icon">📦</div>
+        <div class="menu-title">จัดการสต๊อก (Stock)</div>
+        <div class="menu-desc">ตรวจสอบและจัดการสต๊อกสินค้า LED (Coming Soon)</div>
+      </a>
+
+      <!-- Job Request (Coming Soon - Dev/Admin only) -->
+      <a href="#" class="menu-card role-restricted" data-allowed="admin,dev" id="menu-job" onclick="alert('ระบบแจ้งงานซ่อม/ติดตั้ง อยู่ระหว่างการพัฒนา'); return false;">
+        <div class="menu-icon">🛠️</div>
+        <div class="menu-title">แจ้งงานซ่อม/ติดตั้ง</div>
+        <div class="menu-desc">ระบบออกใบแจ้งงานสำหรับช่างและทีมติดตั้ง (Coming Soon)</div>
+      </a>
+      
+      <!-- Manage Staff (Coming Soon - Dev/Admin only) -->
+      <a href="#" class="menu-card role-restricted" data-allowed="admin,dev" id="menu-staff" onclick="alert('ระบบจัดการพนักงาน อยู่ระหว่างการพัฒนา'); return false;">
+        <div class="menu-icon">👥</div>
+        <div class="menu-title">จัดการพนักงาน</div>
+        <div class="menu-desc">จัดการสิทธิ์ (Role), แผนก และรายชื่อพนักงานในระบบ (Coming Soon)</div>
+      </a>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script type="module" src="js/shared.js"></script>
+  <script>
+    (function() {
+      function waitForApp() {
+        if (typeof App !== 'undefined' && typeof AppStorage !== 'undefined') {
+          initDashboard();
+        } else {
+          setTimeout(waitForApp, 50);
+        }
+      }
+
+      async function initDashboard() {
+        await App.checkAuth();
+        const state = await AppStorage.loadState();
+        if (!state || !state.currentUser) {
+          window.location.href = 'index.html';
+          return;
+        }
+
+        const user = state.currentUser;
+        
+        // กำหนด Role ให้ผู้ใช้แบบอัตโนมัติ (ชั่วคราว) โดยอิงจากแผนก (Dept)
+        // ถ้าเป็นแผนก LED ให้ถือว่าเป็น 'dev' / 'admin'
+        // ถ้าเป็นแผนกอื่น ให้ถือว่าเป็น 'sale'
+        let userRole = 'sale';
+        if (user.dept === 'LED') userRole = 'dev';
+        else if (user.dept === 'Store') userRole = 'store';
+        
+        // อัปเดตข้อมูลบนหน้าเว็บ
+        document.getElementById('user-name-display').textContent = user.name || user.id;
+        document.getElementById('user-dept-display').textContent = user.dept || '-';
+        document.getElementById('user-role-display').textContent = userRole.toUpperCase();
+        
+        if (userRole === 'dev' || userRole === 'admin') {
+          document.getElementById('user-role-display').style.background = '#ef4444'; // Red for admin
+        } else if (userRole === 'store') {
+          document.getElementById('user-role-display').style.background = '#f59e0b'; // Amber for store
+        }
+
+        // เช็คสิทธิ์การมองเห็นเมนู
+        document.querySelectorAll('.role-restricted').forEach(card => {
+          const allowedRoles = card.getAttribute('data-allowed').split(',');
+          if (allowedRoles.includes(userRole)) {
+            card.style.display = 'flex'; // Show card
+          }
+        });
+
+        document.documentElement.setAttribute('data-theme', state.ui?.theme || 'light');
+        document.getElementById('theme-toggle').addEventListener('click', App.toggleTheme);
+        document.getElementById('logout-btn').addEventListener('click', App.logout);
+      }
+
+      waitForApp();
+    })();
+  </script>
+</body>
+</html>

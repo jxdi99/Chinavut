@@ -68,25 +68,7 @@
     </div>
   </div>
 
-  <!-- Admin Login Modal (ต้อง login ก่อนถึงจะใช้งานได้) -->
-  <div class="modal" id="admin-login-modal" style="display:flex;">
-    <div class="modal-box">
-      <h3 style="margin:0 0 6px;color:var(--primary);">🔒 Admin Login</h3>
-      <div class="small-muted">กรุณาล็อกอินเพื่อเข้าใช้งานระบบจัดการข้อมูล</div>
-      <div class="field" style="margin-top:14px;">
-        <label>Username</label>
-        <input type="text" id="login-user" value="admin" autocomplete="username">
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <input type="password" id="login-pass" autocomplete="current-password" placeholder="กรอกรหัสผ่าน">
-      </div>
-      <div class="footer-actions">
-        <a class="btn btn-secondary" href="/">ยกเลิก</a>
-        <button class="btn btn-primary" id="login-submit">เข้าสู่ระบบ</button>
-      </div>
-    </div>
-  </div>
+  <!-- Admin Login Modal Removed, using shared Auth -->
 
   <script defer src="data.js"></script>
   <script defer src="storage.js"></script>

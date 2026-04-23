@@ -29,38 +29,16 @@
     App.applyLanguage();
   }
 
-  function openLogin() {
-    document.getElementById("admin-login-modal").style.display = "flex";
-    document.getElementById("login-user").value = "admin";
-    document.getElementById("login-pass").value = "";
-    setTimeout(() => document.getElementById("login-pass").focus(), 50);
-  }
-  function closeLogin() {
-    document.getElementById("admin-login-modal").style.display = "none";
-  }
-
   function updateLoginUI() {
     App.renderWelcomeBanner();
 
-    document.getElementById("admin-logout-btn").style.display = loggedIn
-      ? "inline-block"
-      : "none";
-    document.getElementById("admin-panel").style.display = loggedIn
-      ? "block"
-      : "none";
-    document.getElementById("admin-add-btn").style.display = loggedIn
-      ? "inline-block"
-      : "none";
-    document.getElementById("admin-save-btn").style.display = loggedIn
-      ? "inline-block"
-      : "none";
-    document.getElementById("admin-reset-btn").style.display = loggedIn
-      ? "inline-block"
-      : "inline-block";
-    if (loggedIn) {
-      document.getElementById("admin-group").value = selectedGroup;
-      renderTable();
-    }
+    document.getElementById("admin-panel").style.display = "block";
+    document.getElementById("admin-add-btn").style.display = "inline-block";
+    document.getElementById("admin-save-btn").style.display = "inline-block";
+    document.getElementById("admin-reset-btn").style.display = "inline-block";
+    
+    document.getElementById("admin-group").value = selectedGroup;
+    renderTable();
   }
 
   async function persist() {
@@ -76,7 +54,6 @@
   }
 
   function renderTable() {
-    if (!loggedIn) return;
     const thead = document.getElementById("admin-thead");
     const tbody = document.getElementById("admin-tbody");
 
@@ -194,7 +171,6 @@
   }
 
   function addRow() {
-    if (!loggedIn) return;
     normalizeGroupKey();
     if (selectedGroup === "controllers") {
       data().controllers.push({ name: "NEW", load: 1000000, price: 0 });
@@ -372,22 +348,8 @@
     });
   }
 
-  async function doLogin() {
-    const user = document.getElementById("login-user").value.trim();
-    const pass = document.getElementById("login-pass").value;
-    if (user === "admin" && pass === "1") {
-      loggedIn = true;
-      closeLogin();
-      updateLoginUI();
-      App.showToast(App.t("loginOk"));
-      return;
-    }
-    alert(App.t("loginFail"));
-  }
-
   async function logout() {
-    loggedIn = false;
-    updateLoginUI();
+    App.logout();
   }
 
   async function saveAll() {
@@ -396,7 +358,6 @@
   }
 
   async function syncFromDB() {
-    if (!loggedIn) return;
     const syncSuccess = await App.syncFromDB();
     if (syncSuccess) {
       state.masterData = App.state.masterData;
@@ -455,8 +416,7 @@
     const globalLogout = document.getElementById("global-logout-btn");
     if (globalLogout) globalLogout.addEventListener("click", App.logout);
 
-    const loginSubmit = document.getElementById("login-submit");
-    if (loginSubmit) loginSubmit.addEventListener("click", doLogin);
+    // Removed doLogin
 
     const saveBtn = document.getElementById("admin-save-btn");
     if (saveBtn) saveBtn.addEventListener("click", saveAll);
@@ -484,22 +444,12 @@
     }
 
     const homeLink = document.getElementById("home-link");
-    if (homeLink) homeLink.href = "index.html";
+    if (homeLink) homeLink.href = "../dashboard.html";
 
     setStaticTexts();
     updateLoginUI();
 
-    const modal = document.getElementById("admin-login-modal");
-    window.addEventListener("click", (e) => {
-      if (modal && e.target === modal) closeLogin();
-    });
-
-    const loginPass = document.getElementById("login-pass");
-    if (loginPass) {
-      loginPass.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") doLogin();
-      });
-    }
+    // Modal removed
 
     const adminGroup = document.getElementById("admin-group");
     if (adminGroup) {

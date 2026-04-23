@@ -47,7 +47,7 @@ import { StaffAPI } from '../src/api/client.js';
 
                 setTimeout(() => {
                     // Use ./ to ensure it stays in the subfolder on GitHub Pages
-                    window.location.href = './calculator.html';
+                    window.location.href = './dashboard.html';
                 }, 1000);
             } else {
                 // Failure
