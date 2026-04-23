@@ -329,8 +329,7 @@
   };
 
   async function boot() {
-    // DO NOT checkAuth() here, to allow public access.
-    // await App.checkAuth();
+    await App.checkAuth();
     state = await AppStorage.loadState();
     state.ui = state.ui || { theme: 'light', lang: 'th' };
     state.masterData = state.masterData || App.clone(DEFAULT_DATA);

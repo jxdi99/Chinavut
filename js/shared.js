@@ -143,6 +143,8 @@ import { MasterDataAPI } from "../src/api/client.js";
     )
       return;
     if (window.location.pathname.includes("/backend")) return;
+    if (window.location.pathname.toLowerCase().includes("/public")) return;
+    
     const state = await AppStorage.loadState();
     if (!state.currentUser) {
       window.location.href = "./index.html";
