@@ -15,7 +15,9 @@ CREATE TABLE IF NOT EXISTS staff (
   emp_id text UNIQUE NOT NULL,
   name text NOT NULL,
   nick text,
-  dept text NOT NULL,
+  role text,
+  position text,
+  status text DEFAULT 'active',
   created_at timestamptz DEFAULT now()
 );
 
@@ -50,22 +52,22 @@ CREATE TABLE IF NOT EXISTS accessories (
 -- 3. INSERT DATA (SEEDING)
 
 -- Insert Staff
-INSERT INTO staff (emp_id, name, nick, dept) VALUES
-('HR-MK-4-025', 'นาย ดำรง สูงเรือง', 'ดำ', 'LED'),
-('HR-SP-7-007', 'นาย ภาวัต ศิริวัฒน์', 'หน่อง', 'LED'),
-('HR-SP-7-009', 'นาย ศิริศักดิ์ ทุมดี', 'ศักดิ์', 'LED'),
-('HR-SP-7-010', 'นาย สรศักดิ์ หัดกันยา', 'เจได', 'LED'),
-('HR-SV-6-014', 'นาย ลักษมัณต์ กันชาดี', 'ปลาย', 'LED'),
-('HR-SP-0-000', 'น.ส.สุทธิดา ผดุงฮะ', 'นะ', 'LED'),
-('HR-ST-5-029', 'นาย พิชิตชัย กุตัน', 'กี้', 'Store'),
-('HR-SL-1-001', 'นางสาว ไพรินทร์ ทัพด้วง', 'ริน', 'Sale'),
-('HR-SL-1-006', 'นาย ต้นตระกานต์ ไชยโคตรไพศาล', 'ต้น', 'Sale'),
-('HR-SL-1-007', 'นาย ประทีป อมรดิษฐ์', 'โหน่ง', 'Sale'),
-('HR-SL-1-008', 'นาย ภานุวัฒน์ หัวใจแก้ว', 'โน๊ต', 'Sale'),
-('HR-SL-1-014', 'นางสาว สกาวรัตน์ คงเกตุ', 'กาว', 'Sale'),
-('HR-SL-1-017', 'นาย ธนาพัฒน์ รุ้งเรืองรอง', 'ตรังค์', 'Sale'),
-('HR-SL-1-020', 'นางสาว อิสรี มาลีอังศุกุล', 'ขิม', 'Sale'),
-('HR-SL-1-022', 'นางสาว อาฑิตยา สิงหราช', 'กิ๊ฟ', 'Sale')
+INSERT INTO staff (emp_id, name, nick, role, position, status) VALUES
+('HR-MK-4-025', 'นาย ดำรง สูงเรือง', 'ดำ', 'admin', null, 'active'),
+('HR-SP-7-007', 'นาย ภาวัต ศิริวัฒน์', 'หน่อง', 'dev', null, 'active'),
+('HR-SP-7-009', 'นาย ศิริศักดิ์ ทุมดี', 'ศักดิ์', 'dev', null, 'active'),
+('HR-SP-7-010', 'นาย สรศักดิ์ หัดกันยา', 'เจได', 'dev', null, 'active'),
+('HR-SV-6-014', 'นาย ลักษมัณต์ กันชาดี', 'ปลาย', 'dev', null, 'active'),
+('HR-SP-0-000', 'น.ส.สุทธิดา ผดุงฮะ', 'นะ', 'admin', null, 'active'),
+('HR-ST-5-029', 'นาย พิชิตชัย กุตัน', 'กี้', 'store', null, 'active'),
+('HR-SL-1-001', 'นางสาว ไพรินทร์ ทัพด้วง', 'ริน', 'sale', null, 'active'),
+('HR-SL-1-006', 'นาย ต้นตระกานต์ ไชยโคตรไพศาล', 'ต้น', 'sale', null, 'active'),
+('HR-SL-1-007', 'นาย ประทีป อมรดิษฐ์', 'โหน่ง', 'sale', null, 'active'),
+('HR-SL-1-008', 'นาย ภานุวัฒน์ หัวใจแก้ว', 'โน๊ต', 'sale', null, 'active'),
+('HR-SL-1-014', 'นางสาว สกาวรัตน์ คงเกตุ', 'กาว', 'sale', null, 'active'),
+('HR-SL-1-017', 'นาย ธนาพัฒน์ รุ้งเรืองรอง', 'ตรังค์', 'sale', null, 'active'),
+('HR-SL-1-020', 'นางสาว อิสรี มาลีอังศุกุล', 'ขิม', 'sale', null, 'active'),
+('HR-SL-1-022', 'นางสาว อาฑิตยา สิงหราช', 'กิ๊ฟ', 'sale', null, 'active')
 ON CONFLICT (emp_id) DO NOTHING;
 
 -- Insert LED Models (UIR)

@@ -119,7 +119,7 @@
       <div class="dashboard-welcome">
         <h1>ยินดีต้อนรับ, <span id="user-name-display">ผู้ใช้งาน</span></h1>
         <div style="color: var(--muted); margin-top: 8px;">
-          แผนก: <span id="user-dept-display">-</span> | ตำแหน่ง: <span id="user-role-display" class="dashboard-role-badge">Sale</span>
+          ตำแหน่ง: <span id="user-dept-display">-</span> | สิทธิ์ใช้งาน: <span id="user-role-display" class="dashboard-role-badge">Sale</span>
         </div>
       </div>
     </div>
@@ -192,19 +192,12 @@
 
         const user = state.currentUser;
         
-        // ใช้ 'role' และ 'position' จาก Database โดยตรง (ถ้ามี)
-        // ถ้ายะงไม่มี ให้คำนวณจากแผนก (Dept) แทน
-        let userRole = user.role ? user.role.toLowerCase() : 'sale';
-        if (!user.role) {
-          if (user.dept === 'LED' || user.dept === 'DEV') userRole = 'dev';
-          else if (user.dept === 'Store') userRole = 'store';
-        }
-        
-        const positionDisplay = user.position ? user.position : user.dept;
+        // ใช้ Role จากฐานข้อมูลโดยตรง
+        let userRole = (user.role || 'sale').toLowerCase();
         
         // อัปเดตข้อมูลบนหน้าเว็บ
         document.getElementById('user-name-display').textContent = user.name || user.id;
-        document.getElementById('user-dept-display').textContent = positionDisplay || '-';
+        document.getElementById('user-dept-display').textContent = user.position || '-';
         document.getElementById('user-role-display').textContent = userRole.toUpperCase();
         
         if (userRole === 'dev' || userRole === 'admin') {

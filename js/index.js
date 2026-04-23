@@ -40,8 +40,9 @@ import { StaffAPI } from '../src/api/client.js';
                     id: val, 
                     name: firstName, 
                     nick: staff.nick, 
-                    dept: staff.dept,
-                    role: 'employee' 
+                    role: staff.role ? staff.role.toLowerCase() : 'employee',
+                    position: staff.position,
+                    status: staff.status 
                 };
                 await AppStorage.saveState(App.state);
 
