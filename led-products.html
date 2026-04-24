@@ -64,7 +64,7 @@
             </div>
             <div class="field">
               <label>Location</label>
-              <input type="text" id="receive-lot" placeholder="เช่น คลัง" autofocus>
+              <input type="text" id="receive-location" placeholder="เช่น คลัง หรือ ชั้น 2 ห้อง LED">
             </div>
           </div>
           <div class="receive-row">
@@ -77,7 +77,21 @@
               <input type="number" id="receive-module" placeholder="จำนวน Module" min="0">
             </div>
           </div>
-          <div style="display: flex; gap: 10px; margin-top: 8px;">
+          <div class="receive-row">
+            <div class="field">
+              <label>สภาพสินค้า</label>
+              <select id="receive-status">
+                <option value="ดี">ดี</option>
+                <option value="รอตรวจสอบ">รอตรวจสอบ</option>
+                <option value="เสีย">เสีย</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>หมายเหตุ</label>
+              <input type="text" id="receive-notes" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)">
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 12px;">
             <button class="btn btn-primary" id="receive-submit" style="flex: 1;">📥 บันทึกรับเข้า</button>
           </div>
         </div>
@@ -123,19 +137,15 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
           <h3 style="margin: 0; color: var(--primary); font-size: 1rem;">➕ เพิ่มรายการ</h3>
         </div>
-        <div class="receive-form">
-          <div style="display: grid; grid-template-columns: 1fr 1.2fr 0.8fr 0.8fr; gap: 10px; align-items: end;">
+        <div class="receive-form" style="max-width: 100%;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; align-items: end;">
             <div class="field" style="margin-bottom: 0;">
               <label style="font-size: 0.85rem;">Lot</label>
               <input type="text" id="stock-add-lot" placeholder="0478" style="padding: 9px 10px;">
             </div>
             <div class="field" style="margin-bottom: 0;">
               <label style="font-size: 0.85rem;">Location</label>
-              <select id="stock-add-location" style="padding: 9px 10px;">
-                <option value="">-- เลือก --</option>
-                <option value="ชั้น 2 ห้อง LED">ชั้น 2 ห้อง LED</option>
-                <option value="คลัง">คลัง</option>
-              </select>
+              <input type="text" id="stock-add-location" placeholder="เช่น คลัง" style="padding: 9px 10px;">
             </div>
             <div class="field" style="margin-bottom: 0;">
               <label style="font-size: 0.85rem;">Cabinet</label>
@@ -145,8 +155,17 @@
               <label style="font-size: 0.85rem;">Module</label>
               <input type="number" id="stock-add-module" placeholder="0" min="0" style="padding: 9px 10px;">
             </div>
+            <div class="field" style="margin-bottom: 0;">
+              <label style="font-size: 0.85rem;">สภาพ</label>
+              <select id="stock-add-status" style="padding: 9px 10px;">
+                <option value="ดี">ดี</option>
+                <option value="รอตรวจสอบ">รอตรวจสอบ</option>
+                <option value="เสีย">เสีย</option>
+              </select>
+            </div>
           </div>
           <div style="display: flex; gap: 10px; margin-top: 10px; justify-content: flex-end;">
+            <input type="text" id="stock-add-notes" placeholder="หมายเหตุ (ถ้ามี)" style="flex: 1; padding: 9px 10px;">
             <button class="btn btn-primary" id="stock-add-submit" style="white-space: nowrap;">📥 บันทึก</button>
           </div>
         </div>
@@ -172,13 +191,15 @@
                 <th>Location</th>
                 <th>Cabinet</th>
                 <th>Module</th>
+                <th>สภาพ</th>
                 <th>วันที่บันทึก</th>
                 <th>ผู้บันทึก</th>
+                <th>หมายเหตุ</th>
               </tr>
             </thead>
             <tbody id="stock-table-body">
               <tr>
-                <td colspan="7" style="text-align: center; padding: 40px; color: var(--muted);">
+                <td colspan="9" style="text-align: center; padding: 40px; color: var(--muted);">
                   กำลังโหลดข้อมูล...
                 </td>
               </tr>
@@ -215,14 +236,16 @@
                 <th>Location</th>
                 <th>Cabinet</th>
                 <th>Module</th>
+                <th>สภาพ</th>
                 <th>วันที่บันทึก</th>
                 <th>ผู้บันทึก</th>
+                <th>หมายเหตุ</th>
                 <th>จัดการ</th>
               </tr>
             </thead>
             <tbody id="manage-table-body">
               <tr>
-                <td colspan="8" style="text-align: center; padding: 40px; color: var(--muted);">
+                <td colspan="10" style="text-align: center; padding: 40px; color: var(--muted);">
                   กำลังโหลดข้อมูล...
                 </td>
               </tr>

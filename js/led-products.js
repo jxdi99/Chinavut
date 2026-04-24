@@ -45,12 +45,14 @@ import { supabase } from '../src/api/client.js';
     }
 
     // ── Insert item to DB ──
-    async function insertItem(lot, location, cabinet, module) {
+    async function insertItem(lot, location, cabinet, module, status, notes) {
         const { error } = await supabase.from('led_inventory').insert({
             lot_number: lot,
             location: location || null,
             cabinet: cabinet || 0,
             module: module || 0,
+            status: status || 'ดี',
+            notes: notes || null,
             received_by: currentUser?.name || 'ไม่ทราบ',
             created_at: new Date().toISOString()
         });
@@ -60,16 +62,18 @@ import { supabase } from '../src/api/client.js';
     // ── SECTION: รับเข้า ──
     async function handleReceive() {
         const lot = document.getElementById('receive-lot').value.trim();
-        const location = document.getElementById('receive-location').value;
+        const location = document.getElementById('receive-location').value.trim();
         const cabinet = parseInt(document.getElementById('receive-cabinet').value) || 0;
         const module = parseInt(document.getElementById('receive-module').value) || 0;
+        const status = document.getElementById('receive-status').value;
+        const notes = document.getElementById('receive-notes').value.trim();
 
         if (!lot) { App.showToast('กรุณากรอก Lot'); return; }
-        if (!location) { App.showToast('กรุณาเลือก Location'); return; }
+        if (!location) { App.showToast('กรุณากรอก Location'); return; }
         if (cabinet === 0 && module === 0) { App.showToast('กรุณากรอก Cabinet หรือ Module'); return; }
 
         App.showToast('กำลังบันทึก...');
-        const error = await insertItem(lot, location, cabinet, module);
+        const error = await insertItem(lot, location, cabinet, module, status, notes);
 
         if (error) {
             console.error('Insert error:', error);
@@ -83,6 +87,8 @@ import { supabase } from '../src/api/client.js';
         document.getElementById('receive-lot').value = '';
         document.getElementById('receive-cabinet').value = '';
         document.getElementById('receive-module').value = '';
+        document.getElementById('receive-notes').value = '';
+        document.getElementById('receive-status').value = 'ดี';
         document.getElementById('receive-lot').focus();
 
         loadRecentReceive();
@@ -110,6 +116,8 @@ import { supabase } from '../src/api/client.js';
                         📍 ${item.location || '-'}
                         ${item.cabinet ? ` · Cabinet: ${item.cabinet}` : ''}
                         ${item.module ? ` · Module: ${item.module}` : ''}
+                        ${item.status ? ` · <span class="badge ${item.status === 'เสีย' ? 'warn' : ''}" style="margin-bottom:0; padding:2px 6px;">${item.status}</span>` : ''}
+                        ${item.notes ? ` · 📝 ${item.notes}` : ''}
                     </div>
                 </div>
                 <div class="recent-item-date">
@@ -123,16 +131,18 @@ import { supabase } from '../src/api/client.js';
     // ── SECTION: นับสต๊อก - Quick Add ──
     async function handleStockQuickAdd() {
         const lot = document.getElementById('stock-add-lot').value.trim();
-        const location = document.getElementById('stock-add-location').value;
+        const location = document.getElementById('stock-add-location').value.trim();
         const cabinet = parseInt(document.getElementById('stock-add-cabinet').value) || 0;
         const module = parseInt(document.getElementById('stock-add-module').value) || 0;
+        const status = document.getElementById('stock-add-status').value;
+        const notes = document.getElementById('stock-add-notes').value.trim();
 
         if (!lot) { App.showToast('กรุณากรอก Lot'); return; }
-        if (!location) { App.showToast('กรุณาเลือก Location'); return; }
+        if (!location) { App.showToast('กรุณากรอก Location'); return; }
         if (cabinet === 0 && module === 0) { App.showToast('กรุณากรอก Cabinet หรือ Module'); return; }
 
         App.showToast('กำลังบันทึก...');
-        const error = await insertItem(lot, location, cabinet, module);
+        const error = await insertItem(lot, location, cabinet, module, status, notes);
 
         if (error) {
             App.showToast('เกิดข้อผิดพลาด: ' + error.message);
@@ -145,6 +155,8 @@ import { supabase } from '../src/api/client.js';
         document.getElementById('stock-add-lot').value = '';
         document.getElementById('stock-add-cabinet').value = '';
         document.getElementById('stock-add-module').value = '';
+        document.getElementById('stock-add-notes').value = '';
+        document.getElementById('stock-add-status').value = 'ดี';
         document.getElementById('stock-add-lot').focus();
 
         // Reload table & stats
@@ -175,7 +187,8 @@ import { supabase } from '../src/api/client.js';
             const q = searchText.toLowerCase();
             filtered = filtered.filter(i =>
                 (i.lot_number || '').toLowerCase().includes(q) ||
-                (i.location || '').toLowerCase().includes(q)
+                (i.location || '').toLowerCase().includes(q) ||
+                (i.notes || '').toLowerCase().includes(q)
             );
         }
 
@@ -192,8 +205,10 @@ import { supabase } from '../src/api/client.js';
                 <td>${item.location || '-'}</td>
                 <td>${item.cabinet || '-'}</td>
                 <td>${item.module || '-'}</td>
+                <td><span class="badge ${item.status === 'เสีย' ? 'warn' : ''}" style="margin-bottom:0; padding:2px 6px;">${item.status || 'ดี'}</span></td>
                 <td>${formatDate(item.created_at)}</td>
                 <td>${item.received_by || '-'}</td>
+                <td>${item.notes || '-'}</td>
             </tr>
         `).join('');
     }
@@ -211,7 +226,8 @@ import { supabase } from '../src/api/client.js';
             const q = searchText.toLowerCase();
             filtered = filtered.filter(i =>
                 (i.lot_number || '').toLowerCase().includes(q) ||
-                (i.location || '').toLowerCase().includes(q)
+                (i.location || '').toLowerCase().includes(q) ||
+                (i.notes || '').toLowerCase().includes(q)
             );
         }
 
@@ -228,8 +244,10 @@ import { supabase } from '../src/api/client.js';
                 <td>${item.location || '-'}</td>
                 <td>${item.cabinet || '-'}</td>
                 <td>${item.module || '-'}</td>
+                <td><span class="badge ${item.status === 'เสีย' ? 'warn' : ''}" style="margin-bottom:0; padding:2px 6px;">${item.status || 'ดี'}</span></td>
                 <td>${formatDate(item.created_at)}</td>
                 <td>${item.received_by || '-'}</td>
+                <td>${item.notes || '-'}</td>
                 <td><button class="btn-delete-sm" data-id="${item.id}">🗑️ ลบ</button></td>
             </tr>
         `).join('');
