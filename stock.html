@@ -26,17 +26,42 @@
 
   <div class="container page-fade-in" style="margin-top: 80px; max-width: 1200px;">
     
-    <!-- Tab Navigation -->
-    <div class="tabs">
-      <button class="tab-btn active" data-tab="executive">🏢 ภาพรวมผู้บริหาร (Executive)</button>
-      <button class="tab-btn" data-tab="overview">📊 ภาพรวมสต๊อกรายตัว (Detail)</button>
-      <button class="tab-btn" data-tab="receive">📥 รับเข้า (Receive)</button>
-      <button class="tab-btn" data-tab="reserve">🔖 จองสินค้า (Reserve)</button>
-      <button class="tab-btn" data-tab="erp">🔄 เทียบ ERP (Compare)</button>
+    <!-- Sub-Dashboard Navigation -->
+    <div class="menu-grid" id="stock-menu-grid">
+      <div class="menu-card" data-tab="executive" style="cursor:pointer;">
+        <div class="menu-icon">🏢</div>
+        <div class="menu-title">ภาพรวมผู้บริหาร</div>
+        <div class="menu-desc">ดูมูลค่าสต๊อกรวม, Dead Stock และสรุปยอดทุกแผนก</div>
+      </div>
+      <div class="menu-card" data-tab="overview" style="cursor:pointer;">
+        <div class="menu-icon">📊</div>
+        <div class="menu-title">สต๊อกรายตัว (Detail)</div>
+        <div class="menu-desc">ตรวจสอบจำนวนสินค้าแต่ละรายการแบบละเอียด</div>
+      </div>
+      <div class="menu-card" data-tab="receive" style="cursor:pointer;">
+        <div class="menu-icon">📥</div>
+        <div class="menu-title">รับเข้าสินค้า</div>
+        <div class="menu-desc">บันทึกการรับของเข้าคลังสินค้าเพิ่มสต๊อก</div>
+      </div>
+      <div class="menu-card" data-tab="reserve" style="cursor:pointer;">
+        <div class="menu-icon">🔖</div>
+        <div class="menu-title">จองสินค้า</div>
+        <div class="menu-desc">ตัดสต๊อกล่วงหน้าสำหรับโปรเจคที่เตรียมส่งมอบ</div>
+      </div>
+      <div class="menu-card" data-tab="erp" style="cursor:pointer;">
+        <div class="menu-icon">🔄</div>
+        <div class="menu-title">เทียบระบบบัญชี ERP</div>
+        <div class="menu-desc">เปรียบเทียบยอดสต๊อกหน้าเว็บกับระบบบัญชีหลังบ้าน</div>
+      </div>
+    </div>
+
+    <!-- Actions Toolbar (Visible inside a section) -->
+    <div id="stock-section-toolbar" style="display:none; margin-bottom: 20px;">
+      <button class="btn btn-secondary" id="btn-back-to-menu">🔙 กลับไปเมนูสต๊อก</button>
     </div>
 
     <!-- Tab 0: Executive Overview -->
-    <div class="tab-content active" id="tab-executive">
+    <div class="tab-content" id="tab-executive">
       
       <!-- KPI Grid -->
       <div class="kpi-grid">

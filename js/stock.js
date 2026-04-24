@@ -87,15 +87,19 @@ import { MasterDataAPI } from '../src/api/client.js';
         return items;
     }
 
-    function initTabs() {
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                
-                const target = e.target.closest('.tab-btn');
-                target.classList.add('active');
+    function initSubMenu() {
+        // Handle menu card clicks
+        document.querySelectorAll('#stock-menu-grid .menu-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                const target = e.currentTarget;
                 const tabId = target.getAttribute('data-tab');
+                
+                // Hide menu grid
+                document.getElementById('stock-menu-grid').style.display = 'none';
+                
+                // Show back button and specific content
+                document.getElementById('stock-section-toolbar').style.display = 'block';
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                 document.getElementById(`tab-${tabId}`).classList.add('active');
 
                 // Refresh specific tab data if needed
@@ -104,6 +108,14 @@ import { MasterDataAPI } from '../src/api/client.js';
                 if (tabId === 'erp') renderErp();
                 if (tabId === 'receive' || tabId === 'reserve') populateDropdowns();
             });
+        });
+
+        // Handle back button click
+        document.getElementById('btn-back-to-menu').addEventListener('click', () => {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('stock-section-toolbar').style.display = 'none';
+            // Show menu grid again
+            document.getElementById('stock-menu-grid').style.display = 'grid'; // .menu-grid uses CSS Grid
         });
     }
 
@@ -378,11 +390,10 @@ import { MasterDataAPI } from '../src/api/client.js';
         document.getElementById('theme-toggle')?.addEventListener('click', App.toggleTheme);
 
         await loadMockStockData();
-        initTabs();
+        initSubMenu();
         setupActions();
         
-        renderExecutiveOverview();
-        renderOverview();
+        // Removed default rendering of tabs on load to keep them fresh when clicked
         populateDropdowns();
     }
 
