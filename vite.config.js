@@ -11,6 +11,7 @@ export default defineConfig({
         admin: resolve(__dirname, 'backend/index.html'),
         quote: resolve(__dirname, 'quote.html'),
         detail: resolve(__dirname, 'detail.html'),
+        resetPassword: resolve(__dirname, 'reset-password.html'),
       },
     },
   },

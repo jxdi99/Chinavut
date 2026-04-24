@@ -20,13 +20,34 @@ export const StaffAPI = {
         const { data, error } = await supabase
           .from("staff")
           .select("*")
-          .eq("username", username)
+          .ilike("username", username)
           .single();
         if (error) {
           console.error("StaffAPI.getByUsername error:", error);
           return null;
         }
         return data;
+      } catch (err) {
+        console.error("StaffAPI connection failed:", err);
+        return null;
+      }
+    }
+    return null;
+  },
+  async getByNameAndNick(name, nick) {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from("staff")
+          .select("*")
+          .ilike("name", `%${name}%`)
+          .ilike("nick", nick);
+        if (error) {
+          console.error("StaffAPI.getByNameAndNick error:", error);
+          return null;
+        }
+        // Return first match if found
+        return data && data.length > 0 ? data[0] : null;
       } catch (err) {
         console.error("StaffAPI connection failed:", err);
         return null;
