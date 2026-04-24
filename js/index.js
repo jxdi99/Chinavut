@@ -7,25 +7,8 @@ import { StaffAPI } from '../src/api/client.js';
         App.applyLanguage();
         App.applyTheme(state.ui.theme);
 
-
-
         const input = document.getElementById('username');
         const submitBtn = document.getElementById('login-submit');
-
-        let isSignUpMode = false;
-        
-        document.getElementById('toggle-signup').addEventListener('click', (e) => {
-            e.preventDefault();
-            isSignUpMode = !isSignUpMode;
-            document.getElementById('email-field').style.display = isSignUpMode ? 'block' : 'none';
-            if (isSignUpMode) {
-                submitBtn.textContent = 'ลงทะเบียน (Sign Up)';
-                e.target.textContent = 'กลับไปหน้าเข้าสู่ระบบ (Login)';
-            } else {
-                submitBtn.textContent = App.t('loginBtn') || 'เข้าสู่ระบบ';
-                e.target.textContent = 'ตั้งรหัสผ่านใหม่ (Sign Up)';
-            }
-        });
 
         // Toggle password visibility
         document.getElementById('toggle-password').addEventListener('click', () => {
@@ -40,51 +23,139 @@ import { StaffAPI } from '../src/api/client.js';
             }
         });
 
-        // Forgot password - lookup by email in staff table
-        document.getElementById('forgot-password').addEventListener('click', async (e) => {
+        // ==========================================
+        // Forgot Password - Multi-step Reset Flow
+        // ==========================================
+        let verifiedStaff = null;
+
+        document.getElementById('forgot-password').addEventListener('click', (e) => {
             e.preventDefault();
-            const email = prompt('กรุณากรอกอีเมลที่ใช้ลงทะเบียน:');
-            if (!email) return;
-            const staff = await StaffAPI.getByEmail(email);
-            if (staff) {
-                alert(`ชื่อผู้ใช้: ${staff.nick}\nUsername: ${staff.username}\nรหัสผ่านของคุณคือ: ${staff.password}`);
-            } else {
-                App.showToast('ไม่พบอีเมลนี้ในระบบ');
+            showStep(1);
+            document.getElementById('reset-modal').classList.add('active');
+            document.getElementById('reset-username').value = '';
+            document.getElementById('reset-email').value = '';
+            document.getElementById('reset-username').focus();
+        });
+
+        document.getElementById('reset-cancel').addEventListener('click', () => {
+            document.getElementById('reset-modal').classList.remove('active');
+        });
+
+        document.getElementById('reset-modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('reset-modal')) {
+                document.getElementById('reset-modal').classList.remove('active');
             }
         });
 
+        // Step 1: Verify identity (username + email)
+        document.getElementById('reset-verify').addEventListener('click', async () => {
+            const username = document.getElementById('reset-username').value.trim();
+            const email = document.getElementById('reset-email').value.trim();
+
+            if (!username || !email) {
+                App.showToast('กรุณากรอก Username และอีเมลให้ครบ');
+                return;
+            }
+
+            App.showToast('กำลังตรวจสอบ...');
+            const staff = await StaffAPI.getByUsername(username);
+
+            if (!staff) {
+                App.showToast('ไม่พบ Username นี้ในระบบ');
+                return;
+            }
+
+            if (!staff.email || staff.email.toLowerCase() !== email.toLowerCase()) {
+                App.showToast('อีเมลไม่ตรงกับข้อมูลในระบบ');
+                return;
+            }
+
+            // Verified!
+            verifiedStaff = staff;
+            showStep(2);
+            document.getElementById('reset-new-password').value = '';
+            document.getElementById('reset-confirm-password').value = '';
+            document.getElementById('reset-new-password').focus();
+        });
+
+        // Step 2: Back button
+        document.getElementById('reset-back').addEventListener('click', () => {
+            showStep(1);
+        });
+
+        // Step 2: Save new password
+        document.getElementById('reset-save').addEventListener('click', async () => {
+            const newPw = document.getElementById('reset-new-password').value;
+            const confirmPw = document.getElementById('reset-confirm-password').value;
+
+            if (!newPw) {
+                App.showToast('กรุณากรอกรหัสผ่านใหม่');
+                return;
+            }
+            if (newPw.length < 3) {
+                App.showToast('รหัสผ่านต้องมีอย่างน้อย 3 ตัวอักษร');
+                return;
+            }
+            if (newPw !== confirmPw) {
+                App.showToast('รหัสผ่านไม่ตรงกัน กรุณาพิมพ์ใหม่');
+                return;
+            }
+
+            App.showToast('กำลังบันทึก...');
+
+            // Update password in Supabase staff table
+            const { supabase } = await import('../src/api/client.js');
+            const { error } = await supabase
+                .from('staff')
+                .update({ password: newPw })
+                .eq('id', verifiedStaff.id);
+
+            if (error) {
+                console.error('Password update error:', error);
+                App.showToast('เกิดข้อผิดพลาด: ' + error.message);
+                return;
+            }
+
+            // Success!
+            showStep(3);
+        });
+
+        // Step 3: Done
+        document.getElementById('reset-done').addEventListener('click', () => {
+            document.getElementById('reset-modal').classList.remove('active');
+            verifiedStaff = null;
+        });
+
+        function showStep(step) {
+            document.querySelectorAll('.reset-step').forEach(el => el.classList.remove('active'));
+            document.getElementById(`reset-step-${step}`).classList.add('active');
+        }
+
+        // ==========================================
+        // Login Flow
+        // ==========================================
         async function handleLogin() {
             const val = input.value.trim();
             const password = document.getElementById('password').value;
             if (!val || !password) {
-                App.showToast('กรุณากรอกรหัสพนักงานและรหัสผ่าน');
+                App.showToast('กรุณากรอก Username และรหัสผ่าน');
                 return;
             }
 
             App.showToast(App.t('calculating'));
             
-            // Validate if username exists in staff table FIRST
             const staff = await StaffAPI.getByUsername(val);
             if (!staff) {
                 App.showToast('ไม่พบ Username นี้ในระบบ');
                 return;
             }
             
-            // Simple Custom Login Flow (Bypass Supabase Auth)
-            if (isSignUpMode) {
-                // If they want to sign up, we just update the password in the staff table
-                // Note: For this to work, we need an admin or they need to have a default password
-                App.showToast('ระบบสมัครสมาชิกแบบ Custom ยังไม่เปิดใช้งาน กรุณาติดต่อแอดมิน');
+            if (password !== staff.password) {
+                App.showToast('รหัสผ่านไม่ถูกต้อง');
                 return;
-            } else {
-                // Check if password matches
-                if (password !== staff.password) {
-                    App.showToast('รหัสผ่านไม่ถูกต้อง');
-                    return;
-                }
             }
 
-            // Authentication Success (Login or Signup)
+            // Authentication Success
             const cleanName = (fullName) => {
                 let name = fullName;
                 const prefixes = ['นาย ', 'นางสาว ', 'น.ส. ', 'น.ส.', 'นาง '];
@@ -100,7 +171,6 @@ import { StaffAPI } from '../src/api/client.js';
             console.log('Login Success:', staff);
             App.showToast(`${App.t('welcome')} คุณ ${firstName}`);
             
-            // Store logged in user in state
             App.state.currentUser = { 
                 id: val, 
                 name: firstName, 
@@ -112,15 +182,15 @@ import { StaffAPI } from '../src/api/client.js';
             await AppStorage.saveState(App.state);
 
             setTimeout(() => {
-                // Use ./ to ensure it stays in the subfolder on GitHub Pages
                 window.location.href = './dashboard.html';
             }, 1000);
         }
 
-
-
         submitBtn.addEventListener('click', handleLogin);
         input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') handleLogin();
+        });
+        document.getElementById('password').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') handleLogin();
         });
     }
