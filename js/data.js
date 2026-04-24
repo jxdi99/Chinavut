@@ -68,7 +68,7 @@
       noMatchingController: "Controller ไม่พอสำหรับขนาดนี้",
       reset: "รีเซ็ตข้อมูล",
       backHome: "กลับหน้า Calculator",
-      dashboardHome: "🏠 กลับหน้าแรก",
+      dashboardHome: "กลับหน้าแรก",
       adminTitle: "Admin: จัดการ Master Data",
       adminSub:
         "แก้ไขสินค้า/Controller ได้ทันที และบันทึกลงฐานข้อมูลของเบราว์เซอร์",
@@ -264,7 +264,7 @@
       noMatchingController: "No matching controller for this size",
       reset: "Reset Data",
       backHome: "Back to Calculator",
-      dashboardHome: "🏠 Back to Dashboard",
+      dashboardHome: "Back to Dashboard",
       adminTitle: "Admin: Manage Master Data",
       adminSub: "Edit products/controllers and save to browser database",
       targetGroup: "Select Category to Edit",

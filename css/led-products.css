@@ -106,7 +106,7 @@
 }
 
 .receive-form .field {
-  margin-bottom: 16px;
+  margin-bottom: 0;
 }
 
 .receive-form label {
@@ -144,7 +144,7 @@
 .receive-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 16px;
 }
 
 @media (max-width: 500px) {
