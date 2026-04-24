@@ -15,13 +15,13 @@ import { StaffAPI, supabase } from '../src/api/client.js';
     }
 
     function init() {
-        // Step 1: Verify by Username + Email
+        // Step 1: Verify by Username + Contact (Email or Phone)
         document.getElementById('reset-verify').addEventListener('click', async () => {
             const username = document.getElementById('reset-username').value.trim();
-            const email = document.getElementById('reset-email').value.trim();
+            const contact = document.getElementById('reset-contact').value.trim();
 
-            if (!username || !email) {
-                App.showToast('กรุณากรอก Username และอีเมลให้ครบ');
+            if (!username || !contact) {
+                App.showToast('กรุณากรอก Username และ อีเมลหรือเบอร์โทรศัพท์ ให้ครบ');
                 return;
             }
 
@@ -33,8 +33,11 @@ import { StaffAPI, supabase } from '../src/api/client.js';
                 return;
             }
 
-            if (!staff.email || staff.email.toLowerCase() !== email.toLowerCase()) {
-                App.showToast('อีเมลไม่ตรงกับข้อมูลในระบบ');
+            const matchEmail = staff.email && staff.email.toLowerCase() === contact.toLowerCase();
+            const matchPhone = staff.phone && staff.phone === contact;
+
+            if (!matchEmail && !matchPhone) {
+                App.showToast('ข้อมูลอีเมลหรือเบอร์โทรศัพท์ไม่ถูกต้อง');
                 return;
             }
 
@@ -81,9 +84,9 @@ import { StaffAPI, supabase } from '../src/api/client.js';
 
         // Enter key support
         document.getElementById('reset-username').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') document.getElementById('reset-email').focus();
+            if (e.key === 'Enter') document.getElementById('reset-contact').focus();
         });
-        document.getElementById('reset-email').addEventListener('keydown', (e) => {
+        document.getElementById('reset-contact').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') document.getElementById('reset-verify').click();
         });
         document.getElementById('reset-new-password').addEventListener('keydown', (e) => {
