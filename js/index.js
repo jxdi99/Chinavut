@@ -62,7 +62,8 @@ import { StaffAPI } from '../src/api/client.js';
             
             App.state.currentUser = { 
                 id: val, 
-                name: firstName, 
+                name: firstName,
+                fullName: staff.name, 
                 nick: staff.nick, 
                 role: staff.role ? staff.role.toLowerCase() : 'employee',
                 position: staff.position,

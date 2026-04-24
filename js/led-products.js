@@ -53,7 +53,7 @@ import { supabase } from '../src/api/client.js';
             module: module || 0,
             status: status || 'ดี',
             notes: notes || null,
-            received_by: currentUser?.name || 'ไม่ทราบ',
+            received_by: currentUser?.fullName || currentUser?.name || 'ไม่ทราบ',
             created_at: new Date().toISOString()
         });
         return error;
