@@ -147,7 +147,8 @@ import { MasterDataAPI } from "../src/api/client.js";
     
     const state = await AppStorage.loadState();
     if (!state.currentUser) {
-      window.location.href = "./index.html";
+      const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+      window.location.href = basePath + 'index.html';
     }
   };
 
@@ -165,7 +166,9 @@ import { MasterDataAPI } from "../src/api/client.js";
     App.state.currentUser = null;
     App.state.lastInputs = null;
     await AppStorage.saveState(App.state);
-    window.location.href = "./index.html";
+    // Navigate to login page (handles both root and subfolder deployments)
+    const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+    window.location.href = basePath + 'index.html';
   };
 
   App.renderWelcomeBanner = function () {
