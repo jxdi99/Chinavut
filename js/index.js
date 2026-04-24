@@ -33,10 +33,10 @@ import { StaffAPI } from '../src/api/client.js';
             const btn = document.getElementById('toggle-password');
             if (pwInput.type === 'password') {
                 pwInput.type = 'text';
-                btn.textContent = '🙈';
+                btn.textContent = 'ซ่อน';
             } else {
                 pwInput.type = 'password';
-                btn.textContent = '👁️';
+                btn.textContent = 'แสดง';
             }
         });
 
