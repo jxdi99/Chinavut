@@ -1,465 +1,181 @@
-import { MasterDataAPI } from '../src/api/client.js';
+(function() {
+  const STORAGE_KEY = 'razr_stock_data';
+  
+  // Initial dummy data
+  const initialData = [
+    { id: 'LED-UIR-001', name: 'UIR 1.9 (Indoor)', dept: 'led', erpQty: 120, actualQty: 115, reserved: 20, depp: 5, price: 60000 },
+    { id: 'LED-UOS-001', name: 'UOS 3.9 (Outdoor)', dept: 'led', erpQty: 50, actualQty: 50, reserved: 10, depp: 0, price: 85000 },
+    { id: 'LED-CON-NOV', name: 'NovaStar TB60', dept: 'led', erpQty: 15, actualQty: 16, reserved: 2, depp: 0, price: 15000 },
+    { id: 'MKT-BRO-001', name: 'โบรชัวร์ LED 2026', dept: 'marketing', erpQty: 1000, actualQty: 950, reserved: 0, depp: 50, price: 10 },
+    { id: 'MKT-BAN-001', name: 'Roll-up Banner', dept: 'marketing', erpQty: 10, actualQty: 10, reserved: 2, depp: 0, price: 500 }
+  ];
 
-(function () {
-    let masterDataCache = null;
-    let stockData = {}; // Mock stock database structure: { itemId: { total: 0, reserved: 0, erp: 0, lastMovement: Date } }
-    let currentWarehouse = 'led'; // Default warehouse
+  let stockData = [];
+  let currentTab = 'tab-overview';
+  
+  function init() {
+    loadData();
+    bindEvents();
+    render();
+  }
 
-    async function loadMockStockData() {
-        // Since we don't have a real table, we use localStorage to mock the stock database
-        const saved = localStorage.getItem('mockStockData');
-        if (saved) {
-            stockData = JSON.parse(saved);
-        } else {
-            stockData = {};
-        }
-        
-        if (!masterDataCache) {
-            masterDataCache = await MasterDataAPI.fetchFull();
-        }
+  function loadData() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      stockData = JSON.parse(saved);
+    } else {
+      stockData = initialData;
+      saveData();
+    }
+  }
 
-        // Initialize missing items with random mock data for demo purposes if not existing
-        let needsSave = false;
-        const allItems = getAllItems(masterDataCache);
-        allItems.forEach(item => {
-            if (!stockData[item.id]) {
-                const isDeadStock = Math.random() > 0.8; // 20% chance to be mock dead stock
-                const total = Math.floor(Math.random() * 50) + 10;
-                const reserved = Math.floor(Math.random() * (total / 2));
-                stockData[item.id] = {
-                    total: total,
-                    reserved: reserved,
-                    erp: total, // Initially sync with ERP
-                    lastMovement: isDeadStock ? (Date.now() - (180 * 24 * 60 * 60 * 1000)) : Date.now(), // 180 days ago
-                    name: item.name,
-                    category: item.category
-                };
-                needsSave = true;
-            }
-        });
+  function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stockData));
+  }
 
-        if (needsSave) {
-            saveMockStockData();
-        }
+  function bindEvents() {
+    // Tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      if(!btn.hasAttribute('data-tab')) return;
+      btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        currentTab = e.target.dataset.tab;
+        render();
+      });
+    });
+
+    // Search
+    document.getElementById('search-stock').addEventListener('input', render);
+
+    // Sync ERP (Mock)
+    document.getElementById('btn-sync-erp').addEventListener('click', () => {
+      App.showToast('กำลังซิงค์ข้อมูลกับ ERP...');
+      setTimeout(() => {
+        App.showToast('อัปเดตข้อมูล ERP ล่าสุดเรียบร้อยแล้ว');
+        render();
+      }, 800);
+    });
+
+    // Modals
+    document.getElementById('btn-receive').addEventListener('click', () => openModal('receive'));
+    document.getElementById('btn-reserve').addEventListener('click', () => openModal('reserve'));
+    
+    document.getElementById('modal-cancel').addEventListener('click', closeModal);
+    document.getElementById('modal-confirm').addEventListener('click', confirmAction);
+  }
+
+  let actionType = '';
+  function openModal(type) {
+    actionType = type;
+    document.getElementById('action-modal').style.display = 'flex';
+    document.getElementById('modal-title').textContent = type === 'receive' ? 'รับเข้าสินค้า' : 'จองสินค้า';
+    
+    const select = document.getElementById('modal-item-select');
+    select.innerHTML = '';
+    stockData.forEach(item => {
+      select.innerHTML += `<option value="${item.id}">${item.id} - ${item.name} (Avail: ${item.actualQty - item.reserved - item.depp})</option>`;
+    });
+    
+    document.getElementById('modal-qty').value = 1;
+    document.getElementById('modal-note').value = '';
+    document.getElementById('modal-note-field').style.display = type === 'reserve' ? 'block' : 'none';
+  }
+
+  function closeModal() {
+    document.getElementById('action-modal').style.display = 'none';
+  }
+
+  function confirmAction() {
+    const id = document.getElementById('modal-item-select').value;
+    const qty = parseInt(document.getElementById('modal-qty').value) || 0;
+    const note = document.getElementById('modal-note').value;
+
+    if (qty <= 0) {
+      alert('จำนวนต้องมากกว่า 0');
+      return;
     }
 
-    function saveMockStockData() {
-        localStorage.setItem('mockStockData', JSON.stringify(stockData));
+    const item = stockData.find(x => x.id === id);
+    if (!item) return;
+
+    if (actionType === 'receive') {
+      item.actualQty += qty;
+      App.showToast(`รับเข้า ${item.name} จำนวน ${qty} ชิ้นเรียบร้อย`);
+    } else if (actionType === 'reserve') {
+      const avail = item.actualQty - item.reserved - item.depp;
+      if (qty > avail) {
+        alert(`จองไม่ได้! สินค้าว่างมีแค่ ${avail} ชิ้น`);
+        return;
+      }
+      item.reserved += qty;
+      App.showToast(`จอง ${item.name} จำนวน ${qty} ชิ้นเรียบร้อย`);
     }
 
-    function getMockOtherDepartments() {
-        return [
-            // Audio System
-            { id: 'm-audio-1', name: 'RAZR Ceiling Speaker 10W', price: 1200, category: 'audio' },
-            { id: 'm-audio-2', name: 'RAZR Wireless Mic Dual', price: 8500, category: 'audio' },
-            { id: 'm-audio-3', name: 'Digital DSP Mixer 8-Ch', price: 15000, category: 'audio' },
-            // Projector
-            { id: 'm-proj-1', name: 'RAZR Laser Projector 6000lm', price: 45000, category: 'projector' },
-            { id: 'm-proj-2', name: 'RAZR Short Throw 4000lm', price: 32000, category: 'projector' },
-            // Interactive Board
-            { id: 'm-int-1', name: 'RAZR i-Board 65"', price: 55000, category: 'interactive' },
-            { id: 'm-int-2', name: 'RAZR i-Board 86"', price: 95000, category: 'interactive' },
-            // IT / Network
-            { id: 'm-it-1', name: 'Cisco Switch 24-Port PoE', price: 18000, category: 'it' },
-            { id: 'm-it-2', name: 'WiFi 6 Access Point', price: 6500, category: 'it' },
-            { id: 'm-it-3', name: 'Video Conference Cam PTZ', price: 22000, category: 'it' }
-        ];
+    saveData();
+    closeModal();
+    render();
+  }
+
+  function render() {
+    const search = document.getElementById('search-stock').value.toLowerCase();
+    
+    let filtered = stockData.filter(item => {
+      if (search && !item.name.toLowerCase().includes(search) && !item.id.toLowerCase().includes(search)) return false;
+      if (currentTab === 'tab-led' && item.dept !== 'led') return false;
+      if (currentTab === 'tab-marketing' && item.dept !== 'marketing') return false;
+      return true;
+    });
+
+    const tbody = document.getElementById('stock-table-body');
+    tbody.innerHTML = '';
+
+    let sumErpVal = 0;
+    let sumActual = 0;
+    let sumDiff = 0;
+    let sumDead = 0;
+
+    filtered.forEach(item => {
+      const diff = item.actualQty - item.erpQty;
+      const available = item.actualQty - item.reserved - item.depp;
+
+      // Overview math
+      sumErpVal += (item.erpQty * item.price);
+      sumActual += item.actualQty;
+      sumDiff += Math.abs(diff);
+      sumDead += item.depp;
+
+      const diffHtml = diff === 0 
+        ? `<span class="diff-ok">0</span>` 
+        : `<span class="diff-alert">${diff > 0 ? '+'+diff : diff}</span>`;
+
+      tbody.innerHTML += `
+        <tr>
+          <td><strong>${item.id}</strong></td>
+          <td>${item.name}</td>
+          <td><span class="badge" style="background:var(--card); border:1px solid var(--border); color:var(--text);">${item.dept.toUpperCase()}</span></td>
+          <td class="qty-col">${item.erpQty.toLocaleString()}</td>
+          <td class="qty-col">${item.actualQty.toLocaleString()}</td>
+          <td class="qty-col">${diffHtml}</td>
+          <td class="qty-col" style="color:var(--warning);">${item.reserved.toLocaleString()}</td>
+          <td class="qty-col" style="color:var(--success); font-weight:bold;">${available.toLocaleString()}</td>
+          <td class="qty-col" style="color:var(--danger);">${item.depp.toLocaleString()}</td>
+          <td style="text-align:center;">
+            <button class="btn btn-secondary" style="padding:4px 8px; font-size:0.8em;" onclick="alert('ดูประวัติรายการเบิก-จ่าย ของ ${item.id} (Coming Soon)')">History</button>
+          </td>
+        </tr>
+      `;
+    });
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; padding: 20px; color:var(--muted);">ไม่พบรายการสินค้า</td></tr>`;
     }
 
-    function getMockMarketing() {
-        return [
-            { id: 'm-mkt-1', name: 'เสื้อโปโล RAZR (Size M)', price: 250, category: 'marketing' },
-            { id: 'm-mkt-2', name: 'เสื้อโปโล RAZR (Size L)', price: 250, category: 'marketing' },
-            { id: 'm-mkt-3', name: 'แก้วน้ำเก็บความเย็น', price: 150, category: 'marketing' },
-            { id: 'm-mkt-4', name: 'โบรชัวร์ จอ LED', price: 10, category: 'marketing' },
-            { id: 'm-mkt-5', name: 'ปากกาสกรีนโลโก้', price: 15, category: 'marketing' }
-        ];
-    }
+    document.getElementById('sum-erp-val').textContent = '฿' + sumErpVal.toLocaleString();
+    document.getElementById('sum-actual-qty').innerHTML = sumActual.toLocaleString() + ' <span style="font-size:0.5em;font-weight:normal;">ชิ้น</span>';
+    document.getElementById('sum-diff').textContent = sumDiff.toLocaleString();
+    document.getElementById('sum-dead-stock').textContent = sumDead.toLocaleString();
+  }
 
-    function getAllItems(data) {
-        let items = [];
-        
-        if (currentWarehouse === 'led') {
-            if (data) {
-                ['UIR', 'UOS', 'CIH'].forEach(group => {
-                    if (data[group] && data[group].items) {
-                        data[group].items.forEach(i => items.push({ ...i, category: 'led', wh: 'led' }));
-                    }
-                });
-                if (data.controllers) {
-                    data.controllers.forEach(c => items.push({ ...c, category: 'controller', wh: 'led' }));
-                }
-                if (data.accessories) {
-                    data.accessories.forEach(a => items.push({ ...a, category: 'accessory', wh: 'led' }));
-                }
-            }
-            // Append Mock Other Departments
-            items = items.concat(getMockOtherDepartments().map(i => ({...i, wh: 'led'})));
-        } else if (currentWarehouse === 'marketing') {
-            items = getMockMarketing().map(i => ({...i, wh: 'marketing'}));
-        }
-        
-        return items;
-    }
-
-    function initSubMenu() {
-        // Handle menu card clicks
-        document.querySelectorAll('#stock-menu-grid .menu-card').forEach(card => {
-            card.addEventListener('click', (e) => {
-                const target = e.currentTarget;
-                const tabId = target.getAttribute('data-tab');
-                
-                // Hide menu grid
-                document.getElementById('stock-menu-grid').style.display = 'none';
-                
-                // Show back button and specific content
-                document.getElementById('stock-section-toolbar').style.display = 'block';
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                document.getElementById(`tab-${tabId}`).classList.add('active');
-
-                // Refresh specific tab data if needed
-                if (tabId === 'executive') renderExecutiveOverview();
-                if (tabId === 'overview') renderOverview();
-                if (tabId === 'erp') renderErp();
-                if (tabId === 'receive' || tabId === 'reserve') populateDropdowns();
-            });
-        });
-
-        // Handle back button click
-        document.getElementById('btn-back-to-menu').addEventListener('click', () => {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById('stock-section-toolbar').style.display = 'none';
-            // Show menu grid again
-            document.getElementById('stock-menu-grid').style.display = 'grid'; // .menu-grid uses CSS Grid
-        });
-    }
-
-    function formatMoney(amount) {
-        return new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', maximumFractionDigits: 0 }).format(amount);
-    }
-
-    function renderExecutiveOverview() {
-        const items = getAllItems(masterDataCache);
-        
-        let totalVal = 0;
-        let availVal = 0;
-        let deadVal = 0;
-        let totalErpDiff = 0;
-        let totalErpItems = 0;
-
-        const deptMap = {
-            'led': { name: 'จอ LED', sku: 0, qty: 0, val: 0, deadVal: 0 },
-            'controller': { name: 'LED (Controller)', sku: 0, qty: 0, val: 0, deadVal: 0 },
-            'accessory': { name: 'LED (Accessories)', sku: 0, qty: 0, val: 0, deadVal: 0 },
-            'audio': { name: 'ระบบเสียง (Audio)', sku: 0, qty: 0, val: 0, deadVal: 0 },
-            'projector': { name: 'โปรเจคเตอร์ (Projector)', sku: 0, qty: 0, val: 0, deadVal: 0 },
-            'interactive': { name: 'จอสัมผัส (Interactive)', sku: 0, qty: 0, val: 0, deadVal: 0 },
-            'it': { name: 'ไอที/เน็ตเวิร์ก (IT)', sku: 0, qty: 0, val: 0, deadVal: 0 },
-            'marketing': { name: 'สินค้า Marketing', sku: 0, qty: 0, val: 0, deadVal: 0 }
-        };
-
-        items.forEach(item => {
-            const stock = stockData[item.id] || { total: 0, reserved: 0, erp: 0, lastMovement: Date.now() };
-            const price = item.price || 0;
-            const available = stock.total - stock.reserved;
-            
-            const itemTotalVal = stock.total * price;
-            const itemAvailVal = available * price;
-
-            const daysSinceMovement = Math.floor((Date.now() - stock.lastMovement) / (1000 * 60 * 60 * 24));
-            const isDead = stock.total > 0 && daysSinceMovement > 90;
-            const itemDeadVal = isDead ? itemTotalVal : 0;
-
-            totalVal += itemTotalVal;
-            availVal += itemAvailVal;
-            deadVal += itemDeadVal;
-
-            if (stock.total !== stock.erp) totalErpDiff++;
-            if (stock.total > 0 || stock.erp > 0) totalErpItems++;
-
-            if (deptMap[item.category]) {
-                deptMap[item.category].sku += 1;
-                deptMap[item.category].qty += stock.total;
-                deptMap[item.category].val += itemTotalVal;
-                deptMap[item.category].deadVal += itemDeadVal;
-            }
-        });
-
-        const deadPct = totalVal > 0 ? ((deadVal / totalVal) * 100).toFixed(1) : 0;
-        const erpAcc = totalErpItems > 0 ? (((totalErpItems - totalErpDiff) / totalErpItems) * 100).toFixed(1) : 100;
-
-        document.getElementById('kpi-total-val').textContent = formatMoney(totalVal);
-        document.getElementById('kpi-avail-val').textContent = formatMoney(availVal);
-        document.getElementById('kpi-dead-val').textContent = formatMoney(deadVal);
-        document.getElementById('kpi-dead-pct').textContent = `คิดเป็น ${deadPct}% ของทั้งหมด`;
-        
-        const erpEl = document.getElementById('kpi-erp-acc');
-        erpEl.textContent = `${erpAcc}%`;
-        erpEl.style.color = erpAcc < 90 ? '#ef4444' : (erpAcc < 98 ? '#f59e0b' : '#3b82f6');
-
-        // Render Table
-        const tbody = document.getElementById('exec-dept-tbody');
-        tbody.innerHTML = '';
-
-        Object.values(deptMap).forEach(dept => {
-            if (dept.sku === 0) return;
-            const pct = totalVal > 0 ? ((dept.val / totalVal) * 100).toFixed(1) : 0;
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>${dept.name}</strong></td>
-                <td>${dept.sku}</td>
-                <td>${dept.qty}</td>
-                <td style="font-weight:bold; color:var(--primary);">${formatMoney(dept.val)}</td>
-                <td style="color:${dept.deadVal > 0 ? '#ef4444' : 'inherit'}">${formatMoney(dept.deadVal)}</td>
-                <td style="min-width: 120px;">
-                    <div style="display:flex; justify-content:space-between; font-size:0.85em;">
-                        <span>${pct}%</span>
-                    </div>
-                    <div class="bar-chart-container">
-                        <div class="bar-chart-fill" style="width: ${pct}%;"></div>
-                    </div>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    function renderOverview() {
-        const tbody = document.getElementById('overview-tbody');
-        const filter = document.getElementById('overview-category-filter').value;
-        tbody.innerHTML = '';
-
-        const items = getAllItems(masterDataCache);
-        
-        items.forEach(item => {
-            if (filter !== 'all' && item.category !== filter) return;
-
-            const stock = stockData[item.id] || { total: 0, reserved: 0, lastMovement: Date.now() };
-            const available = stock.total - stock.reserved;
-            
-            // Dead stock logic (e.g. no movement for > 90 days and has stock)
-            const daysSinceMovement = Math.floor((Date.now() - stock.lastMovement) / (1000 * 60 * 60 * 24));
-            let deadStockBadge = '<span class="badge badge-success">เคลื่อนไหวปกติ</span>';
-            if (stock.total > 0 && daysSinceMovement > 90) {
-                deadStockBadge = `<span class="badge badge-danger">Dead Stock (${daysSinceMovement} วัน)</span>`;
-            } else if (stock.total === 0) {
-                deadStockBadge = '<span class="badge badge-secondary">ของหมด</span>';
-            }
-
-            const deptMap = {
-                'led': { name: 'LED (จอ)' },
-                'controller': { name: 'LED (Controller)' },
-                'accessory': { name: 'LED (Accessories)' },
-                'audio': { name: 'ระบบเสียง (Audio)' },
-                'projector': { name: 'โปรเจคเตอร์ (Projector)' },
-                'interactive': { name: 'จอสัมผัส (Interactive)' },
-                'it': { name: 'ไอที/เน็ตเวิร์ก (IT)' },
-                'marketing': { name: 'สินค้า Marketing' }
-            };
-
-            let catLabel = deptMap[item.category] ? deptMap[item.category].name : item.category;
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>${item.name}</strong></td>
-                <td>${catLabel}</td>
-                <td style="font-weight:bold; color:var(--primary);">${stock.total}</td>
-                <td style="color:#f59e0b;">${stock.reserved}</td>
-                <td style="font-weight:bold; color:#10b981;">${available}</td>
-                <td>${deadStockBadge}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    function renderErp() {
-        const tbody = document.getElementById('erp-tbody');
-        tbody.innerHTML = '';
-        const items = getAllItems(masterDataCache);
-
-        items.forEach(item => {
-            const stock = stockData[item.id] || { total: 0, erp: 0 };
-            const diff = stock.total - stock.erp;
-            
-            let statusBadge = '<span class="badge badge-success">ตรงกัน (Match)</span>';
-            if (diff > 0) {
-                statusBadge = '<span class="badge badge-warning">ระบบเรามากกว่า ERP</span>';
-            } else if (diff < 0) {
-                statusBadge = '<span class="badge badge-danger">ระบบเราน้อยกว่า ERP</span>';
-            }
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>${item.name}</strong></td>
-                <td>${stock.total}</td>
-                <td>${stock.erp}</td>
-                <td style="font-weight:bold; color:${diff === 0 ? 'inherit' : (diff > 0 ? '#f59e0b' : '#ef4444')}">${diff > 0 ? '+'+diff : diff}</td>
-                <td>${statusBadge}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    function populateDropdowns() {
-        const items = getAllItems(masterDataCache);
-        const rcvSelect = document.getElementById('receive-item-select');
-        const rsvSelect = document.getElementById('reserve-item-select');
-        
-        let options = '<option value="">-- เลือกสินค้า --</option>';
-        items.forEach(item => {
-            options += `<option value="${item.id}">${item.name} (${item.category})</option>`;
-        });
-
-        rcvSelect.innerHTML = options;
-        rsvSelect.innerHTML = options;
-    }
-
-    function setupActions() {
-        // Warehouse Selection Grid (Step 1)
-        document.querySelectorAll('.wh-giant-card').forEach(card => {
-            card.addEventListener('click', (e) => {
-                const target = e.currentTarget;
-                currentWarehouse = target.getAttribute('data-wh');
-                
-                // Set titles based on selection
-                const titleText = currentWarehouse === 'led' ? 'คลังสินค้า LED & AV' : 'คลังสินค้า Marketing';
-                document.getElementById('current-wh-title').textContent = `จัดการสต๊อก: ${titleText}`;
-                
-                // Hide selection screen, show action menu
-                document.getElementById('warehouse-selection-screen').style.display = 'none';
-                document.getElementById('stock-actions-screen').style.display = 'block';
-                
-                // Ensure tab contents are hidden and menu grid is shown
-                document.getElementById('stock-menu-grid').style.display = 'grid';
-                document.getElementById('stock-section-toolbar').style.display = 'none';
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-
-                // Filter the main overview dropdown based on warehouse
-                const filterSel = document.getElementById('overview-category-filter');
-                if (currentWarehouse === 'marketing') {
-                    filterSel.innerHTML = '<option value="all">ทุกหมวดหมู่ (Marketing)</option>';
-                } else {
-                    filterSel.innerHTML = `
-                      <option value="all">ทุกหมวดหมู่</option>
-                      <option value="led">LED (จอ)</option>
-                      <option value="controller">LED (Controller)</option>
-                      <option value="accessory">LED (Accessories)</option>
-                      <option value="audio">ระบบเสียง (Audio)</option>
-                      <option value="projector">โปรเจคเตอร์ (Projector)</option>
-                      <option value="interactive">จอสัมผัส (Interactive)</option>
-                      <option value="it">ไอที/เน็ตเวิร์ก (IT)</option>
-                    `;
-                }
-
-                // Make sure we update dropdowns
-                populateDropdowns();
-            });
-        });
-
-        // Back to Warehouse Selection (From Step 2)
-        document.getElementById('btn-back-to-wh').addEventListener('click', () => {
-            document.getElementById('stock-actions-screen').style.display = 'none';
-            document.getElementById('warehouse-selection-screen').style.display = 'block';
-        });
-
-        document.getElementById('overview-category-filter').addEventListener('change', renderOverview);
-
-        // Receive Submit
-        document.getElementById('btn-receive-submit').addEventListener('click', () => {
-            const itemId = document.getElementById('receive-item-select').value;
-            const qty = parseInt(document.getElementById('receive-qty').value, 10);
-            
-            if (!itemId || isNaN(qty) || qty <= 0) {
-                App.showToast('กรุณาเลือกสินค้าและระบุจำนวนที่ถูกต้อง');
-                return;
-            }
-
-            stockData[itemId].total += qty;
-            stockData[itemId].lastMovement = Date.now();
-            saveMockStockData();
-
-            App.showToast('รับเข้าสินค้าสำเร็จ!');
-            document.getElementById('receive-qty').value = '';
-            document.getElementById('receive-note').value = '';
-        });
-
-        // Reserve Change Hint
-        document.getElementById('reserve-item-select').addEventListener('change', (e) => {
-            const itemId = e.target.value;
-            const hint = document.getElementById('reserve-available-hint');
-            if (itemId && stockData[itemId]) {
-                const available = stockData[itemId].total - stockData[itemId].reserved;
-                hint.textContent = `พร้อมขาย: ${available}`;
-                hint.style.color = available > 0 ? '#10b981' : '#ef4444';
-            } else {
-                hint.textContent = 'พร้อมขาย: 0';
-                hint.style.color = 'var(--muted)';
-            }
-        });
-
-        // Reserve Submit
-        document.getElementById('btn-reserve-submit').addEventListener('click', () => {
-            const itemId = document.getElementById('reserve-item-select').value;
-            const qty = parseInt(document.getElementById('reserve-qty').value, 10);
-            
-            if (!itemId || isNaN(qty) || qty <= 0) {
-                App.showToast('กรุณาเลือกสินค้าและระบุจำนวนที่ถูกต้อง');
-                return;
-            }
-
-            const available = stockData[itemId].total - stockData[itemId].reserved;
-            if (qty > available) {
-                App.showToast(`ไม่สามารถจองได้! สินค้าพร้อมขายมีเพียง ${available}`);
-                return;
-            }
-
-            stockData[itemId].reserved += qty;
-            stockData[itemId].lastMovement = Date.now();
-            saveMockStockData();
-
-            App.showToast('บันทึกการจองสำเร็จ!');
-            document.getElementById('reserve-qty').value = '';
-            document.getElementById('reserve-note').value = '';
-            
-            // Trigger change event to update hint
-            document.getElementById('reserve-item-select').dispatchEvent(new Event('change'));
-        });
-
-        // Mock ERP Sync
-        document.getElementById('btn-sync-erp').addEventListener('click', () => {
-            App.showToast('กำลังซิงค์จำลองกับ ERP...');
-            setTimeout(() => {
-                // Randomly mess up some ERP numbers to show diffs
-                const keys = Object.keys(stockData);
-                keys.forEach(k => {
-                    if (Math.random() > 0.7) {
-                        const shift = Math.floor(Math.random() * 5) - 2; // -2 to +2
-                        stockData[k].erp = Math.max(0, stockData[k].erp + shift);
-                    } else {
-                        // Some match exactly
-                        stockData[k].erp = stockData[k].total;
-                    }
-                });
-                saveMockStockData();
-                renderErp();
-                App.showToast('ดึงข้อมูล ERP จำลองสำเร็จ!');
-            }, 800);
-        });
-    }
-
-    async function init() {
-        await App.checkAuth();
-        App.renderWelcomeBanner();
-        document.getElementById('logout-btn')?.addEventListener('click', App.logout);
-        document.getElementById('theme-toggle')?.addEventListener('click', App.toggleTheme);
-
-        await loadMockStockData();
-        initSubMenu();
-        setupActions();
-        
-        // Removed default rendering of tabs on load to keep them fresh when clicked
-        populateDropdowns();
-    }
-
-    document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('DOMContentLoaded', init);
 })();
