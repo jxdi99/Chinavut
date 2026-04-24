@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สินค้า LED - RAZR LED Portal</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/led-products.css">
+</head>
+
+<body>
+
+  <div class="topbar">
+    <div class="brand">
+      <h1 style="font-size: 1.2rem; margin: 0;">💡 สินค้า LED</h1>
+    </div>
+    <div class="toolbar">
+      <a href="dashboard.html" class="btn btn-secondary">← กลับหน้าหลัก</a>
+      <button class="btn btn-secondary" id="theme-toggle">ธีม: สว่าง</button>
+      <button class="btn btn-danger" id="logout-btn">ออกจากระบบ</button>
+    </div>
+  </div>
+
+  <div class="led-container page-fade-in">
+
+    <!-- ═══ Sub-menu (default view) ═══ -->
+    <div id="led-main-menu">
+      <div class="section-header" style="margin-bottom: 24px;">
+        <h2>เลือกเมนูที่ต้องการ</h2>
+      </div>
+      <div class="sub-menu-grid">
+        <div class="sub-menu-card" data-target="section-receive" id="btn-receive">
+          <div class="sub-menu-icon">📥</div>
+          <div class="sub-menu-title">รับเข้าสินค้า</div>
+          <div class="sub-menu-desc">บันทึกรับสินค้า LED เข้าสต๊อก พร้อมระบุรุ่น, จำนวน และ Lot Number</div>
+        </div>
+        <div class="sub-menu-card" data-target="section-stock" id="btn-stock">
+          <div class="sub-menu-icon">📋</div>
+          <div class="sub-menu-title">นับสต๊อก</div>
+          <div class="sub-menu-desc">ดูรายการสต๊อกสินค้า LED ทั้งหมด สรุปยอดคงเหลือแต่ละรุ่น</div>
+        </div>
+        <div class="sub-menu-card" data-target="section-manage" id="btn-manage">
+          <div class="sub-menu-icon">⚙️</div>
+          <div class="sub-menu-title">จัดการสินค้า LED</div>
+          <div class="sub-menu-desc">เพิ่ม/ลบ/แก้ไข รายการสินค้า LED ในระบบ และดูประวัติการรับเข้า</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Section 1: รับเข้าสินค้า ═══ -->
+    <div class="led-section" id="section-receive">
+      <div class="section-header">
+        <h2>📥 รับเข้าสินค้า</h2>
+        <button class="back-link" id="back-from-receive">← กลับเมนู</button>
+      </div>
+
+      <div class="card">
+        <div class="receive-form">
+          <div class="field">
+            <label>รุ่นสินค้า (Model)</label>
+            <select id="receive-model">
+              <option value="">-- เลือกรุ่น --</option>
+              <option value="UIRx">UIRx</option>
+              <option value="UOS">UOS</option>
+              <option value="CIH">CIH</option>
+            </select>
+          </div>
+          <div class="receive-row">
+            <div class="field">
+              <label>จำนวน</label>
+              <input type="number" id="receive-qty" placeholder="เช่น 2.5" step="0.1" min="0">
+            </div>
+            <div class="field">
+              <label>Lot Number</label>
+              <input type="text" id="receive-lot" placeholder="เช่น APM2F2622" style="text-transform: uppercase;">
+            </div>
+          </div>
+          <div class="field">
+            <label>หมายเหตุ (ถ้ามี)</label>
+            <textarea id="receive-notes" rows="2" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 8px;">
+            <button class="btn btn-primary" id="receive-submit" style="flex: 1;">📥 บันทึกรับเข้า</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Entries -->
+      <div style="margin-top: 24px;">
+        <h3 style="margin-bottom: 14px; color: var(--primary);">📝 รายการรับเข้าล่าสุด</h3>
+        <div id="recent-receive-list">
+          <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <div class="empty-state-text">ยังไม่มีรายการรับเข้า</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Section 2: นับสต๊อก ═══ -->
+    <div class="led-section" id="section-stock">
+      <div class="section-header">
+        <h2>📋 นับสต๊อก</h2>
+        <button class="back-link" id="back-from-stock">← กลับเมนู</button>
+      </div>
+
+      <!-- Stats Overview -->
+      <div class="stats-row" id="stock-stats">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-total-qty">0</div>
+          <div class="stat-label">จำนวนรวมทั้งหมด</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-total-lots">0</div>
+          <div class="stat-label">จำนวน Lot</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-total-models">0</div>
+          <div class="stat-label">จำนวนรุ่น</div>
+        </div>
+      </div>
+
+      <!-- Search & Filter -->
+      <div class="search-bar">
+        <input type="text" id="stock-search" placeholder="🔍 ค้นหาตาม Lot Number หรือรุ่น...">
+        <select id="stock-filter-model">
+          <option value="">ทุกรุ่น</option>
+          <option value="UIRx">UIRx</option>
+          <option value="UOS">UOS</option>
+          <option value="CIH">CIH</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <div class="inventory-table-wrap">
+          <table class="inventory-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>รุ่น</th>
+                <th>จำนวน</th>
+                <th>Lot Number</th>
+                <th>วันที่รับเข้า</th>
+                <th>ผู้รับเข้า</th>
+                <th>หมายเหตุ</th>
+              </tr>
+            </thead>
+            <tbody id="stock-table-body">
+              <tr>
+                <td colspan="7" style="text-align: center; padding: 40px; color: var(--muted);">
+                  กำลังโหลดข้อมูล...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Section 3: จัดการสินค้า LED ═══ -->
+    <div class="led-section" id="section-manage">
+      <div class="section-header">
+        <h2>⚙️ จัดการสินค้า LED</h2>
+        <button class="back-link" id="back-from-manage">← กลับเมนู</button>
+      </div>
+
+      <!-- Search & Filter -->
+      <div class="search-bar">
+        <input type="text" id="manage-search" placeholder="🔍 ค้นหาตาม Lot Number หรือรุ่น...">
+        <select id="manage-filter-model">
+          <option value="">ทุกรุ่น</option>
+          <option value="UIRx">UIRx</option>
+          <option value="UOS">UOS</option>
+          <option value="CIH">CIH</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <div class="inventory-table-wrap">
+          <table class="inventory-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>รุ่น</th>
+                <th>จำนวน</th>
+                <th>Lot Number</th>
+                <th>วันที่รับเข้า</th>
+                <th>ผู้รับเข้า</th>
+                <th>หมายเหตุ</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="manage-table-body">
+              <tr>
+                <td colspan="8" style="text-align: center; padding: 40px; color: var(--muted);">
+                  กำลังโหลดข้อมูล...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script type="module" src="js/shared.js"></script>
+  <script type="module" src="js/led-products.js"></script>
+</body>
+
+</html>
