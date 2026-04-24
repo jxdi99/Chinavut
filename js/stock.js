@@ -315,14 +315,25 @@ import { MasterDataAPI } from '../src/api/client.js';
     }
 
     function setupActions() {
-        // Warehouse Selector
-        document.querySelectorAll('.warehouse-card').forEach(card => {
+        // Warehouse Selection Grid (Step 1)
+        document.querySelectorAll('.wh-giant-card').forEach(card => {
             card.addEventListener('click', (e) => {
-                document.querySelectorAll('.warehouse-card').forEach(c => c.classList.remove('active'));
                 const target = e.currentTarget;
-                target.classList.add('active');
                 currentWarehouse = target.getAttribute('data-wh');
                 
+                // Set titles based on selection
+                const titleText = currentWarehouse === 'led' ? 'คลังสินค้า LED & AV' : 'คลังสินค้า Marketing';
+                document.getElementById('current-wh-title').textContent = `จัดการสต๊อก: ${titleText}`;
+                
+                // Hide selection screen, show action menu
+                document.getElementById('warehouse-selection-screen').style.display = 'none';
+                document.getElementById('stock-actions-screen').style.display = 'block';
+                
+                // Ensure tab contents are hidden and menu grid is shown
+                document.getElementById('stock-menu-grid').style.display = 'grid';
+                document.getElementById('stock-section-toolbar').style.display = 'none';
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
                 // Filter the main overview dropdown based on warehouse
                 const filterSel = document.getElementById('overview-category-filter');
                 if (currentWarehouse === 'marketing') {
@@ -342,15 +353,13 @@ import { MasterDataAPI } from '../src/api/client.js';
 
                 // Make sure we update dropdowns
                 populateDropdowns();
-                
-                // If a tab is currently active, re-render it
-                document.querySelectorAll('.tab-content.active').forEach(tab => {
-                    const id = tab.id.replace('tab-', '');
-                    if (id === 'executive') renderExecutiveOverview();
-                    if (id === 'overview') renderOverview();
-                    if (id === 'erp') renderErp();
-                });
             });
+        });
+
+        // Back to Warehouse Selection (From Step 2)
+        document.getElementById('btn-back-to-wh').addEventListener('click', () => {
+            document.getElementById('stock-actions-screen').style.display = 'none';
+            document.getElementById('warehouse-selection-screen').style.display = 'block';
         });
 
         document.getElementById('overview-category-filter').addEventListener('change', renderOverview);

@@ -1,57 +1,68 @@
 /* css/stock.css */
 
-/* Premium Warehouse Toggle (Segmented Control) */
-.warehouse-selector {
-  display: flex;
-  background: var(--surface-hover);
-  padding: 6px;
-  border-radius: 50px;
+/* Giant Warehouse Selection Cards */
+.warehouse-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  max-width: 900px;
   margin: 0 auto 40px auto;
-  width: fit-content;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.warehouse-card {
-  padding: 12px 30px;
-  border-radius: 40px;
+.wh-giant-card {
+  background: linear-gradient(145deg, var(--surface), var(--surface-hover));
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 40px 30px;
   cursor: pointer;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
-  font-weight: 600;
-  font-size: 1.05em;
-  color: var(--muted);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  background: transparent;
-  border: none;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+  position: relative;
+  overflow: hidden;
 }
 
-.warehouse-card:hover:not(.active) {
+.wh-giant-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 6px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-2));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+
+.wh-giant-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 40px -15px rgba(37, 99, 235, 0.25);
+  border-color: var(--primary);
+  background: var(--surface);
+}
+
+.wh-giant-card:hover::after {
+  transform: scaleX(1);
+}
+
+.wh-giant-card .wh-icon {
+  font-size: 5rem;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+}
+
+.wh-giant-card .wh-title {
+  font-size: 1.8rem;
+  font-weight: 800;
   color: var(--text);
-  background: rgba(255, 255, 255, 0.1);
+  margin-bottom: 15px;
 }
 
-.warehouse-card.active {
-  background: linear-gradient(135deg, var(--primary), var(--primary-2));
-  color: #fff;
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
-}
-
-.wh-icon {
-  font-size: 1.4em;
-  line-height: 1;
-}
-
-.wh-title {
-  margin: 0;
-}
-
-.wh-desc {
-  display: none; /* Hide for sleekness */
-}
-
-.divider {
-  display: none; /* Removed for cleaner look */
+.wh-giant-card .wh-desc {
+  font-size: 1.05rem;
+  color: var(--muted);
+  line-height: 1.5;
 }
 
 /* Rest of the CSS remains the same */

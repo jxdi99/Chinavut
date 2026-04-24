@@ -26,54 +26,63 @@
 
   <div class="container page-fade-in" style="margin-top: 80px; max-width: 1200px;">
     
-    <!-- Warehouse Selector -->
-    <div class="warehouse-selector" id="warehouse-selector">
-      <div class="warehouse-card active" data-wh="led">
-        <div class="wh-icon">🖥️</div>
-        <div class="wh-title">คลังสินค้าหลัก (LED & AV)</div>
-        <div class="wh-desc">จอ LED, ระบบเสียง, โปรเจคเตอร์</div>
-      </div>
-      <div class="warehouse-card" data-wh="marketing">
-        <div class="wh-icon">🎁</div>
-        <div class="wh-title">คลังสินค้า Marketing</div>
-        <div class="wh-desc">ของที่ระลึก, เสื้อ, สินค้าส่งเสริมการขาย</div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-    
-    <!-- Sub-Dashboard Navigation -->
-    <div class="menu-grid" id="stock-menu-grid">
-      <div class="menu-card" data-tab="executive" style="cursor:pointer;">
-        <div class="menu-icon">🏢</div>
-        <div class="menu-title">ภาพรวมผู้บริหาร</div>
-        <div class="menu-desc">ดูมูลค่าสต๊อกรวม, Dead Stock และสรุปยอดทุกแผนก</div>
-      </div>
-      <div class="menu-card" data-tab="overview" style="cursor:pointer;">
-        <div class="menu-icon">📊</div>
-        <div class="menu-title">สต๊อกรายตัว (Detail)</div>
-        <div class="menu-desc">ตรวจสอบจำนวนสินค้าแต่ละรายการแบบละเอียด</div>
-      </div>
-      <div class="menu-card" data-tab="receive" style="cursor:pointer;">
-        <div class="menu-icon">📥</div>
-        <div class="menu-title">รับเข้าสินค้า</div>
-        <div class="menu-desc">บันทึกการรับของเข้าคลังสินค้าเพิ่มสต๊อก</div>
-      </div>
-      <div class="menu-card" data-tab="reserve" style="cursor:pointer;">
-        <div class="menu-icon">🔖</div>
-        <div class="menu-title">จองสินค้า</div>
-        <div class="menu-desc">ตัดสต๊อกล่วงหน้าสำหรับโปรเจคที่เตรียมส่งมอบ</div>
-      </div>
-      <div class="menu-card" data-tab="erp" style="cursor:pointer;">
-        <div class="menu-icon">🔄</div>
-        <div class="menu-title">เทียบระบบบัญชี ERP</div>
-        <div class="menu-desc">เปรียบเทียบยอดสต๊อกหน้าเว็บกับระบบบัญชีหลังบ้าน</div>
+    <!-- Step 1: Warehouse Selection Screen -->
+    <div id="warehouse-selection-screen">
+      <h2 style="text-align: center; margin-bottom: 30px; color: var(--primary);">โปรดเลือกคลังสินค้าที่ต้องการจัดการ</h2>
+      <div class="warehouse-grid">
+        <div class="wh-giant-card" data-wh="led">
+          <div class="wh-icon">🖥️</div>
+          <div class="wh-title">คลังสินค้า LED & AV</div>
+          <div class="wh-desc">จัดการสต๊อกจอ LED, Controller, อุปกรณ์ภาพและเสียง</div>
+        </div>
+        <div class="wh-giant-card" data-wh="marketing">
+          <div class="wh-icon">🎁</div>
+          <div class="wh-title">คลังสินค้า Marketing</div>
+          <div class="wh-desc">จัดการสต๊อกของที่ระลึก, โบรชัวร์, เสื้อ, สื่อส่งเสริมการขาย</div>
+        </div>
       </div>
     </div>
 
-    <!-- Actions Toolbar (Visible inside a section) -->
+    <!-- Step 2: Stock Actions Menu -->
+    <div id="stock-actions-screen" style="display:none;">
+      <div class="header-row" style="margin-bottom: 20px;">
+        <h2 id="current-wh-title" style="margin: 0; color: var(--primary); font-size: 1.4rem;">จัดการสต๊อก</h2>
+        <button class="btn btn-secondary" id="btn-back-to-wh">🔙 เปลี่ยนคลังสินค้า</button>
+      </div>
+
+      <!-- Sub-Dashboard Navigation -->
+      <div class="menu-grid" id="stock-menu-grid">
+        <div class="menu-card" data-tab="executive" style="cursor:pointer;">
+          <div class="menu-icon">🏢</div>
+          <div class="menu-title">ภาพรวมผู้บริหาร</div>
+          <div class="menu-desc">ดูมูลค่าสต๊อกรวม, Dead Stock และสรุปยอดทั้งหมด</div>
+        </div>
+        <div class="menu-card" data-tab="overview" style="cursor:pointer;">
+          <div class="menu-icon">📊</div>
+          <div class="menu-title">สต๊อกรายตัว (Detail)</div>
+          <div class="menu-desc">ตรวจสอบจำนวนสินค้าแต่ละรายการแบบละเอียด</div>
+        </div>
+        <div class="menu-card" data-tab="receive" style="cursor:pointer;">
+          <div class="menu-icon">📥</div>
+          <div class="menu-title">รับเข้าสินค้า</div>
+          <div class="menu-desc">บันทึกการรับของเข้าคลังสินค้าเพิ่มสต๊อก</div>
+        </div>
+        <div class="menu-card" data-tab="reserve" style="cursor:pointer;">
+          <div class="menu-icon">🔖</div>
+          <div class="menu-title">จองสินค้า</div>
+          <div class="menu-desc">ตัดสต๊อกล่วงหน้าสำหรับโปรเจคที่เตรียมส่งมอบ</div>
+        </div>
+        <div class="menu-card" data-tab="erp" style="cursor:pointer;">
+          <div class="menu-icon">🔄</div>
+          <div class="menu-title">เทียบระบบบัญชี ERP</div>
+          <div class="menu-desc">เปรียบเทียบยอดสต๊อกหน้าเว็บกับระบบบัญชีหลังบ้าน</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions Toolbar (Visible inside a specific action section) -->
     <div id="stock-section-toolbar" style="display:none; margin-bottom: 20px;">
-      <button class="btn btn-secondary" id="btn-back-to-menu">🔙 กลับไปเมนูสต๊อก</button>
+      <button class="btn btn-secondary" id="btn-back-to-menu">🔙 กลับไปเมนูทำรายการ</button>
     </div>
 
     <!-- Tab 0: Executive Overview -->
