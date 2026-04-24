@@ -46,20 +46,44 @@ import { MasterDataAPI } from '../src/api/client.js';
         localStorage.setItem('mockStockData', JSON.stringify(stockData));
     }
 
+    function getMockOtherDepartments() {
+        return [
+            // Audio System
+            { id: 'm-audio-1', name: 'RAZR Ceiling Speaker 10W', price: 1200, category: 'audio' },
+            { id: 'm-audio-2', name: 'RAZR Wireless Mic Dual', price: 8500, category: 'audio' },
+            { id: 'm-audio-3', name: 'Digital DSP Mixer 8-Ch', price: 15000, category: 'audio' },
+            // Projector
+            { id: 'm-proj-1', name: 'RAZR Laser Projector 6000lm', price: 45000, category: 'projector' },
+            { id: 'm-proj-2', name: 'RAZR Short Throw 4000lm', price: 32000, category: 'projector' },
+            // Interactive Board
+            { id: 'm-int-1', name: 'RAZR i-Board 65"', price: 55000, category: 'interactive' },
+            { id: 'm-int-2', name: 'RAZR i-Board 86"', price: 95000, category: 'interactive' },
+            // IT / Network
+            { id: 'm-it-1', name: 'Cisco Switch 24-Port PoE', price: 18000, category: 'it' },
+            { id: 'm-it-2', name: 'WiFi 6 Access Point', price: 6500, category: 'it' },
+            { id: 'm-it-3', name: 'Video Conference Cam PTZ', price: 22000, category: 'it' }
+        ];
+    }
+
     function getAllItems(data) {
-        if (!data) return [];
         let items = [];
-        ['UIR', 'UOS', 'CIH'].forEach(group => {
-            if (data[group] && data[group].items) {
-                data[group].items.forEach(i => items.push({ ...i, category: 'led' }));
+        if (data) {
+            ['UIR', 'UOS', 'CIH'].forEach(group => {
+                if (data[group] && data[group].items) {
+                    data[group].items.forEach(i => items.push({ ...i, category: 'led' }));
+                }
+            });
+            if (data.controllers) {
+                data.controllers.forEach(c => items.push({ ...c, category: 'controller' }));
             }
-        });
-        if (data.controllers) {
-            data.controllers.forEach(c => items.push({ ...c, category: 'controller' }));
+            if (data.accessories) {
+                data.accessories.forEach(a => items.push({ ...a, category: 'accessory' }));
+            }
         }
-        if (data.accessories) {
-            data.accessories.forEach(a => items.push({ ...a, category: 'accessory' }));
-        }
+        
+        // Append Mock Other Departments
+        items = items.concat(getMockOtherDepartments());
+        
         return items;
     }
 
@@ -75,10 +99,100 @@ import { MasterDataAPI } from '../src/api/client.js';
                 document.getElementById(`tab-${tabId}`).classList.add('active');
 
                 // Refresh specific tab data if needed
+                if (tabId === 'executive') renderExecutiveOverview();
                 if (tabId === 'overview') renderOverview();
                 if (tabId === 'erp') renderErp();
                 if (tabId === 'receive' || tabId === 'reserve') populateDropdowns();
             });
+        });
+    }
+
+    function formatMoney(amount) {
+        return new Intl.NumberFormat('th-TH', { style: 'currency', currency: 'THB', maximumFractionDigits: 0 }).format(amount);
+    }
+
+    function renderExecutiveOverview() {
+        const items = getAllItems(masterDataCache);
+        
+        let totalVal = 0;
+        let availVal = 0;
+        let deadVal = 0;
+        let totalErpDiff = 0;
+        let totalErpItems = 0;
+
+        const deptMap = {
+            'led': { name: 'จอ LED', sku: 0, qty: 0, val: 0, deadVal: 0 },
+            'controller': { name: 'LED (Controller)', sku: 0, qty: 0, val: 0, deadVal: 0 },
+            'accessory': { name: 'LED (Accessories)', sku: 0, qty: 0, val: 0, deadVal: 0 },
+            'audio': { name: 'ระบบเสียง (Audio)', sku: 0, qty: 0, val: 0, deadVal: 0 },
+            'projector': { name: 'โปรเจคเตอร์ (Projector)', sku: 0, qty: 0, val: 0, deadVal: 0 },
+            'interactive': { name: 'จอสัมผัส (Interactive)', sku: 0, qty: 0, val: 0, deadVal: 0 },
+            'it': { name: 'ไอที/เน็ตเวิร์ก (IT)', sku: 0, qty: 0, val: 0, deadVal: 0 }
+        };
+
+        items.forEach(item => {
+            const stock = stockData[item.id] || { total: 0, reserved: 0, erp: 0, lastMovement: Date.now() };
+            const price = item.price || 0;
+            const available = stock.total - stock.reserved;
+            
+            const itemTotalVal = stock.total * price;
+            const itemAvailVal = available * price;
+
+            const daysSinceMovement = Math.floor((Date.now() - stock.lastMovement) / (1000 * 60 * 60 * 24));
+            const isDead = stock.total > 0 && daysSinceMovement > 90;
+            const itemDeadVal = isDead ? itemTotalVal : 0;
+
+            totalVal += itemTotalVal;
+            availVal += itemAvailVal;
+            deadVal += itemDeadVal;
+
+            if (stock.total !== stock.erp) totalErpDiff++;
+            if (stock.total > 0 || stock.erp > 0) totalErpItems++;
+
+            if (deptMap[item.category]) {
+                deptMap[item.category].sku += 1;
+                deptMap[item.category].qty += stock.total;
+                deptMap[item.category].val += itemTotalVal;
+                deptMap[item.category].deadVal += itemDeadVal;
+            }
+        });
+
+        const deadPct = totalVal > 0 ? ((deadVal / totalVal) * 100).toFixed(1) : 0;
+        const erpAcc = totalErpItems > 0 ? (((totalErpItems - totalErpDiff) / totalErpItems) * 100).toFixed(1) : 100;
+
+        document.getElementById('kpi-total-val').textContent = formatMoney(totalVal);
+        document.getElementById('kpi-avail-val').textContent = formatMoney(availVal);
+        document.getElementById('kpi-dead-val').textContent = formatMoney(deadVal);
+        document.getElementById('kpi-dead-pct').textContent = `คิดเป็น ${deadPct}% ของทั้งหมด`;
+        
+        const erpEl = document.getElementById('kpi-erp-acc');
+        erpEl.textContent = `${erpAcc}%`;
+        erpEl.style.color = erpAcc < 90 ? '#ef4444' : (erpAcc < 98 ? '#f59e0b' : '#3b82f6');
+
+        // Render Table
+        const tbody = document.getElementById('exec-dept-tbody');
+        tbody.innerHTML = '';
+
+        Object.values(deptMap).forEach(dept => {
+            if (dept.sku === 0) return;
+            const pct = totalVal > 0 ? ((dept.val / totalVal) * 100).toFixed(1) : 0;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${dept.name}</strong></td>
+                <td>${dept.sku}</td>
+                <td>${dept.qty}</td>
+                <td style="font-weight:bold; color:var(--primary);">${formatMoney(dept.val)}</td>
+                <td style="color:${dept.deadVal > 0 ? '#ef4444' : 'inherit'}">${formatMoney(dept.deadVal)}</td>
+                <td style="min-width: 120px;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.85em;">
+                        <span>${pct}%</span>
+                    </div>
+                    <div class="bar-chart-container">
+                        <div class="bar-chart-fill" style="width: ${pct}%;"></div>
+                    </div>
+                </td>
+            `;
+            tbody.appendChild(tr);
         });
     }
 
@@ -104,7 +218,17 @@ import { MasterDataAPI } from '../src/api/client.js';
                 deadStockBadge = '<span class="badge badge-secondary">ของหมด</span>';
             }
 
-            let catLabel = item.category === 'led' ? 'จอ LED' : (item.category === 'controller' ? 'Controller' : 'Accessory');
+            const deptMap = {
+                'led': { name: 'LED (จอ)' },
+                'controller': { name: 'LED (Controller)' },
+                'accessory': { name: 'LED (Accessories)' },
+                'audio': { name: 'ระบบเสียง (Audio)' },
+                'projector': { name: 'โปรเจคเตอร์ (Projector)' },
+                'interactive': { name: 'จอสัมผัส (Interactive)' },
+                'it': { name: 'ไอที/เน็ตเวิร์ก (IT)' }
+            };
+
+            let catLabel = deptMap[item.category] ? deptMap[item.category].name : item.category;
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -257,6 +381,7 @@ import { MasterDataAPI } from '../src/api/client.js';
         initTabs();
         setupActions();
         
+        renderExecutiveOverview();
         renderOverview();
         populateDropdowns();
     }

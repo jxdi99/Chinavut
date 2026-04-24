@@ -28,23 +28,80 @@
     
     <!-- Tab Navigation -->
     <div class="tabs">
-      <button class="tab-btn active" data-tab="overview">📊 ภาพรวมสต๊อก (Overview)</button>
+      <button class="tab-btn active" data-tab="executive">🏢 ภาพรวมผู้บริหาร (Executive)</button>
+      <button class="tab-btn" data-tab="overview">📊 ภาพรวมสต๊อกรายตัว (Detail)</button>
       <button class="tab-btn" data-tab="receive">📥 รับเข้า (Receive)</button>
       <button class="tab-btn" data-tab="reserve">🔖 จองสินค้า (Reserve)</button>
       <button class="tab-btn" data-tab="erp">🔄 เทียบ ERP (Compare)</button>
     </div>
 
+    <!-- Tab 0: Executive Overview -->
+    <div class="tab-content active" id="tab-executive">
+      
+      <!-- KPI Grid -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-title">มูลค่าสต๊อกรวมทั้งหมด</div>
+          <div class="kpi-value" id="kpi-total-val">฿0</div>
+          <div class="kpi-subtitle text-muted">รวมทุกแผนก (Total Inventory)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title">มูลค่าสต๊อกพร้อมขาย</div>
+          <div class="kpi-value" id="kpi-avail-val" style="color: #10b981;">฿0</div>
+          <div class="kpi-subtitle text-muted">หักยอดจองแล้ว (Available)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title">มูลค่า Dead Stock</div>
+          <div class="kpi-value" id="kpi-dead-val" style="color: #ef4444;">฿0</div>
+          <div class="kpi-subtitle text-muted" id="kpi-dead-pct">คิดเป็น 0% ของทั้งหมด</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-title">ความแม่นยำเทียบ ERP</div>
+          <div class="kpi-value" id="kpi-erp-acc" style="color: #3b82f6;">100%</div>
+          <div class="kpi-subtitle text-muted">ยอดตรงกัน (ERP Accuracy)</div>
+        </div>
+      </div>
+
+      <!-- Department Breakdown -->
+      <div class="card mt-4">
+        <div class="header-row">
+          <h2>มูลค่าสต๊อกแยกตามกลุ่มสินค้า (Department/Category)</h2>
+        </div>
+        <div class="table-responsive mt-3">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>กลุ่มสินค้า (Department)</th>
+                <th>จำนวนรายการ (SKU)</th>
+                <th>จำนวนชิ้นรวม</th>
+                <th>มูลค่ารวม (บาท)</th>
+                <th>มูลค่า Dead Stock</th>
+                <th>สัดส่วนมูลค่า</th>
+              </tr>
+            </thead>
+            <tbody id="exec-dept-tbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- Tab 1: Overview -->
-    <div class="tab-content active" id="tab-overview">
+    <div class="tab-content" id="tab-overview">
       <div class="card">
         <div class="header-row">
           <h2>สถานะสต๊อกสินค้าทั้งหมด</h2>
           <div class="filters">
             <select id="overview-category-filter" class="form-control">
               <option value="all">ทุกหมวดหมู่</option>
-              <option value="led">จอ LED</option>
-              <option value="controller">Controller</option>
-              <option value="accessory">Accessories</option>
+              <option value="led">LED (จอ)</option>
+              <option value="controller">LED (Controller)</option>
+              <option value="accessory">LED (Accessories)</option>
+              <option value="audio">ระบบเสียง (Audio)</option>
+              <option value="projector">โปรเจคเตอร์ (Projector)</option>
+              <option value="interactive">จอสัมผัส (Interactive)</option>
+              <option value="it">ไอที/เน็ตเวิร์ก (IT)</option>
             </select>
           </div>
         </div>
