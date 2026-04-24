@@ -1,1 +1,0 @@
-import"./modulepreload-polyfill-EeOZK34R.js";/* empty css               */import"./storage-CwudRZlo.js";import"./shared-CgUcDUEp.js";(async function(){await App.checkAuth();let e=document.getElementById(`lang-toggle`);e&&e.addEventListener(`click`,App.handleLangClick);let t=document.getElementById(`logout-btn`);t&&t.addEventListener(`click`,App.logout)})();

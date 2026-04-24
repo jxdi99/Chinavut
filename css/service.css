@@ -1,0 +1,155 @@
+.container {
+    max-width: 1200px;
+    margin: 24px auto;
+    padding: 0 20px;
+}
+
+.service-layout {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 30px;
+}
+
+@media (max-width: 900px) {
+    .service-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.service-form .field {
+    margin-bottom: 16px;
+}
+
+.service-form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.service-form input,
+.service-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 1rem;
+    background: var(--card);
+    color: var(--text);
+    transition: border-color 0.2s;
+}
+
+.service-form input:focus,
+.service-form textarea:focus {
+    border-color: var(--primary);
+    outline: none;
+}
+
+.service-form textarea {
+    resize: vertical;
+}
+
+.service-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.job-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow);
+}
+
+.job-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.job-info {
+    flex: 1;
+}
+
+.job-subject {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: var(--text);
+}
+
+.job-meta {
+    font-size: 0.85rem;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 12px;
+}
+
+.job-detail {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text);
+    background: color-mix(in srgb, var(--bg) 60%, transparent);
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.job-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    margin-left: 20px;
+}
+
+.status-badge {
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-completed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.btn-complete {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-complete:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    background: var(--card);
+    border-radius: 14px;
+    border: 2px dashed var(--border);
+}

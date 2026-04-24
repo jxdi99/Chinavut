@@ -13,6 +13,7 @@ export default defineConfig({
         detail: resolve(__dirname, 'detail.html'),
         resetPassword: resolve(__dirname, 'reset-password.html'),
         ledProducts: resolve(__dirname, 'led-products.html'),
+        service: resolve(__dirname, 'service.html'),
       },
     },
   },

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แจ้งงานซ่อม/ติดตั้ง - RAZR LED Portal</title>
+  <script type="module" crossorigin src="/calculator_LED/assets/service-BzV_ywLq.js"></script>
+  <link rel="modulepreload" crossorigin href="/calculator_LED/assets/client-fN6McSnU.js">
+  <link rel="modulepreload" crossorigin href="/calculator_LED/assets/modulepreload-polyfill-iJ-6Fn-a.js">
+  <link rel="modulepreload" crossorigin href="/calculator_LED/assets/shared-uvIJ2Joy.js">
+  <link rel="stylesheet" crossorigin href="/calculator_LED/assets/service-0IqAL-S1.css">
+  <link rel="stylesheet" crossorigin href="/calculator_LED/assets/styles-DIc31TLr.css">
+</head>
+
+<body>
+
+    <div class="topbar">
+        <div class="brand">
+            <h1 style="font-size: 1.2rem; margin: 0;">🛠️ แจ้งงานซ่อม/ติดตั้ง</h1>
+        </div>
+        <div class="toolbar">
+            <a href="dashboard.html" class="btn btn-secondary">← กลับหน้าหลัก</a>
+            <button class="btn btn-secondary" id="theme-toggle">ธีม: สว่าง</button>
+            <button class="btn btn-danger" id="logout-btn">ออกจากระบบ</button>
+        </div>
+    </div>
+
+    <div class="container page-fade-in">
+        <div class="service-layout">
+            <!-- Left: Request Form -->
+            <div class="form-section">
+                <div class="card">
+                    <h3 style="margin-top: 0; color: var(--primary);">➕ สร้างใบแจ้งงานใหม่</h3>
+                    <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 20px;">กรอกรายละเอียดเพื่อให้ทีมช่างเข้าดำเนินการ</p>
+
+                    <div class="service-form">
+                        <div class="field">
+                            <label>หัวข้อแจ้งงาน</label>
+                            <input type="text" id="service-subject" placeholder="เช่น ซ่อมจอ LED ชั้น 3 หรือ ติดตั้งจอใหม่">
+                        </div>
+                        <div class="field">
+                            <label>แผนกที่แจ้ง</label>
+                            <input type="text" id="service-dept" placeholder="เช่น แผนกขาย, แผนกบัญชี">
+                        </div>
+                        <div class="field">
+                            <label>รายละเอียดงาน</label>
+                            <textarea id="service-detail" rows="4"
+                                placeholder="ระบุรายละเอียดปัญหา หรือความต้องการเพิ่มเติม..."></textarea>
+                        </div>
+                        <button class="btn btn-primary" id="service-submit" style="width: 100%; margin-top: 10px;">📤
+                            ส่งข้อมูลแจ้งงาน</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Job List -->
+            <div class="list-section">
+                <div class="section-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="margin: 0; color: var(--primary);">📋 รายการแจ้งงานทั้งหมด</h3>
+                    <div class="filters">
+                        <select id="filter-status" style="padding: 8px; border-radius: 8px; border: 1px solid var(--border);">
+                            <option value="all">ทั้งหมด</option>
+                            <option value="รอดำเนินการ">รอดำเนินการ</option>
+                            <option value="เสร็จสิ้น">เสร็จสิ้น</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="service-list" class="service-list">
+                    <!-- Loaded by JS -->
+                    <div class="loading" style="text-align: center; padding: 40px; color: var(--muted);">กำลังโหลดข้อมูล...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/storage.js"></script>
+</body>
+
+</html>
