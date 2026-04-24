@@ -29,8 +29,14 @@
             
             <div class="field" style="margin-bottom: 14px; text-align: left;">
                 <label style="display: block; margin-bottom: 6px; font-weight: 700;">รหัสผ่าน (Password)</label>
-                <input type="password" id="password" placeholder="รหัสผ่านของคุณ"
-                    style="width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 12px;">
+                <div style="position: relative;">
+                    <input type="password" id="password" placeholder="รหัสผ่านของคุณ"
+                        style="width: 100%; padding: 11px 40px 11px 12px; border: 1px solid var(--border); border-radius: 12px;">
+                    <button type="button" id="toggle-password"
+                        style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; font-size: 1.2em; color: var(--muted); padding: 4px;">
+                        👁️
+                    </button>
+                </div>
             </div>
 
             <div style="text-align: right; margin-bottom: 10px;">

@@ -27,9 +27,41 @@ import { StaffAPI } from '../src/api/client.js';
             }
         });
 
+        // Toggle password visibility
+        document.getElementById('toggle-password').addEventListener('click', () => {
+            const pwInput = document.getElementById('password');
+            const btn = document.getElementById('toggle-password');
+            if (pwInput.type === 'password') {
+                pwInput.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                pwInput.type = 'password';
+                btn.textContent = '👁️';
+            }
+        });
+
+        // Forgot password via email
         document.getElementById('forgot-password').addEventListener('click', async (e) => {
             e.preventDefault();
-            App.showToast('กรุณาติดต่อแอดมินเพื่อรีเซ็ตรหัสผ่าน');
+            const username = input.value.trim();
+            if (!username) {
+                App.showToast('กรุณากรอก Username ก่อน แล้วกดลืมรหัสผ่าน');
+                input.focus();
+                return;
+            }
+            const staff = await StaffAPI.getByUsername(username);
+            if (!staff) {
+                App.showToast('ไม่พบ Username นี้ในระบบ');
+                return;
+            }
+            if (!staff.email) {
+                App.showToast('บัญชีนี้ยังไม่มีอีเมล กรุณาติดต่อแอดมิน');
+                return;
+            }
+            // Mask email: show first 2 chars + *** + @domain
+            const [localPart, domain] = staff.email.split('@');
+            const masked = localPart.substring(0, 2) + '***@' + domain;
+            App.showToast(`รหัสผ่านถูกส่งไปที่ ${masked} แล้ว`);
         });
 
         async function handleLogin() {
