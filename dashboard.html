@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,9 @@
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/dashboard.css">
 </head>
+
 <body>
-  
+
   <div class="topbar">
     <div class="brand">
       <h1 style="font-size: 1.2rem; margin: 0;">RAZR LED Portal</h1>
@@ -24,7 +26,8 @@
       <div class="dashboard-welcome">
         <h1>ยินดีต้อนรับ, <span id="user-name-display">ผู้ใช้งาน</span></h1>
         <div style="color: var(--muted); margin-top: 8px;">
-          ตำแหน่ง: <span id="user-dept-display">-</span> | สิทธิ์ใช้งาน: <span id="user-role-display" class="dashboard-role-badge">Sale</span>
+          แผนก: <span id="user-role-display" class="dashboard-role-badge">Sale</span> | ตำแหน่ง: <span
+            id="user-dept-display">-</span>
         </div>
       </div>
     </div>
@@ -52,21 +55,24 @@
       </a>
 
       <!-- Stock Management (Coming Soon - Dev/Admin/Store only) -->
-      <a href="#" class="menu-card role-restricted" data-allowed="admin,dev,store" id="menu-stock" onclick="alert('ระบบจัดการสต๊อกสินค้า อยู่ระหว่างการพัฒนา'); return false;">
+      <a href="#" class="menu-card role-restricted" data-allowed="admin,dev,store" id="menu-stock"
+        onclick="alert('ระบบจัดการสต๊อกสินค้า อยู่ระหว่างการพัฒนา'); return false;">
         <div class="menu-icon">📦</div>
         <div class="menu-title">จัดการสต๊อก (Stock)</div>
         <div class="menu-desc">ตรวจสอบและจัดการสต๊อกสินค้า LED (Coming Soon)</div>
       </a>
 
       <!-- Job Request (Coming Soon - Dev/Admin only) -->
-      <a href="#" class="menu-card role-restricted" data-allowed="admin,dev" id="menu-job" onclick="alert('ระบบแจ้งงานซ่อม/ติดตั้ง อยู่ระหว่างการพัฒนา'); return false;">
+      <a href="#" class="menu-card role-restricted" data-allowed="admin,dev" id="menu-job"
+        onclick="alert('ระบบแจ้งงานซ่อม/ติดตั้ง อยู่ระหว่างการพัฒนา'); return false;">
         <div class="menu-icon">🛠️</div>
         <div class="menu-title">แจ้งงานซ่อม/ติดตั้ง</div>
         <div class="menu-desc">ระบบออกใบแจ้งงานสำหรับช่างและทีมติดตั้ง (Coming Soon)</div>
       </a>
-      
+
       <!-- Manage Staff (Coming Soon - Dev/Admin only) -->
-      <a href="#" class="menu-card role-restricted" data-allowed="admin,dev" id="menu-staff" onclick="alert('ระบบจัดการพนักงาน อยู่ระหว่างการพัฒนา'); return false;">
+      <a href="#" class="menu-card role-restricted" data-allowed="admin,dev" id="menu-staff"
+        onclick="alert('ระบบจัดการพนักงาน อยู่ระหว่างการพัฒนา'); return false;">
         <div class="menu-icon">👥</div>
         <div class="menu-title">จัดการพนักงาน</div>
         <div class="menu-desc">จัดการสิทธิ์ (Role), แผนก และรายชื่อพนักงานในระบบ (Coming Soon)</div>
@@ -79,4 +85,5 @@
   <script type="module" src="js/shared.js"></script>
   <script src="js/dashboard.js"></script>
 </body>
+
 </html>
