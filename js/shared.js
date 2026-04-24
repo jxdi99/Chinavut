@@ -144,6 +144,7 @@ import { MasterDataAPI } from "../src/api/client.js";
       return;
     if (window.location.pathname.includes("/backend")) return;
     if (window.location.pathname.toLowerCase().includes("/public")) return;
+    if (window.location.pathname.includes("reset-password")) return;
     
     const state = await AppStorage.loadState();
     if (!state.currentUser) {
