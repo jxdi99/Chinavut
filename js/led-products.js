@@ -45,8 +45,8 @@ import { supabase } from '../src/api/client.js';
     }
 
     // ── Insert item to DB ──
-    async function insertItem(lot, location, cabinet, module, status, notes) {
-        const { error } = await supabase.from('led_inventory').insert({
+    async function insertItem(lot, location, cabinet, module, status, notes, model, pixel, spare_module, date_entered, source) {
+        const payload = {
             lot_number: lot,
             location: location || null,
             cabinet: cabinet || 0,
@@ -55,25 +55,36 @@ import { supabase } from '../src/api/client.js';
             notes: notes || null,
             received_by: currentUser?.fullName || currentUser?.name || 'ไม่ทราบ',
             created_at: new Date().toISOString()
-        });
+        };
+
+        if (model !== undefined) payload.model = model;
+        if (pixel !== undefined) payload.pixel = pixel;
+        if (spare_module !== undefined) payload.spare_module = spare_module;
+        if (date_entered !== undefined) payload.date_entered = date_entered;
+        if (source !== undefined) payload.source = source;
+
+        const { error } = await supabase.from('led_inventory').insert(payload);
         return error;
     }
 
     // ── SECTION: รับเข้า ──
     async function handleReceive() {
+        const model = document.getElementById('receive-model').value.trim();
+        const pixel = document.getElementById('receive-pixel').value.trim();
         const lot = document.getElementById('receive-lot').value.trim();
         const location = document.getElementById('receive-location').value.trim();
         const cabinet = parseInt(document.getElementById('receive-cabinet').value) || 0;
         const module = parseInt(document.getElementById('receive-module').value) || 0;
+        const spare = parseInt(document.getElementById('receive-spare').value) || 0;
+        const date_entered = document.getElementById('receive-date').value || null;
+        const source = document.getElementById('receive-source').value.trim();
         const status = document.getElementById('receive-status').value;
         const notes = document.getElementById('receive-notes').value.trim();
 
-        if (!lot) { App.showToast('กรุณากรอก Lot'); return; }
-        if (!location) { App.showToast('กรุณากรอก Location'); return; }
-        if (cabinet === 0 && module === 0) { App.showToast('กรุณากรอก Cabinet หรือ Module'); return; }
+        if (!lot) { App.showToast('กรุณากรอก Lot เต็ม'); return; }
 
         App.showToast('กำลังบันทึก...');
-        const error = await insertItem(lot, location, cabinet, module, status, notes);
+        const error = await insertItem(lot, location, cabinet, module, status, notes, model, pixel, spare, date_entered, source);
 
         if (error) {
             console.error('Insert error:', error);
@@ -84,12 +95,17 @@ import { supabase } from '../src/api/client.js';
         App.showToast(`✅ บันทึก Lot ${lot} สำเร็จ!`);
 
         // Clear form
+        document.getElementById('receive-model').value = '';
+        document.getElementById('receive-pixel').value = '';
         document.getElementById('receive-lot').value = '';
         document.getElementById('receive-cabinet').value = '';
         document.getElementById('receive-module').value = '';
+        document.getElementById('receive-spare').value = '';
+        document.getElementById('receive-date').value = '';
+        document.getElementById('receive-source').value = '';
         document.getElementById('receive-notes').value = '';
         document.getElementById('receive-status').value = 'ดี';
-        document.getElementById('receive-lot').focus();
+        document.getElementById('receive-model').focus();
 
         loadRecentReceive();
     }
@@ -301,6 +317,16 @@ import { supabase } from '../src/api/client.js';
 
         // Receive form submit
         document.getElementById('receive-submit').addEventListener('click', handleReceive);
+
+        // Auto calculate module from cabinet
+        document.getElementById('receive-cabinet').addEventListener('input', (e) => {
+            const val = parseInt(e.target.value) || 0;
+            if (val > 0) {
+                document.getElementById('receive-module').value = val * 6;
+            } else {
+                document.getElementById('receive-module').value = '';
+            }
+        });
 
         // Enter key on receive form
         document.getElementById('receive-module').addEventListener('keydown', (e) => {

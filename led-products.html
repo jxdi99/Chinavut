@@ -59,22 +59,44 @@
         <div class="receive-form">
           <div class="receive-row">
             <div class="field">
-              <label>Lot</label>
-              <input type="text" id="receive-lot" placeholder="เช่น 0478" autofocus>
+              <label>รุ่น (Model)</label>
+              <input type="text" id="receive-model" placeholder="เช่น UIRx" autofocus>
             </div>
             <div class="field">
-              <label>Location</label>
-              <input type="text" id="receive-location" placeholder="เช่น คลัง หรือ ชั้น 2 ห้อง LED">
+              <label>Pixel</label>
+              <input type="text" id="receive-pixel" placeholder="เช่น 2.5">
+            </div>
+            <div class="field">
+              <label>Lot เต็ม</label>
+              <input type="text" id="receive-lot" placeholder="เช่น APM2F5559">
             </div>
           </div>
           <div class="receive-row">
+            <div class="field">
+              <label>Location (สถานที่เก็บ)</label>
+              <input type="text" id="receive-location" placeholder="เช่น คลัง หรือ ชั้น 2">
+            </div>
             <div class="field">
               <label>Cabinet (ตู้)</label>
               <input type="number" id="receive-cabinet" placeholder="จำนวนตู้" min="0">
             </div>
             <div class="field">
-              <label>Module</label>
+              <label>Module (คำนวณออโต้)</label>
               <input type="number" id="receive-module" placeholder="จำนวน Module" min="0">
+            </div>
+          </div>
+          <div class="receive-row">
+            <div class="field">
+              <label>Module สำรอง</label>
+              <input type="number" id="receive-spare" placeholder="จำนวน Module สำรอง" min="0">
+            </div>
+            <div class="field">
+              <label>เข้าเมื่อไหร่ (วันที่)</label>
+              <input type="date" id="receive-date">
+            </div>
+            <div class="field">
+              <label>เข้าจากที่ไหน</label>
+              <input type="text" id="receive-source" placeholder="เช่น โรงงานจีน">
             </div>
           </div>
           <div class="receive-row">
