@@ -33,12 +33,12 @@
         <div class="sub-menu-card" data-target="section-receive" id="btn-receive">
           <div class="sub-menu-icon">📥</div>
           <div class="sub-menu-title">รับเข้าสินค้า</div>
-          <div class="sub-menu-desc">บันทึกรับสินค้า LED เข้าสต๊อก พร้อมระบุรุ่น, จำนวน และ Lot Number</div>
+          <div class="sub-menu-desc">บันทึกรับสินค้า LED เข้าสต๊อก พร้อมระบุ Lot, Location, Cabinet, Module</div>
         </div>
         <div class="sub-menu-card" data-target="section-stock" id="btn-stock">
           <div class="sub-menu-icon">📋</div>
           <div class="sub-menu-title">นับสต๊อก</div>
-          <div class="sub-menu-desc">ดูรายการสต๊อกสินค้า LED ทั้งหมด สรุปยอดคงเหลือแต่ละรุ่น</div>
+          <div class="sub-menu-desc">ดูรายการสต๊อกสินค้า LED ทั้งหมด สรุปยอดคงเหลือ พร้อมเพิ่มรายการได้ทันที</div>
         </div>
         <div class="sub-menu-card" data-target="section-manage" id="btn-manage">
           <div class="sub-menu-icon">⚙️</div>
@@ -57,28 +57,29 @@
 
       <div class="card">
         <div class="receive-form">
-          <div class="field">
-            <label>รุ่นสินค้า (Model)</label>
-            <select id="receive-model">
-              <option value="">-- เลือกรุ่น --</option>
-              <option value="UIRx">UIRx</option>
-              <option value="UOS">UOS</option>
-              <option value="CIH">CIH</option>
-            </select>
+          <div class="receive-row">
+            <div class="field">
+              <label>Lot</label>
+              <input type="text" id="receive-lot" placeholder="เช่น 0478" autofocus>
+            </div>
+            <div class="field">
+              <label>Location</label>
+              <select id="receive-location">
+                <option value="">-- เลือก --</option>
+                <option value="ชั้น 2 ห้อง LED">ชั้น 2 ห้อง LED</option>
+                <option value="คลัง">คลัง</option>
+              </select>
+            </div>
           </div>
           <div class="receive-row">
             <div class="field">
-              <label>จำนวน</label>
-              <input type="number" id="receive-qty" placeholder="เช่น 2.5" step="0.1" min="0">
+              <label>Cabinet (ตู้)</label>
+              <input type="number" id="receive-cabinet" placeholder="จำนวนตู้" min="0">
             </div>
             <div class="field">
-              <label>Lot Number</label>
-              <input type="text" id="receive-lot" placeholder="เช่น APM2F2622" style="text-transform: uppercase;">
+              <label>Module</label>
+              <input type="number" id="receive-module" placeholder="จำนวน Module" min="0">
             </div>
-          </div>
-          <div class="field">
-            <label>หมายเหตุ (ถ้ามี)</label>
-            <textarea id="receive-notes" rows="2" placeholder="รายละเอียดเพิ่มเติม..."></textarea>
           </div>
           <div style="display: flex; gap: 10px; margin-top: 8px;">
             <button class="btn btn-primary" id="receive-submit" style="flex: 1;">📥 บันทึกรับเข้า</button>
@@ -108,46 +109,48 @@
       <!-- Stats Overview -->
       <div class="stats-row" id="stock-stats">
         <div class="stat-card">
-          <div class="stat-value" id="stat-total-qty">0</div>
-          <div class="stat-label">จำนวนรวมทั้งหมด</div>
-        </div>
-        <div class="stat-card">
           <div class="stat-value" id="stat-total-lots">0</div>
           <div class="stat-label">จำนวน Lot</div>
         </div>
         <div class="stat-card">
-          <div class="stat-value" id="stat-total-models">0</div>
-          <div class="stat-label">จำนวนรุ่น</div>
+          <div class="stat-value" id="stat-total-cabinet">0</div>
+          <div class="stat-label">Cabinet รวม</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-total-module">0</div>
+          <div class="stat-label">Module รวม</div>
         </div>
       </div>
 
       <!-- Quick Add -->
       <div class="card" style="margin-bottom: 20px; border: 2px dashed color-mix(in srgb, var(--primary) 30%, var(--border));">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-          <h3 style="margin: 0; color: var(--primary); font-size: 1rem;">➕ เพิ่มรายการเข้าสต๊อก</h3>
+          <h3 style="margin: 0; color: var(--primary); font-size: 1rem;">➕ เพิ่มรายการ</h3>
         </div>
         <div class="receive-form">
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1.5fr; gap: 10px; align-items: end;">
+          <div style="display: grid; grid-template-columns: 1fr 1.2fr 0.8fr 0.8fr; gap: 10px; align-items: end;">
             <div class="field" style="margin-bottom: 0;">
-              <label style="font-size: 0.85rem;">รุ่น</label>
-              <select id="stock-add-model" style="padding: 9px 10px;">
-                <option value="">-- รุ่น --</option>
-                <option value="UIRx">UIRx</option>
-                <option value="UOS">UOS</option>
-                <option value="CIH">CIH</option>
+              <label style="font-size: 0.85rem;">Lot</label>
+              <input type="text" id="stock-add-lot" placeholder="0478" style="padding: 9px 10px;">
+            </div>
+            <div class="field" style="margin-bottom: 0;">
+              <label style="font-size: 0.85rem;">Location</label>
+              <select id="stock-add-location" style="padding: 9px 10px;">
+                <option value="">-- เลือก --</option>
+                <option value="ชั้น 2 ห้อง LED">ชั้น 2 ห้อง LED</option>
+                <option value="คลัง">คลัง</option>
               </select>
             </div>
             <div class="field" style="margin-bottom: 0;">
-              <label style="font-size: 0.85rem;">จำนวน</label>
-              <input type="number" id="stock-add-qty" placeholder="2.5" step="0.1" min="0" style="padding: 9px 10px;">
+              <label style="font-size: 0.85rem;">Cabinet</label>
+              <input type="number" id="stock-add-cabinet" placeholder="0" min="0" style="padding: 9px 10px;">
             </div>
             <div class="field" style="margin-bottom: 0;">
-              <label style="font-size: 0.85rem;">Lot Number</label>
-              <input type="text" id="stock-add-lot" placeholder="เช่น APM2F2622" style="padding: 9px 10px; text-transform: uppercase;">
+              <label style="font-size: 0.85rem;">Module</label>
+              <input type="number" id="stock-add-module" placeholder="0" min="0" style="padding: 9px 10px;">
             </div>
           </div>
-          <div style="display: flex; gap: 10px; margin-top: 10px;">
-            <input type="text" id="stock-add-notes" placeholder="หมายเหตุ (ถ้ามี)" style="flex: 1; padding: 9px 10px;">
+          <div style="display: flex; gap: 10px; margin-top: 10px; justify-content: flex-end;">
             <button class="btn btn-primary" id="stock-add-submit" style="white-space: nowrap;">📥 บันทึก</button>
           </div>
         </div>
@@ -155,12 +158,11 @@
 
       <!-- Search & Filter -->
       <div class="search-bar">
-        <input type="text" id="stock-search" placeholder="🔍 ค้นหาตาม Lot Number หรือรุ่น...">
-        <select id="stock-filter-model">
-          <option value="">ทุกรุ่น</option>
-          <option value="UIRx">UIRx</option>
-          <option value="UOS">UOS</option>
-          <option value="CIH">CIH</option>
+        <input type="text" id="stock-search" placeholder="🔍 ค้นหาตาม Lot หรือ Location...">
+        <select id="stock-filter-location">
+          <option value="">ทุก Location</option>
+          <option value="ชั้น 2 ห้อง LED">ชั้น 2 ห้อง LED</option>
+          <option value="คลัง">คลัง</option>
         </select>
       </div>
 
@@ -170,12 +172,12 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>รุ่น</th>
-                <th>จำนวน</th>
-                <th>Lot Number</th>
-                <th>วันที่รับเข้า</th>
-                <th>ผู้รับเข้า</th>
-                <th>หมายเหตุ</th>
+                <th>Lot</th>
+                <th>Location</th>
+                <th>Cabinet</th>
+                <th>Module</th>
+                <th>วันที่บันทึก</th>
+                <th>ผู้บันทึก</th>
               </tr>
             </thead>
             <tbody id="stock-table-body">
@@ -199,12 +201,11 @@
 
       <!-- Search & Filter -->
       <div class="search-bar">
-        <input type="text" id="manage-search" placeholder="🔍 ค้นหาตาม Lot Number หรือรุ่น...">
-        <select id="manage-filter-model">
-          <option value="">ทุกรุ่น</option>
-          <option value="UIRx">UIRx</option>
-          <option value="UOS">UOS</option>
-          <option value="CIH">CIH</option>
+        <input type="text" id="manage-search" placeholder="🔍 ค้นหาตาม Lot หรือ Location...">
+        <select id="manage-filter-location">
+          <option value="">ทุก Location</option>
+          <option value="ชั้น 2 ห้อง LED">ชั้น 2 ห้อง LED</option>
+          <option value="คลัง">คลัง</option>
         </select>
       </div>
 
@@ -214,12 +215,12 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>รุ่น</th>
-                <th>จำนวน</th>
-                <th>Lot Number</th>
-                <th>วันที่รับเข้า</th>
-                <th>ผู้รับเข้า</th>
-                <th>หมายเหตุ</th>
+                <th>Lot</th>
+                <th>Location</th>
+                <th>Cabinet</th>
+                <th>Module</th>
+                <th>วันที่บันทึก</th>
+                <th>ผู้บันทึก</th>
                 <th>จัดการ</th>
               </tr>
             </thead>

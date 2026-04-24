@@ -26,7 +26,7 @@ import { supabase } from '../src/api/client.js';
         const { data, error } = await supabase
             .from('led_inventory')
             .select('*')
-            .order('received_at', { ascending: false });
+            .order('created_at', { ascending: false });
         if (error) {
             console.error('Fetch inventory error:', error);
             return [];
@@ -44,27 +44,32 @@ import { supabase } from '../src/api/client.js';
         });
     }
 
+    // ── Insert item to DB ──
+    async function insertItem(lot, location, cabinet, module) {
+        const { error } = await supabase.from('led_inventory').insert({
+            lot_number: lot,
+            location: location || null,
+            cabinet: cabinet || 0,
+            module: module || 0,
+            received_by: currentUser?.name || 'ไม่ทราบ',
+            created_at: new Date().toISOString()
+        });
+        return error;
+    }
+
     // ── SECTION: รับเข้า ──
     async function handleReceive() {
-        const model = document.getElementById('receive-model').value;
-        const qty = parseFloat(document.getElementById('receive-qty').value);
-        const lot = document.getElementById('receive-lot').value.trim().toUpperCase();
-        const notes = document.getElementById('receive-notes').value.trim();
+        const lot = document.getElementById('receive-lot').value.trim();
+        const location = document.getElementById('receive-location').value;
+        const cabinet = parseInt(document.getElementById('receive-cabinet').value) || 0;
+        const module = parseInt(document.getElementById('receive-module').value) || 0;
 
-        if (!model) { App.showToast('กรุณาเลือกรุ่นสินค้า'); return; }
-        if (!qty || qty <= 0) { App.showToast('กรุณากรอกจำนวนที่ถูกต้อง'); return; }
-        if (!lot) { App.showToast('กรุณากรอก Lot Number'); return; }
+        if (!lot) { App.showToast('กรุณากรอก Lot'); return; }
+        if (!location) { App.showToast('กรุณาเลือก Location'); return; }
+        if (cabinet === 0 && module === 0) { App.showToast('กรุณากรอก Cabinet หรือ Module'); return; }
 
         App.showToast('กำลังบันทึก...');
-
-        const { error } = await supabase.from('led_inventory').insert({
-            model: model,
-            quantity: qty,
-            lot_number: lot,
-            notes: notes || null,
-            received_by: currentUser?.name || 'ไม่ทราบ',
-            received_at: new Date().toISOString()
-        });
+        const error = await insertItem(lot, location, cabinet, module);
 
         if (error) {
             console.error('Insert error:', error);
@@ -72,13 +77,13 @@ import { supabase } from '../src/api/client.js';
             return;
         }
 
-        App.showToast(`✅ บันทึกรับเข้า ${model} x ${qty} lot ${lot} สำเร็จ!`);
+        App.showToast(`✅ บันทึก Lot ${lot} สำเร็จ!`);
 
         // Clear form
-        document.getElementById('receive-model').value = '';
-        document.getElementById('receive-qty').value = '';
         document.getElementById('receive-lot').value = '';
-        document.getElementById('receive-notes').value = '';
+        document.getElementById('receive-cabinet').value = '';
+        document.getElementById('receive-module').value = '';
+        document.getElementById('receive-lot').focus();
 
         loadRecentReceive();
     }
@@ -100,14 +105,15 @@ import { supabase } from '../src/api/client.js';
         container.innerHTML = recent.map(item => `
             <div class="recent-item">
                 <div class="recent-item-info">
-                    <div class="recent-item-model">${item.model} x ${item.quantity}</div>
+                    <div class="recent-item-model">Lot <span class="lot-badge">${item.lot_number}</span></div>
                     <div class="recent-item-detail">
-                        Lot: <span class="lot-badge">${item.lot_number}</span>
-                        ${item.notes ? ` · ${item.notes}` : ''}
+                        📍 ${item.location || '-'}
+                        ${item.cabinet ? ` · Cabinet: ${item.cabinet}` : ''}
+                        ${item.module ? ` · Module: ${item.module}` : ''}
                     </div>
                 </div>
                 <div class="recent-item-date">
-                    ${formatDate(item.received_at)}<br>
+                    ${formatDate(item.created_at)}<br>
                     <small>โดย ${item.received_by || '-'}</small>
                 </div>
             </div>
@@ -116,41 +122,30 @@ import { supabase } from '../src/api/client.js';
 
     // ── SECTION: นับสต๊อก - Quick Add ──
     async function handleStockQuickAdd() {
-        const model = document.getElementById('stock-add-model').value;
-        const qty = parseFloat(document.getElementById('stock-add-qty').value);
-        const lot = document.getElementById('stock-add-lot').value.trim().toUpperCase();
-        const notes = document.getElementById('stock-add-notes').value.trim();
+        const lot = document.getElementById('stock-add-lot').value.trim();
+        const location = document.getElementById('stock-add-location').value;
+        const cabinet = parseInt(document.getElementById('stock-add-cabinet').value) || 0;
+        const module = parseInt(document.getElementById('stock-add-module').value) || 0;
 
-        if (!model) { App.showToast('กรุณาเลือกรุ่นสินค้า'); return; }
-        if (!qty || qty <= 0) { App.showToast('กรุณากรอกจำนวน'); return; }
-        if (!lot) { App.showToast('กรุณากรอก Lot Number'); return; }
+        if (!lot) { App.showToast('กรุณากรอก Lot'); return; }
+        if (!location) { App.showToast('กรุณาเลือก Location'); return; }
+        if (cabinet === 0 && module === 0) { App.showToast('กรุณากรอก Cabinet หรือ Module'); return; }
 
         App.showToast('กำลังบันทึก...');
-
-        const { error } = await supabase.from('led_inventory').insert({
-            model: model,
-            quantity: qty,
-            lot_number: lot,
-            notes: notes || null,
-            received_by: currentUser?.name || 'ไม่ทราบ',
-            received_at: new Date().toISOString()
-        });
+        const error = await insertItem(lot, location, cabinet, module);
 
         if (error) {
-            console.error('Quick add error:', error);
             App.showToast('เกิดข้อผิดพลาด: ' + error.message);
             return;
         }
 
-        App.showToast(`✅ เพิ่ม ${model} x ${qty} lot ${lot} สำเร็จ!`);
+        App.showToast(`✅ เพิ่ม Lot ${lot} สำเร็จ!`);
 
-        // Clear form but keep model selection for speed
-        document.getElementById('stock-add-qty').value = '';
+        // Clear form but keep location for speed
         document.getElementById('stock-add-lot').value = '';
-        document.getElementById('stock-add-notes').value = '';
-
-        // Focus lot field for next item
-        document.getElementById('stock-add-qty').focus();
+        document.getElementById('stock-add-cabinet').value = '';
+        document.getElementById('stock-add-module').value = '';
+        document.getElementById('stock-add-lot').focus();
 
         // Reload table & stats
         await loadStockView();
@@ -164,24 +159,23 @@ import { supabase } from '../src/api/client.js';
     }
 
     function renderStockStats() {
-        const totalQty = allInventory.reduce((s, i) => s + (parseFloat(i.quantity) || 0), 0);
+        const totalCabinet = allInventory.reduce((s, i) => s + (parseInt(i.cabinet) || 0), 0);
+        const totalModule = allInventory.reduce((s, i) => s + (parseInt(i.module) || 0), 0);
         const uniqueLots = new Set(allInventory.map(i => i.lot_number)).size;
-        const uniqueModels = new Set(allInventory.map(i => i.model)).size;
 
-        document.getElementById('stat-total-qty').textContent = totalQty.toLocaleString('th-TH', { maximumFractionDigits: 1 });
         document.getElementById('stat-total-lots').textContent = uniqueLots;
-        document.getElementById('stat-total-models').textContent = uniqueModels;
+        document.getElementById('stat-total-cabinet').textContent = totalCabinet.toLocaleString('th-TH');
+        document.getElementById('stat-total-module').textContent = totalModule.toLocaleString('th-TH');
     }
 
-    function renderStockTable(filterModel = '', searchText = '') {
+    function renderStockTable(filterLocation = '', searchText = '') {
         let filtered = allInventory;
-        if (filterModel) filtered = filtered.filter(i => i.model === filterModel);
+        if (filterLocation) filtered = filtered.filter(i => i.location === filterLocation);
         if (searchText) {
             const q = searchText.toLowerCase();
             filtered = filtered.filter(i =>
                 (i.lot_number || '').toLowerCase().includes(q) ||
-                (i.model || '').toLowerCase().includes(q) ||
-                (i.notes || '').toLowerCase().includes(q)
+                (i.location || '').toLowerCase().includes(q)
             );
         }
 
@@ -194,12 +188,12 @@ import { supabase } from '../src/api/client.js';
         tbody.innerHTML = filtered.map((item, i) => `
             <tr>
                 <td>${i + 1}</td>
-                <td><strong>${item.model}</strong></td>
-                <td>${item.quantity}</td>
                 <td><span class="lot-badge">${item.lot_number}</span></td>
-                <td>${formatDate(item.received_at)}</td>
+                <td>${item.location || '-'}</td>
+                <td>${item.cabinet || '-'}</td>
+                <td>${item.module || '-'}</td>
+                <td>${formatDate(item.created_at)}</td>
                 <td>${item.received_by || '-'}</td>
-                <td>${item.notes || '-'}</td>
             </tr>
         `).join('');
     }
@@ -210,15 +204,14 @@ import { supabase } from '../src/api/client.js';
         renderManageTable();
     }
 
-    function renderManageTable(filterModel = '', searchText = '') {
+    function renderManageTable(filterLocation = '', searchText = '') {
         let filtered = allInventory;
-        if (filterModel) filtered = filtered.filter(i => i.model === filterModel);
+        if (filterLocation) filtered = filtered.filter(i => i.location === filterLocation);
         if (searchText) {
             const q = searchText.toLowerCase();
             filtered = filtered.filter(i =>
                 (i.lot_number || '').toLowerCase().includes(q) ||
-                (i.model || '').toLowerCase().includes(q) ||
-                (i.notes || '').toLowerCase().includes(q)
+                (i.location || '').toLowerCase().includes(q)
             );
         }
 
@@ -231,12 +224,12 @@ import { supabase } from '../src/api/client.js';
         tbody.innerHTML = filtered.map((item, i) => `
             <tr>
                 <td>${i + 1}</td>
-                <td><strong>${item.model}</strong></td>
-                <td>${item.quantity}</td>
                 <td><span class="lot-badge">${item.lot_number}</span></td>
-                <td>${formatDate(item.received_at)}</td>
+                <td>${item.location || '-'}</td>
+                <td>${item.cabinet || '-'}</td>
+                <td>${item.module || '-'}</td>
+                <td>${formatDate(item.created_at)}</td>
                 <td>${item.received_by || '-'}</td>
-                <td>${item.notes || '-'}</td>
                 <td><button class="btn-delete-sm" data-id="${item.id}">🗑️ ลบ</button></td>
             </tr>
         `).join('');
@@ -293,50 +286,42 @@ import { supabase } from '../src/api/client.js';
         // Receive form submit
         document.getElementById('receive-submit').addEventListener('click', handleReceive);
 
-        // Auto uppercase for lot number
-        document.getElementById('receive-lot').addEventListener('input', (e) => {
-            e.target.value = e.target.value.toUpperCase();
+        // Enter key on receive form
+        document.getElementById('receive-module').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('receive-submit').click();
         });
 
         // Stock quick-add form
         document.getElementById('stock-add-submit').addEventListener('click', handleStockQuickAdd);
-        document.getElementById('stock-add-lot').addEventListener('input', (e) => {
-            e.target.value = e.target.value.toUpperCase();
-        });
-        document.getElementById('stock-add-lot').addEventListener('keydown', (e) => {
+        document.getElementById('stock-add-module').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') document.getElementById('stock-add-submit').click();
         });
-        document.getElementById('stock-add-notes').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') document.getElementById('stock-add-submit').click();
+        document.getElementById('stock-add-cabinet').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('stock-add-module').focus();
         });
 
         // Stock search/filter
         document.getElementById('stock-search').addEventListener('input', () => {
             const search = document.getElementById('stock-search').value;
-            const model = document.getElementById('stock-filter-model').value;
-            renderStockTable(model, search);
+            const loc = document.getElementById('stock-filter-location').value;
+            renderStockTable(loc, search);
         });
-        document.getElementById('stock-filter-model').addEventListener('change', () => {
+        document.getElementById('stock-filter-location').addEventListener('change', () => {
             const search = document.getElementById('stock-search').value;
-            const model = document.getElementById('stock-filter-model').value;
-            renderStockTable(model, search);
+            const loc = document.getElementById('stock-filter-location').value;
+            renderStockTable(loc, search);
         });
 
         // Manage search/filter
         document.getElementById('manage-search').addEventListener('input', () => {
             const search = document.getElementById('manage-search').value;
-            const model = document.getElementById('manage-filter-model').value;
-            renderManageTable(model, search);
+            const loc = document.getElementById('manage-filter-location').value;
+            renderManageTable(loc, search);
         });
-        document.getElementById('manage-filter-model').addEventListener('change', () => {
+        document.getElementById('manage-filter-location').addEventListener('change', () => {
             const search = document.getElementById('manage-search').value;
-            const model = document.getElementById('manage-filter-model').value;
-            renderManageTable(model, search);
-        });
-
-        // Enter key on receive form
-        document.getElementById('receive-lot').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') document.getElementById('receive-submit').click();
+            const loc = document.getElementById('manage-filter-location').value;
+            renderManageTable(loc, search);
         });
     }
 
