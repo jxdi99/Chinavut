@@ -29,17 +29,7 @@ import { StaffAPI } from '../src/api/client.js';
 
         document.getElementById('forgot-password').addEventListener('click', async (e) => {
             e.preventDefault();
-            const email = prompt('กรุณากรอกอีเมลที่ใช้สมัคร เพื่อรับลิงก์รีเซ็ตรหัสผ่าน:');
-            if (email) {
-                const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                    redirectTo: window.location.origin + window.location.pathname,
-                });
-                if (error) {
-                    App.showToast('เกิดข้อผิดพลาด: ' + error.message);
-                } else {
-                    App.showToast('ส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมลของคุณแล้ว');
-                }
-            }
+            App.showToast('กรุณาติดต่อแอดมินเพื่อรีเซ็ตรหัสผ่าน');
         });
 
         async function handleLogin() {
