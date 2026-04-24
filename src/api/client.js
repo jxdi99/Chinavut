@@ -34,6 +34,26 @@ export const StaffAPI = {
     }
     return null;
   },
+  async getByEmail(email) {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from("staff")
+          .select("*")
+          .eq("email", email)
+          .single();
+        if (error) {
+          console.error("StaffAPI.getByEmail error:", error);
+          return null;
+        }
+        return data;
+      } catch (err) {
+        console.error("StaffAPI connection failed:", err);
+        return null;
+      }
+    }
+    return null;
+  },
 };
 
 export const MasterDataAPI = {

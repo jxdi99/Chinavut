@@ -40,28 +40,17 @@ import { StaffAPI } from '../src/api/client.js';
             }
         });
 
-        // Forgot password via email
+        // Forgot password - lookup by email in staff table
         document.getElementById('forgot-password').addEventListener('click', async (e) => {
             e.preventDefault();
-            const username = input.value.trim();
-            if (!username) {
-                App.showToast('กรุณากรอก Username ก่อน แล้วกดลืมรหัสผ่าน');
-                input.focus();
-                return;
+            const email = prompt('กรุณากรอกอีเมลที่ใช้ลงทะเบียน:');
+            if (!email) return;
+            const staff = await StaffAPI.getByEmail(email);
+            if (staff) {
+                alert(`ชื่อผู้ใช้: ${staff.nick}\nUsername: ${staff.username}\nรหัสผ่านของคุณคือ: ${staff.password}`);
+            } else {
+                App.showToast('ไม่พบอีเมลนี้ในระบบ');
             }
-            const staff = await StaffAPI.getByUsername(username);
-            if (!staff) {
-                App.showToast('ไม่พบ Username นี้ในระบบ');
-                return;
-            }
-            if (!staff.email) {
-                App.showToast('บัญชีนี้ยังไม่มีอีเมล กรุณาติดต่อแอดมิน');
-                return;
-            }
-            // Mask email: show first 2 chars + *** + @domain
-            const [localPart, domain] = staff.email.split('@');
-            const masked = localPart.substring(0, 2) + '***@' + domain;
-            App.showToast(`รหัสผ่านถูกส่งไปที่ ${masked} แล้ว`);
         });
 
         async function handleLogin() {
