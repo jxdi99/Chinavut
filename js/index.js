@@ -7,42 +7,7 @@ import { StaffAPI } from '../src/api/client.js';
         App.applyLanguage();
         App.applyTheme(state.ui.theme);
 
-        const { supabase } = await import('../src/api/client.js');
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        const cleanName = (fullName) => {
-            let name = fullName;
-            const prefixes = ['นาย ', 'นางสาว ', 'น.ส. ', 'น.ส.', 'นาง '];
-            for (const p of prefixes) {
-                if (name.startsWith(p)) {
-                    name = name.substring(p.length).trim();
-                    break;
-                }
-            }
-            return name.split(/\s+/)[0];
-        };
 
-        if (session) {
-            // Check if this email exists in staff table
-            const { data: staff } = await supabase.from('staff').select('*').eq('email', session.user.email).single();
-            if (staff) {
-                const firstName = cleanName(staff.name);
-                App.state.currentUser = { 
-                    id: staff.username, 
-                    name: firstName, 
-                    nick: staff.nick, 
-                    role: staff.role ? staff.role.toLowerCase() : 'employee',
-                    position: staff.position,
-                    status: staff.status 
-                };
-                await AppStorage.saveState(App.state);
-                window.location.href = './dashboard.html';
-                return;
-            } else {
-                App.showToast('อีเมลนี้ยังไม่ได้ผูกกับพนักงานในระบบ กรุณาใช้ Username ล็อกอิน');
-                await supabase.auth.signOut();
-            }
-        }
 
         const input = document.getElementById('username');
         const submitBtn = document.getElementById('login-submit');
@@ -94,45 +59,32 @@ import { StaffAPI } from '../src/api/client.js';
                 return;
             }
             
-            
+            // Simple Custom Login Flow (Bypass Supabase Auth)
             if (isSignUpMode) {
-                // Sign Up Flow
-                const emailInput = document.getElementById('email').value.trim();
-                if (!emailInput) {
-                    App.showToast('กรุณากรอกอีเมลสำหรับการสมัคร');
-                    return;
-                }
-                const { data, error } = await supabase.auth.signUp({
-                    email: emailInput,
-                    password: password,
-                });
-                if (error) {
-                    console.error('Sign Up Error:', error);
-                    App.showToast('ลงทะเบียนล้มเหลว: ' + error.message);
-                    return;
-                }
-                // Save email to staff table
-                await supabase.from('staff').update({ email: emailInput }).eq('username', val);
-                
-                App.showToast('ลงทะเบียนสำเร็จ! กำลังเข้าสู่ระบบ...');
+                // If they want to sign up, we just update the password in the staff table
+                // Note: For this to work, we need an admin or they need to have a default password
+                App.showToast('ระบบสมัครสมาชิกแบบ Custom ยังไม่เปิดใช้งาน กรุณาติดต่อแอดมิน');
+                return;
             } else {
-                // Login Flow
-                if (!staff.email) {
-                    App.showToast('คุณยังไม่ได้ตั้งรหัสผ่าน (กรุณากด Sign Up ก่อน)');
-                    return;
-                }
-                const { data, error } = await supabase.auth.signInWithPassword({
-                    email: staff.email,
-                    password: password,
-                });
-                if (error) {
-                    console.error('Login Error:', error);
-                    App.showToast('รหัสผ่านไม่ถูกต้อง');
+                // Check if password matches
+                if (password !== staff.emp_id) {
+                    App.showToast('รหัสผ่านไม่ถูกต้อง (รหัสผ่านของคุณคือ รหัสพนักงาน เช่น HR-xx-x-xxx)');
                     return;
                 }
             }
 
             // Authentication Success (Login or Signup)
+            const cleanName = (fullName) => {
+                let name = fullName;
+                const prefixes = ['นาย ', 'นางสาว ', 'น.ส. ', 'น.ส.', 'นาง '];
+                for (const p of prefixes) {
+                    if (name.startsWith(p)) {
+                        name = name.substring(p.length).trim();
+                        break;
+                    }
+                }
+                return name.split(/\s+/)[0];
+            };
             const firstName = cleanName(staff.name);
             console.log('Login Success:', staff);
             App.showToast(`${App.t('welcome')} คุณ ${firstName}`);
