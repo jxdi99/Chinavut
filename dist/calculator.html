@@ -5,8 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RAZR LED Solution Calculator Pro</title>
-  <script type="module" crossorigin src="/calculator_LED/assets/calculator-DoXUvucp.js"></script>
-  <link rel="modulepreload" crossorigin href="/calculator_LED/assets/shared-C1HfS9Ki.js">
+  <script type="module" crossorigin src="/calculator_LED/assets/calculator-DfGs7stF.js"></script>
+  <link rel="modulepreload" crossorigin href="/calculator_LED/assets/modulepreload-polyfill-EeOZK34R.js">
+  <link rel="modulepreload" crossorigin href="/calculator_LED/assets/client-DNfA53-h.js">
+  <link rel="modulepreload" crossorigin href="/calculator_LED/assets/shared-CgUcDUEp.js">
+  <link rel="modulepreload" crossorigin href="/calculator_LED/assets/storage-CwudRZlo.js">
   <link rel="stylesheet" crossorigin href="/calculator_LED/assets/styles-DIc31TLr.css">
 </head>
 
@@ -30,6 +33,8 @@
                     <button class="lang-opt" data-lang="en">EN</button>
                 </div>
                 <button class="btn btn-secondary" id="theme-toggle" data-i18n="theme">ธีม: สว่าง</button>
+                <a class="btn btn-primary" id="home-link" href="dashboard.html"
+                    data-i18n="dashboardHome">กลับหน้าแรก</a>
                 <button class="btn btn-secondary" id="logout-btn" data-i18n="adminLogout"
                     style="display:none;">Logout</button>
             </div>
@@ -102,32 +107,32 @@
                         <div class="row">
                             <div class="field">
                                 <label data-i18n="customSteelLabel">ค่าโครงสร้างเหล็กรับจอ</label>
-                                <input type="number" id="custom-steel"
-                                    data-i18n-placeholder="customExtraPlaceholder" placeholder="ไม่ระบุ = 0" min="0">
+                                <input type="number" id="custom-steel" data-i18n-placeholder="customExtraPlaceholder"
+                                    placeholder="ไม่ระบุ = 0" min="0">
                             </div>
                             <div class="field">
                                 <label data-i18n="customAlumLabel">Aluminium Composite</label>
-                                <input type="number" id="custom-alum"
-                                    data-i18n-placeholder="customExtraPlaceholder" placeholder="ไม่ระบุ = 0" min="0">
+                                <input type="number" id="custom-alum" data-i18n-placeholder="customExtraPlaceholder"
+                                    placeholder="ไม่ระบุ = 0" min="0">
                             </div>
                         </div>
                         <div class="row">
                             <div class="field">
                                 <label data-i18n="customLoadCabLabel">ค่าติดตั้งตู้โหลดไฟฟ้า</label>
-                                <input type="number" id="custom-load-cab"
-                                    data-i18n-placeholder="customExtraPlaceholder" placeholder="ไม่ระบุ = 0" min="0">
+                                <input type="number" id="custom-load-cab" data-i18n-placeholder="customExtraPlaceholder"
+                                    placeholder="ไม่ระบุ = 0" min="0">
                             </div>
                             <div class="field">
                                 <label data-i18n="customCableLabel">ค่าติดตั้งสายสัญญาณ</label>
-                                <input type="number" id="custom-cable"
-                                    data-i18n-placeholder="customExtraPlaceholder" placeholder="ไม่ระบุ = 0" min="0">
+                                <input type="number" id="custom-cable" data-i18n-placeholder="customExtraPlaceholder"
+                                    placeholder="ไม่ระบุ = 0" min="0">
                             </div>
                         </div>
                         <div class="row">
                             <div class="field">
                                 <label data-i18n="customDemoLabel">ค่ารื้อถอน</label>
-                                <input type="number" id="custom-demo"
-                                    data-i18n-placeholder="customExtraPlaceholder" placeholder="ไม่ระบุ = 0" min="0">
+                                <input type="number" id="custom-demo" data-i18n-placeholder="customExtraPlaceholder"
+                                    placeholder="ไม่ระบุ = 0" min="0">
                             </div>
                             <div class="field">
                                 <label data-i18n="customFoundLabel">ค่าฝังฐานราก</label>
@@ -159,21 +164,21 @@
                     <div class="field"
                         style="margin-top:16px; padding:12px; background:color-mix(in srgb, var(--card) 90%, transparent); border:1px dashed var(--border); border-radius:12px;">
                         <label data-i18n="extraController">Controller เพิ่มเติม / อุปกรณ์เสริม</label>
-                        
+
                         <!-- Controller 2 -->
                         <div style="margin-bottom:8px;">
                             <select id="con2-select">
                                 <option value="-1" data-i18n="none">-- ไม่รับ --</option>
                             </select>
                         </div>
-                        
+
                         <!-- Controller 3 -->
                         <div style="margin-bottom:8px;">
                             <select id="con3-select">
                                 <option value="-1" data-i18n="none">-- ไม่รับ --</option>
                             </select>
                         </div>
-                        
+
                         <!-- Accessory -->
                         <div>
                             <select id="acc-select">
@@ -184,9 +189,7 @@
 
                     <div class="footer-actions" style="justify-content:flex-start;margin-top:18px;">
                         <button class="btn btn-secondary" id="calc-reset" data-i18n="reset">🔄 รีเซ็ตข้อมูล</button>
-                        <button class="btn btn-success" id="detail-btn" data-i18n="detailBtn">📋 Detail(Demo)</button>
-                        <a class="btn btn-quote" id="quote-link" href="quote.html" data-i18n="makeQuote">📄
-                            ทำใบเสนอราคา</a>
+                        <button class="btn btn-success" id="detail-btn" data-i18n="detailBtn">📋 Detail</button>
                     </div>
                 </div>
 

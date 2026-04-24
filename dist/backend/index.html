@@ -5,9 +5,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RAZR LED Admin</title>
-  <script type="module" crossorigin src="/calculator_LED/assets/admin-BOqXaoQk.js"></script>
-  <link rel="modulepreload" crossorigin href="/calculator_LED/assets/shared-C1HfS9Ki.js">
-  <link rel="stylesheet" crossorigin href="/calculator_LED/assets/styles-DIc31TLr.css">
+  <script type="module" crossorigin src="/calculator_LED/assets/admin-bt_4JlkG.js"></script>
+  <link rel="modulepreload" crossorigin href="/calculator_LED/assets/client-DNfA53-h.js">
+  <link rel="modulepreload" crossorigin href="/calculator_LED/assets/modulepreload-polyfill-EeOZK34R.js">
+  <link rel="stylesheet" crossorigin href="/calculator_LED/assets/admin-v7Wa1HFM.css">
 </head>
 
 <body>
@@ -24,7 +25,7 @@
           <button class="lang-opt" data-lang="en">EN</button>
         </div>
         <button class="btn btn-secondary" id="theme-toggle" data-i18n="themeLabel">ธีม: สว่าง</button>
-        <a class="btn btn-primary" id="home-link" href="/" data-i18n="backHome">กลับหน้า Calculator</a>
+        <a class="btn btn-primary" id="home-link" href="/" data-i18n="dashboardHome">กลับหน้า Calculator</a>
         <button class="btn btn-danger" id="admin-logout-btn" data-i18n="adminLogout">ออกจากระบบ</button>
       </div>
     </div>
@@ -54,6 +55,7 @@
         <div class="panel-head">
           <div class="small-muted" data-i18n="adminPanelInfo">แก้ไขข้อมูลในตารางได้ทันที ระบบจะบันทึกให้อัตโนมัติ</div>
           <div class="toolbar">
+            <button class="btn btn-primary" id="admin-sync-btn" data-i18n="syncFromDB">ดึงข้อมูลจาก Database</button>
             <button class="btn btn-danger" id="admin-reset-btn" data-i18n="reset">รีเซ็ตเป็นค่าเริ่มต้น</button>
             <button class="btn btn-success" id="admin-save-btn" data-i18n="saveAll">บันทึกทั้งหมด</button>
           </div>
@@ -69,26 +71,11 @@
     </div>
   </div>
 
-  <!-- Admin Login Modal (ต้อง login ก่อนถึงจะใช้งานได้) -->
-  <div class="modal" id="admin-login-modal" style="display:flex;">
-    <div class="modal-box">
-      <h3 style="margin:0 0 6px;color:var(--primary);">🔒 Admin Login</h3>
-      <div class="small-muted">กรุณาล็อกอินเพื่อเข้าใช้งานระบบจัดการข้อมูล</div>
-      <div class="field" style="margin-top:14px;">
-        <label>Username</label>
-        <input type="text" id="login-user" value="admin" autocomplete="username">
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <input type="password" id="login-pass" autocomplete="current-password" placeholder="กรอกรหัสผ่าน">
-      </div>
-      <div class="footer-actions">
-        <a class="btn btn-secondary" href="/">ยกเลิก</a>
-        <button class="btn btn-primary" id="login-submit">เข้าสู่ระบบ</button>
-      </div>
-    </div>
-  </div>
-
+  <!-- Admin Login Modal Removed, using shared Auth -->
+
+  <script defer src="data.js"></script>
+  <script defer src="storage.js"></script>
+  <script defer src="admin.js"></script>
 </body>
 
 </html>
