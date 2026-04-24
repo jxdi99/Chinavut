@@ -57,8 +57,8 @@ import { StaffAPI } from '../src/api/client.js';
                 return;
             } else {
                 // Check if password matches
-                if (password !== staff.emp_id) {
-                    App.showToast('รหัสผ่านไม่ถูกต้อง (รหัสผ่านของคุณคือ รหัสพนักงาน เช่น HR-xx-x-xxx)');
+                if (password !== staff.password) {
+                    App.showToast('รหัสผ่านไม่ถูกต้อง');
                     return;
                 }
             }
