@@ -14,16 +14,16 @@ export const StaffAPI = {
     if (error) console.error("StaffAPI.getAll error:", error);
     return data || [];
   },
-  async getByEmpId(empId) {
+  async getByUsername(username) {
     if (supabase) {
       try {
         const { data, error } = await supabase
           .from("staff")
           .select("*")
-          .eq("emp_id", empId)
+          .eq("username", username)
           .single();
         if (error) {
-          console.error("StaffAPI.getByEmpId error:", error);
+          console.error("StaffAPI.getByUsername error:", error);
           return null;
         }
         return data;
@@ -32,9 +32,7 @@ export const StaffAPI = {
         return null;
       }
     }
-    return window.STAFF_DATA?.[empId]
-      ? { emp_id: empId, ...window.STAFF_DATA[empId] }
-      : null;
+    return null;
   },
 };
 

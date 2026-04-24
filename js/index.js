@@ -7,7 +7,44 @@ import { StaffAPI } from '../src/api/client.js';
         App.applyLanguage();
         App.applyTheme(state.ui.theme);
 
-        const input = document.getElementById('employee-id');
+        const { supabase } = await import('../src/api/client.js');
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        const cleanName = (fullName) => {
+            let name = fullName;
+            const prefixes = ['นาย ', 'นางสาว ', 'น.ส. ', 'น.ส.', 'นาง '];
+            for (const p of prefixes) {
+                if (name.startsWith(p)) {
+                    name = name.substring(p.length).trim();
+                    break;
+                }
+            }
+            return name.split(/\s+/)[0];
+        };
+
+        if (session) {
+            // Check if this email exists in staff table
+            const { data: staff } = await supabase.from('staff').select('*').eq('email', session.user.email).single();
+            if (staff) {
+                const firstName = cleanName(staff.name);
+                App.state.currentUser = { 
+                    id: staff.username, 
+                    name: firstName, 
+                    nick: staff.nick, 
+                    role: staff.role ? staff.role.toLowerCase() : 'employee',
+                    position: staff.position,
+                    status: staff.status 
+                };
+                await AppStorage.saveState(App.state);
+                window.location.href = './dashboard.html';
+                return;
+            } else {
+                App.showToast('อีเมลนี้ยังไม่ได้ผูกกับพนักงานในระบบ กรุณาใช้ Username ล็อกอิน');
+                await supabase.auth.signOut();
+            }
+        }
+
+        const input = document.getElementById('username');
         const submitBtn = document.getElementById('login-submit');
 
         let isSignUpMode = false;
@@ -15,12 +52,28 @@ import { StaffAPI } from '../src/api/client.js';
         document.getElementById('toggle-signup').addEventListener('click', (e) => {
             e.preventDefault();
             isSignUpMode = !isSignUpMode;
+            document.getElementById('email-field').style.display = isSignUpMode ? 'block' : 'none';
             if (isSignUpMode) {
                 submitBtn.textContent = 'ลงทะเบียน (Sign Up)';
                 e.target.textContent = 'กลับไปหน้าเข้าสู่ระบบ (Login)';
             } else {
                 submitBtn.textContent = App.t('loginBtn') || 'เข้าสู่ระบบ';
                 e.target.textContent = 'ตั้งรหัสผ่านใหม่ (Sign Up)';
+            }
+        });
+
+        document.getElementById('forgot-password').addEventListener('click', async (e) => {
+            e.preventDefault();
+            const email = prompt('กรุณากรอกอีเมลที่ใช้สมัคร เพื่อรับลิงก์รีเซ็ตรหัสผ่าน:');
+            if (email) {
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + window.location.pathname,
+                });
+                if (error) {
+                    App.showToast('เกิดข้อผิดพลาด: ' + error.message);
+                } else {
+                    App.showToast('ส่งลิงก์รีเซ็ตรหัสผ่านไปยังอีเมลของคุณแล้ว');
+                }
             }
         });
 
@@ -34,21 +87,23 @@ import { StaffAPI } from '../src/api/client.js';
 
             App.showToast(App.t('calculating'));
             
-            // Validate if empId exists in staff table FIRST
-            const staff = await StaffAPI.getByEmpId(val);
+            // Validate if username exists in staff table FIRST
+            const staff = await StaffAPI.getByUsername(val);
             if (!staff) {
-                App.showToast('ไม่พบรหัสพนักงานนี้ในระบบ');
+                App.showToast('ไม่พบ Username นี้ในระบบ');
                 return;
             }
             
-            // Construct pseudo-email for Supabase Auth
-            const authEmail = `${val.toLowerCase()}@razr.local`;
-            const { supabase } = await import('../src/api/client.js');
             
             if (isSignUpMode) {
                 // Sign Up Flow
+                const emailInput = document.getElementById('email').value.trim();
+                if (!emailInput) {
+                    App.showToast('กรุณากรอกอีเมลสำหรับการสมัคร');
+                    return;
+                }
                 const { data, error } = await supabase.auth.signUp({
-                    email: authEmail,
+                    email: emailInput,
                     password: password,
                 });
                 if (error) {
@@ -56,34 +111,28 @@ import { StaffAPI } from '../src/api/client.js';
                     App.showToast('ลงทะเบียนล้มเหลว: ' + error.message);
                     return;
                 }
+                // Save email to staff table
+                await supabase.from('staff').update({ email: emailInput }).eq('username', val);
+                
                 App.showToast('ลงทะเบียนสำเร็จ! กำลังเข้าสู่ระบบ...');
-                // Switch back to login mode implicitly since signup automatically logs in if email confirm is off
             } else {
                 // Login Flow
+                if (!staff.email) {
+                    App.showToast('คุณยังไม่ได้ตั้งรหัสผ่าน (กรุณากด Sign Up ก่อน)');
+                    return;
+                }
                 const { data, error } = await supabase.auth.signInWithPassword({
-                    email: authEmail,
+                    email: staff.email,
                     password: password,
                 });
                 if (error) {
                     console.error('Login Error:', error);
-                    App.showToast('รหัสผ่านไม่ถูกต้อง หรือคุณยังไม่ได้ตั้งรหัสผ่าน');
+                    App.showToast('รหัสผ่านไม่ถูกต้อง');
                     return;
                 }
             }
 
             // Authentication Success (Login or Signup)
-            const cleanName = (fullName) => {
-                let name = fullName;
-                const prefixes = ['นาย ', 'นางสาว ', 'น.ส. ', 'น.ส.', 'นาง '];
-                for (const p of prefixes) {
-                    if (name.startsWith(p)) {
-                        name = name.substring(p.length).trim();
-                        break;
-                    }
-                }
-                return name.split(/\s+/)[0];
-            };
-
             const firstName = cleanName(staff.name);
             console.log('Login Success:', staff);
             App.showToast(`${App.t('welcome')} คุณ ${firstName}`);
@@ -105,50 +154,7 @@ import { StaffAPI } from '../src/api/client.js';
             }, 1000);
         }
 
-        function formatId(val) {
-            // Remove all non-alphanumeric for processing
-            let raw = val.toUpperCase().replace(/[^A-Z0-9]/g, '');
-            
-            // If it starts with letters, apply the pattern XX-XX-X-XXX
-            if (raw.length >= 3 && /^[A-Z]/.test(raw)) {
-                let res = '';
-                res += raw.substring(0, 2); 
-                if (raw.length > 2) res += '-' + raw.substring(2, 4); 
-                if (raw.length > 4) res += '-' + raw.substring(4, 5); 
-                if (raw.length > 5) res += '-' + raw.substring(5, 8);
-                return res;
-            }
-            return val.toUpperCase();
-        }
 
-        input.addEventListener('input', (e) => {
-            const originalValue = input.value;
-            const formatted = formatId(originalValue);
-            
-            if (originalValue !== formatted) {
-                // Calculate cursor position by counting non-hyphen characters
-                const cursor = input.selectionStart;
-                const beforeCursor = originalValue.substring(0, cursor).replace(/-/g, '').length;
-                
-                input.value = formatted;
-                
-                // Find new cursor position that matches the count of real characters
-                let newCursor = 0;
-                let realCount = 0;
-                while (realCount < beforeCursor && newCursor < formatted.length) {
-                    if (formatted[newCursor] !== '-') {
-                        realCount++;
-                    }
-                    newCursor++;
-                }
-                // Also skip any hyphens immediately following the character we just typed
-                while (newCursor < formatted.length && formatted[newCursor] === '-') {
-                    newCursor++;
-                }
-                
-                input.setSelectionRange(newCursor, newCursor);
-            }
-        });
 
         submitBtn.addEventListener('click', handleLogin);
         input.addEventListener('keydown', (e) => {

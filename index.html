@@ -16,16 +16,25 @@
             </h2>
 
             <div class="field" style="margin-bottom: 14px; text-align: left;">
-                <label data-i18n="empId"
-                    style="display: block; margin-bottom: 6px; font-weight: 700;">รหัสพนักงาน</label>
-                <input type="text" id="employee-id" autofocus placeholder="HR-SX-0-000"
-                    style="width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 12px; text-transform: uppercase;">
+                <label data-i18n="username"
+                    style="display: block; margin-bottom: 6px; font-weight: 700;">ชื่อผู้ใช้งาน (Username)</label>
+                <input type="text" id="username" autofocus placeholder="Username ของคุณ"
+                    style="width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 12px;">
+            </div>
+            <div class="field" id="email-field" style="display: none; margin-bottom: 14px; text-align: left;">
+                <label style="display: block; margin-bottom: 6px; font-weight: 700;">อีเมล (Email สำหรับกู้รหัสผ่าน)</label>
+                <input type="email" id="email" placeholder="example@razr.com"
+                    style="width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 12px;">
             </div>
             
             <div class="field" style="margin-bottom: 14px; text-align: left;">
                 <label style="display: block; margin-bottom: 6px; font-weight: 700;">รหัสผ่าน (Password)</label>
                 <input type="password" id="password" placeholder="รหัสผ่านของคุณ"
                     style="width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 12px;">
+            </div>
+
+            <div style="text-align: right; margin-bottom: 10px;">
+                <a href="#" id="forgot-password" style="font-size: 0.85em; color: var(--primary); text-decoration: none;">ลืมรหัสผ่าน?</a>
             </div>
 
             <button class="btn btn-primary" id="login-submit" data-i18n="loginBtn"

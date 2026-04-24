@@ -12,6 +12,8 @@
 -- Staff Profiles
 CREATE TABLE IF NOT EXISTS staff (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  username text UNIQUE NOT NULL,
+  email text UNIQUE,
   emp_id text UNIQUE NOT NULL,
   name text NOT NULL,
   nick text,
