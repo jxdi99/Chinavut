@@ -114,6 +114,48 @@ import { supabase } from '../src/api/client.js';
         `).join('');
     }
 
+    // ── SECTION: นับสต๊อก - Quick Add ──
+    async function handleStockQuickAdd() {
+        const model = document.getElementById('stock-add-model').value;
+        const qty = parseFloat(document.getElementById('stock-add-qty').value);
+        const lot = document.getElementById('stock-add-lot').value.trim().toUpperCase();
+        const notes = document.getElementById('stock-add-notes').value.trim();
+
+        if (!model) { App.showToast('กรุณาเลือกรุ่นสินค้า'); return; }
+        if (!qty || qty <= 0) { App.showToast('กรุณากรอกจำนวน'); return; }
+        if (!lot) { App.showToast('กรุณากรอก Lot Number'); return; }
+
+        App.showToast('กำลังบันทึก...');
+
+        const { error } = await supabase.from('led_inventory').insert({
+            model: model,
+            quantity: qty,
+            lot_number: lot,
+            notes: notes || null,
+            received_by: currentUser?.name || 'ไม่ทราบ',
+            received_at: new Date().toISOString()
+        });
+
+        if (error) {
+            console.error('Quick add error:', error);
+            App.showToast('เกิดข้อผิดพลาด: ' + error.message);
+            return;
+        }
+
+        App.showToast(`✅ เพิ่ม ${model} x ${qty} lot ${lot} สำเร็จ!`);
+
+        // Clear form but keep model selection for speed
+        document.getElementById('stock-add-qty').value = '';
+        document.getElementById('stock-add-lot').value = '';
+        document.getElementById('stock-add-notes').value = '';
+
+        // Focus lot field for next item
+        document.getElementById('stock-add-qty').focus();
+
+        // Reload table & stats
+        await loadStockView();
+    }
+
     // ── SECTION: นับสต๊อก ──
     async function loadStockView() {
         allInventory = await fetchInventory();
@@ -254,6 +296,18 @@ import { supabase } from '../src/api/client.js';
         // Auto uppercase for lot number
         document.getElementById('receive-lot').addEventListener('input', (e) => {
             e.target.value = e.target.value.toUpperCase();
+        });
+
+        // Stock quick-add form
+        document.getElementById('stock-add-submit').addEventListener('click', handleStockQuickAdd);
+        document.getElementById('stock-add-lot').addEventListener('input', (e) => {
+            e.target.value = e.target.value.toUpperCase();
+        });
+        document.getElementById('stock-add-lot').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('stock-add-submit').click();
+        });
+        document.getElementById('stock-add-notes').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('stock-add-submit').click();
         });
 
         // Stock search/filter
