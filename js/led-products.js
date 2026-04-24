@@ -180,9 +180,8 @@ import { supabase } from '../src/api/client.js';
         document.getElementById('stat-total-module').textContent = totalModule.toLocaleString('th-TH');
     }
 
-    function renderStockTable(filterLocation = '', searchText = '') {
+    function renderStockTable(searchText = '') {
         let filtered = allInventory;
-        if (filterLocation) filtered = filtered.filter(i => i.location === filterLocation);
         if (searchText) {
             const q = searchText.toLowerCase();
             filtered = filtered.filter(i =>
@@ -219,9 +218,8 @@ import { supabase } from '../src/api/client.js';
         renderManageTable();
     }
 
-    function renderManageTable(filterLocation = '', searchText = '') {
+    function renderManageTable(searchText = '') {
         let filtered = allInventory;
-        if (filterLocation) filtered = filtered.filter(i => i.location === filterLocation);
         if (searchText) {
             const q = searchText.toLowerCase();
             filtered = filtered.filter(i =>
@@ -318,28 +316,16 @@ import { supabase } from '../src/api/client.js';
             if (e.key === 'Enter') document.getElementById('stock-add-module').focus();
         });
 
-        // Stock search/filter
+        // Stock search
         document.getElementById('stock-search').addEventListener('input', () => {
             const search = document.getElementById('stock-search').value;
-            const loc = document.getElementById('stock-filter-location').value;
-            renderStockTable(loc, search);
-        });
-        document.getElementById('stock-filter-location').addEventListener('change', () => {
-            const search = document.getElementById('stock-search').value;
-            const loc = document.getElementById('stock-filter-location').value;
-            renderStockTable(loc, search);
+            renderStockTable(search);
         });
 
-        // Manage search/filter
+        // Manage search
         document.getElementById('manage-search').addEventListener('input', () => {
             const search = document.getElementById('manage-search').value;
-            const loc = document.getElementById('manage-filter-location').value;
-            renderManageTable(loc, search);
-        });
-        document.getElementById('manage-filter-location').addEventListener('change', () => {
-            const search = document.getElementById('manage-search').value;
-            const loc = document.getElementById('manage-filter-location').value;
-            renderManageTable(loc, search);
+            renderManageTable(search);
         });
     }
 
