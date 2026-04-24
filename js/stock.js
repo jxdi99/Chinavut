@@ -3,6 +3,7 @@ import { MasterDataAPI } from '../src/api/client.js';
 (function () {
     let masterDataCache = null;
     let stockData = {}; // Mock stock database structure: { itemId: { total: 0, reserved: 0, erp: 0, lastMovement: Date } }
+    let currentWarehouse = 'led'; // Default warehouse
 
     async function loadMockStockData() {
         // Since we don't have a real table, we use localStorage to mock the stock database
@@ -65,24 +66,38 @@ import { MasterDataAPI } from '../src/api/client.js';
         ];
     }
 
+    function getMockMarketing() {
+        return [
+            { id: 'm-mkt-1', name: 'เสื้อโปโล RAZR (Size M)', price: 250, category: 'marketing' },
+            { id: 'm-mkt-2', name: 'เสื้อโปโล RAZR (Size L)', price: 250, category: 'marketing' },
+            { id: 'm-mkt-3', name: 'แก้วน้ำเก็บความเย็น', price: 150, category: 'marketing' },
+            { id: 'm-mkt-4', name: 'โบรชัวร์ จอ LED', price: 10, category: 'marketing' },
+            { id: 'm-mkt-5', name: 'ปากกาสกรีนโลโก้', price: 15, category: 'marketing' }
+        ];
+    }
+
     function getAllItems(data) {
         let items = [];
-        if (data) {
-            ['UIR', 'UOS', 'CIH'].forEach(group => {
-                if (data[group] && data[group].items) {
-                    data[group].items.forEach(i => items.push({ ...i, category: 'led' }));
-                }
-            });
-            if (data.controllers) {
-                data.controllers.forEach(c => items.push({ ...c, category: 'controller' }));
-            }
-            if (data.accessories) {
-                data.accessories.forEach(a => items.push({ ...a, category: 'accessory' }));
-            }
-        }
         
-        // Append Mock Other Departments
-        items = items.concat(getMockOtherDepartments());
+        if (currentWarehouse === 'led') {
+            if (data) {
+                ['UIR', 'UOS', 'CIH'].forEach(group => {
+                    if (data[group] && data[group].items) {
+                        data[group].items.forEach(i => items.push({ ...i, category: 'led', wh: 'led' }));
+                    }
+                });
+                if (data.controllers) {
+                    data.controllers.forEach(c => items.push({ ...c, category: 'controller', wh: 'led' }));
+                }
+                if (data.accessories) {
+                    data.accessories.forEach(a => items.push({ ...a, category: 'accessory', wh: 'led' }));
+                }
+            }
+            // Append Mock Other Departments
+            items = items.concat(getMockOtherDepartments().map(i => ({...i, wh: 'led'})));
+        } else if (currentWarehouse === 'marketing') {
+            items = getMockMarketing().map(i => ({...i, wh: 'marketing'}));
+        }
         
         return items;
     }
@@ -139,7 +154,8 @@ import { MasterDataAPI } from '../src/api/client.js';
             'audio': { name: 'ระบบเสียง (Audio)', sku: 0, qty: 0, val: 0, deadVal: 0 },
             'projector': { name: 'โปรเจคเตอร์ (Projector)', sku: 0, qty: 0, val: 0, deadVal: 0 },
             'interactive': { name: 'จอสัมผัส (Interactive)', sku: 0, qty: 0, val: 0, deadVal: 0 },
-            'it': { name: 'ไอที/เน็ตเวิร์ก (IT)', sku: 0, qty: 0, val: 0, deadVal: 0 }
+            'it': { name: 'ไอที/เน็ตเวิร์ก (IT)', sku: 0, qty: 0, val: 0, deadVal: 0 },
+            'marketing': { name: 'สินค้า Marketing', sku: 0, qty: 0, val: 0, deadVal: 0 }
         };
 
         items.forEach(item => {
@@ -237,7 +253,8 @@ import { MasterDataAPI } from '../src/api/client.js';
                 'audio': { name: 'ระบบเสียง (Audio)' },
                 'projector': { name: 'โปรเจคเตอร์ (Projector)' },
                 'interactive': { name: 'จอสัมผัส (Interactive)' },
-                'it': { name: 'ไอที/เน็ตเวิร์ก (IT)' }
+                'it': { name: 'ไอที/เน็ตเวิร์ก (IT)' },
+                'marketing': { name: 'สินค้า Marketing' }
             };
 
             let catLabel = deptMap[item.category] ? deptMap[item.category].name : item.category;
@@ -298,6 +315,44 @@ import { MasterDataAPI } from '../src/api/client.js';
     }
 
     function setupActions() {
+        // Warehouse Selector
+        document.querySelectorAll('.warehouse-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                document.querySelectorAll('.warehouse-card').forEach(c => c.classList.remove('active'));
+                const target = e.currentTarget;
+                target.classList.add('active');
+                currentWarehouse = target.getAttribute('data-wh');
+                
+                // Filter the main overview dropdown based on warehouse
+                const filterSel = document.getElementById('overview-category-filter');
+                if (currentWarehouse === 'marketing') {
+                    filterSel.innerHTML = '<option value="all">ทุกหมวดหมู่ (Marketing)</option>';
+                } else {
+                    filterSel.innerHTML = `
+                      <option value="all">ทุกหมวดหมู่</option>
+                      <option value="led">LED (จอ)</option>
+                      <option value="controller">LED (Controller)</option>
+                      <option value="accessory">LED (Accessories)</option>
+                      <option value="audio">ระบบเสียง (Audio)</option>
+                      <option value="projector">โปรเจคเตอร์ (Projector)</option>
+                      <option value="interactive">จอสัมผัส (Interactive)</option>
+                      <option value="it">ไอที/เน็ตเวิร์ก (IT)</option>
+                    `;
+                }
+
+                // Make sure we update dropdowns
+                populateDropdowns();
+                
+                // If a tab is currently active, re-render it
+                document.querySelectorAll('.tab-content.active').forEach(tab => {
+                    const id = tab.id.replace('tab-', '');
+                    if (id === 'executive') renderExecutiveOverview();
+                    if (id === 'overview') renderOverview();
+                    if (id === 'erp') renderErp();
+                });
+            });
+        });
+
         document.getElementById('overview-category-filter').addEventListener('change', renderOverview);
 
         // Receive Submit
