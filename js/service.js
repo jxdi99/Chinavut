@@ -81,32 +81,46 @@ import { supabase } from '../src/api/client.js';
             return;
         }
 
-        container.innerHTML = filtered.map(job => `
-            <div class="job-card">
-                <div class="job-info">
-                    <div class="job-subject">${job.subject}</div>
-                    <div class="job-meta">
-                        <span>🏢 แผนก: ${job.department}</span>
-                        <span>👤 โดย: ${job.requested_by || 'ไม่ทราบ'}</span>
-                        <span>📅 ${new Date(job.created_at).toLocaleDateString('th-TH', { 
-                            year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
-                        })}</span>
+        container.innerHTML = filtered.map(job => {
+            const isCompleted = job.status === 'ดำเนินการเสร็จสิ้น' || job.status === 'เสร็จสิ้น';
+            const isProcessing = job.status === 'กำลังดำเนินการ';
+            const isPending = job.status === 'แจ้งงานเสร็จสิ้น' || job.status === 'รอดำเนินการ';
+
+            return `
+                <div class="job-card">
+                    <div class="job-info">
+                        <div class="job-subject">${job.subject}</div>
+                        <div class="job-meta">
+                            <span>🏢 แผนก/ลูกค้า: ${job.department}</span>
+                            <span>👤 โดย: ${job.customer_name || job.requested_by || 'ไม่ทราบ'}</span>
+                            <span>📞 เบอร์: ${job.customer_phone || '-'}</span>
+                            <span>📅 ${new Date(job.created_at).toLocaleDateString('th-TH', { 
+                                year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+                            })}</span>
+                        </div>
+                        ${job.details ? `<div class="job-detail">${job.details}</div>` : ''}
                     </div>
-                    ${job.details ? `<div class="job-detail">${job.details}</div>` : ''}
+                    <div class="job-actions">
+                        <span class="status-badge ${isCompleted ? 'status-completed' : (isProcessing ? 'status-processing' : 'status-pending')}">
+                            ${job.status}
+                        </span>
+                        <div style="display:flex; gap:8px; margin-top:10px;">
+                            ${isPending ? 
+                                `<button class="btn-action btn-process" data-id="${job.id}">⚙️ เริ่มดำเนินการ</button>` : ''}
+                            ${!isCompleted ? 
+                                `<button class="btn-action btn-finish" data-id="${job.id}">✅ เสร็จสิ้นงาน</button>` : ''}
+                        </div>
+                    </div>
                 </div>
-                <div class="job-actions">
-                    <span class="status-badge ${job.status === 'เสร็จสิ้น' ? 'status-completed' : 'status-pending'}">
-                        ${job.status}
-                    </span>
-                    ${job.status === 'รอดำเนินการ' ? 
-                        `<button class="btn-complete" data-id="${job.id}">✅ ทำเครื่องหมายว่าเสร็จสิ้น</button>` : ''}
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
         // Attach buttons
-        container.querySelectorAll('.btn-complete').forEach(btn => {
-            btn.addEventListener('click', () => markAsComplete(btn.dataset.id));
+        container.querySelectorAll('.btn-process').forEach(btn => {
+            btn.addEventListener('click', () => updateJobStatus(btn.dataset.id, 'กำลังดำเนินการ'));
+        });
+        container.querySelectorAll('.btn-finish').forEach(btn => {
+            btn.addEventListener('click', () => updateJobStatus(btn.dataset.id, 'ดำเนินการเสร็จสิ้น'));
         });
     }
 
@@ -147,15 +161,15 @@ import { supabase } from '../src/api/client.js';
         }
     }
 
-    async function markAsComplete(id) {
-        if (!confirm('ยืนยันว่าดำเนินการเสร็จสิ้นแล้ว?')) return;
+    async function updateJobStatus(id, newStatus) {
+        if (!confirm(`ยืนยันการเปลี่ยนสถานะเป็น "${newStatus}"?`)) return;
 
         if (typeof App !== 'undefined') App.showToast('กำลังอัปเดต...');
 
         const { error } = await supabase
             .from('service_requests')
             .update({ 
-                status: 'เสร็จสิ้น',
+                status: newStatus,
                 updated_at: new Date().toISOString()
             })
             .eq('id', id);
@@ -163,7 +177,7 @@ import { supabase } from '../src/api/client.js';
         if (error) {
             if (typeof App !== 'undefined') App.showToast('อัปเดตไม่สำเร็จ: ' + error.message);
         } else {
-            if (typeof App !== 'undefined') App.showToast('✅ บันทึกเสร็จสิ้นแล้ว');
+            if (typeof App !== 'undefined') App.showToast('✅ อัปเดตสถานะเรียบร้อย');
             loadJobs();
         }
     }

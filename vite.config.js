@@ -14,6 +14,8 @@ export default defineConfig({
         resetPassword: resolve(__dirname, 'reset-password.html'),
         ledProducts: resolve(__dirname, 'led-products.html'),
         service: resolve(__dirname, 'service.html'),
+        public_home: resolve(__dirname, 'public/public.html'),
+        public_service: resolve(__dirname, 'public/service.html'),
       },
     },
   },

@@ -122,27 +122,40 @@
     color: #92400e;
 }
 
+.status-processing {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
 .status-completed {
     background: #d1fae5;
     color: #065f46;
 }
 
-.btn-complete {
-    background: var(--primary);
-    color: white;
+.btn-action {
     border: none;
-    padding: 8px 16px;
-    border-radius: 10px;
-    font-size: 0.85rem;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
     white-space: nowrap;
 }
 
-.btn-complete:hover {
+.btn-process {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-finish {
+    background: #10b981;
+    color: white;
+}
+
+.btn-action:hover {
     opacity: 0.9;
-    transform: scale(1.02);
+    transform: scale(1.05);
 }
 
 .empty-state {
