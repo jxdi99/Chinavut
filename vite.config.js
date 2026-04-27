@@ -2,7 +2,7 @@ import { resolve } from 'path'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  base: '/calculator_LED/',
+  base: '/Chinavut/',
   build: {
     rollupOptions: {
       input: {
