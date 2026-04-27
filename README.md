@@ -6,4 +6,4 @@ Public Pages:
 
 Employee Portal:
 - Dashboard: https://jxdi99.github.io/Chinavut/
-- Backend: https://jxdi99.github.io/Chinavut/backend/index.html
+- Backend: https://jxdi99.github.io/Chinavut/backend/
