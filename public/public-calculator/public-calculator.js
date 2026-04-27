@@ -162,7 +162,7 @@
         const diagonalInch = (Math.sqrt(screenW * screenW + screenH * screenH) * 39.3701).toFixed(1);
         
         const ratioEl = document.getElementById('overlay-ratio');
-        if (ratioEl) ratioEl.textContent = `Ratio ${ratio} (${diagonalInch}")`;
+        if (ratioEl) ratioEl.textContent = `${ratio} • ${diagonalInch}"`;
 
         const labelSize = document.getElementById('label-size');
         if (labelSize) labelSize.textContent = `W ${screenW.toFixed(2)} × H ${screenH.toFixed(2)} เมตร`;
