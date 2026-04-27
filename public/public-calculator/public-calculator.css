@@ -1,0 +1,92 @@
+.preview-section {
+    margin-top: 24px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    height: 450px;
+    position: relative;
+    background: color-mix(in srgb, var(--bg) 95%, #fff);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .preview-section {
+    background: color-mix(in srgb, var(--bg) 95%, #000);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.screen-viz {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), height 0.4s cubic-bezier(0.4, 0, 0.2, 1), left 0.4s cubic-bezier(0.4, 0, 0.2, 1), bottom 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.screen-overlay {
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.overlay-ratio {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+    margin-top: 4px;
+}
+
+.mode-toggle {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: color-mix(in srgb, var(--border) 30%, transparent);
+    padding: 4px;
+    border-radius: 14px;
+}
+
+.mode-btn {
+    border: none;
+    background: transparent;
+    padding: 10px;
+    border-radius: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mode-btn.active {
+    background: var(--card);
+    color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.input-container {
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.field-hint {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 6px;
+    font-style: italic;
+}
+
+.screen-product-label {
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Fix text centering in viz */
+#overlay-array, #overlay-res, #overlay-ratio {
+    text-align: center;
+    width: 100%;
+}
