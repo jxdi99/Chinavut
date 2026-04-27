@@ -113,11 +113,11 @@
             viz.style.display = 'flex'; // Changed to flex for centering
         }
 
-        const usableH = sectionH - GROUND_PX - 80;
-        const usableW = sectionW - 60;
+        const usableH = sectionH - GROUND_PX - (sectionW < 600 ? 40 : 80);
+        const usableW = sectionW - (sectionW < 600 ? 30 : 60);
         const sceneH = Math.max(HUMAN_M, screenH + FLOOR_LIFT);
-        const sceneW = HUMAN_M / 3 + GAP_M + screenW;
-        const scale = Math.min(usableW / sceneW, usableH / sceneH, 65);
+        const sceneW = (HUMAN_M / 3) + GAP_M + screenW;
+        const scale = Math.min(usableW / sceneW, usableH / sceneH, (sectionW < 600 ? 45 : 65));
 
         const drawW = screenW * scale;
         const drawH = screenH * scale;
@@ -128,8 +128,8 @@
         viz.style.height = drawH + 'px';
         viz.style.bottom = (GROUND_PX + liftPx) + 'px';
 
-        const humanW = HUMAN_M / 3 * scale;
-        const totalW = humanW + GAP_M * scale + drawW;
+        const humanW = (HUMAN_M / 3) * scale;
+        const totalW = humanW + (GAP_M * scale) + drawW;
         const startX = (sectionW - totalW) / 2;
 
         const scaleWrap = document.getElementById('scale-wrap');
@@ -144,7 +144,7 @@
             humanSvg.style.width = 'auto';
         }
 
-        viz.style.left = (startX + humanW + GAP_M * scale) + 'px';
+        viz.style.left = (startX + humanW + (GAP_M * scale)) + 'px';
 
         // Update labels
         const dimWVal = document.getElementById('dim-w-val');
@@ -288,4 +288,3 @@
 
     waitForDeps();
 })();
-
