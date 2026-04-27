@@ -22,7 +22,8 @@
     const user = state.currentUser;
     
     // ใช้ Role จากฐานข้อมูลโดยตรง
-    let userRole = (user.role || 'sale').toLowerCase();
+    let userRole = (user.role || 'sale').toLowerCase().trim();
+    if (userRole === 'developer') userRole = 'dev'; // Map developer to dev
     
     // อัปเดตข้อมูลบนหน้าเว็บ
     document.getElementById('user-name-display').textContent = user.name || user.id;
@@ -37,8 +38,8 @@
 
     // เช็คสิทธิ์การมองเห็นเมนู
     document.querySelectorAll('.role-restricted').forEach(card => {
-      const allowedRoles = card.getAttribute('data-allowed').split(',');
-      if (allowedRoles.includes(userRole)) {
+      const allowedRoles = card.getAttribute('data-allowed').split(',').map(r => r.trim());
+      if (allowedRoles.includes(userRole) || userRole === 'dev' || userRole === 'admin') {
         card.style.display = 'flex'; // Show card
       }
     });
