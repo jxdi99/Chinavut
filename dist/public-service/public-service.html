@@ -3,15 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <base href="../">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แจ้งซ่อม / ติดตามงาน - RAZR LED</title>
-  <script type="module" crossorigin src="/calculator_LED/assets/public_service-D_U4ylQe.js"></script>
-  <link rel="modulepreload" crossorigin href="/calculator_LED/assets/client-CjmNwGvi.js">
-  <link rel="modulepreload" crossorigin href="/calculator_LED/assets/modulepreload-polyfill-N-DOuI4P.js">
-  <link rel="modulepreload" crossorigin href="/calculator_LED/assets/shared-CFkJnn7d.js">
-  <link rel="stylesheet" crossorigin href="/calculator_LED/assets/public_service-rSpA0wAf.css">
-  <link rel="stylesheet" crossorigin href="/calculator_LED/assets/styles-DIc31TLr.css">
+    <link rel="stylesheet" href="../../css/styles.css">
+    <link rel="stylesheet" href="public-service.css">
 </head>
 
 <body data-theme="light">
@@ -19,12 +15,12 @@
     <div class="topbar">
         <div class="container" style="display:flex; justify-content:space-between; align-items:center;">
             <div style="font-weight:700; font-size:1.1em; color:var(--text); display:flex; align-items:center; gap:8px;">
-                <img src="src/img/LOGO.png" alt="RAZR Logo" style="height:24px;">
+                <img src="../../src/img/LOGO.png" alt="RAZR Logo" style="height:24px;">
                 LED Service
             </div>
             <div style="display:flex; gap:12px; align-items:center;">
-                <a class="btn btn-secondary" href="public/public.html">📊 โปรแกรมคำนวณ</a>
-                <a class="btn btn-secondary" href="index.html">🔐 พนักงาน Login</a>
+                <a class="btn btn-secondary" href="../public-calculator/public-calculator.html">📊 โปรแกรมคำนวณ</a>
+                <a class="btn btn-secondary" href="../../index.html">🔐 พนักงาน Login</a>
             </div>
         </div>
     </div>
@@ -111,8 +107,10 @@
     <!-- Toast -->
     <div id="toast" style="display: none;"></div>
 
-    <script src="../js/data.js"></script>
-    <script src="../js/storage.js"></script>
+    <script src="../../js/data.js"></script>
+    <script src="../../js/storage.js"></script>
+    <script type="module" src="../../js/shared.js"></script>
+    <script type="module" src="public-service.js"></script>
 </body>
 
 </html>
