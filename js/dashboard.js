@@ -26,19 +26,19 @@
     if (userRole === 'developer' || userRole === 'development') userRole = 'dev'; // Map developer/development to dev
     if (userRole === 'owner' || userRole === 'ower') userRole = 'admin'; // Map owner (and typo ower) to admin
     
-    // อัปเดตข้อมูลบนหน้าเว็บ (Check if elements exist first)
-    const nameEl = document.getElementById('user-name-display');
-    const deptEl = document.getElementById('user-dept-display');
-    const roleEl = document.getElementById('user-role-display');
+    // อัปเดตข้อมูลบนหน้าเว็บ
+    const nameDisplay = document.getElementById('user-name-display');
+    const deptDisplay = document.getElementById('user-dept-display');
+    const roleDisplay = document.getElementById('user-role-display');
 
-    if (nameEl) nameEl.textContent = user.name || user.fullName || user.username || user.id;
-    if (deptEl) deptEl.textContent = user.position || user.role || '-';
-    if (roleEl) {
-      roleEl.textContent = userRole.toUpperCase();
+    if (nameDisplay) nameDisplay.textContent = user.name || user.fullName || user.username || user.id;
+    if (deptDisplay) deptDisplay.textContent = user.position || user.role || '-';
+    if (roleDisplay) {
+      roleDisplay.textContent = userRole.toUpperCase();
       if (userRole === 'dev' || userRole === 'admin') {
-        roleEl.style.background = '#ef4444'; // Red for admin
+        roleDisplay.style.background = '#ef4444'; // Red for admin
       } else if (userRole === 'store') {
-        roleEl.style.background = '#f59e0b'; // Amber for store
+        roleDisplay.style.background = '#f59e0b'; // Amber for store
       }
     }
 

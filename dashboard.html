@@ -24,22 +24,51 @@
   </div>
 
   <div class="dashboard-container page-fade-in">
-    <div class="dashboard-header">
-    </div>
-
-    <!-- Main Menu -->
+    <!-- 1. Global Menu -->
     <div class="dashboard-section">
-      <h2 class="dashboard-section-title">📊 โปรแกรมคำนวณราคา LED</h2>
+      <h2 class="dashboard-section-title">🌐 Global Menu (เมนูกลาง)</h2>
       <div class="menu-grid">
+        <a href="public/public-calculator/public-calculator.html" class="menu-card">
+          <div class="menu-icon">📱</div>
+          <div class="menu-title">คำนวนLED(ลูกค้า)</div>
+          <div class="menu-desc">โปรแกรมคำนวณราคาจอ LED สำหรับลูกค้า (Public Version)</div>
+        </a>
         <a href="calculator.html" class="menu-card">
           <div class="menu-icon">🧮</div>
           <div class="menu-title">คำนวณราคา LED (Internal)</div>
-          <div class="menu-desc">โปรแกรมคำนวณราคาจอ LED, Controller และอุปกรณ์เสริม สำหรับภายในบริษัท</div>
+          <div class="menu-desc">โปรแกรมคำนวณราคาจอ LED, Controller และอุปกรณ์เสริมแบบ Real-time</div>
         </a>
-        <a href="public/public-calculator/public-calculator.html" class="menu-card">
-          <div class="menu-icon">🌍</div>
-          <div class="menu-title">คำนวณราคา LED (ลูกค้า)</div>
-          <div class="menu-desc">ลิงก์สำหรับส่งให้ลูกค้าคำนวณราคาเบื้องต้นด้วยตัวเอง</div>
+      </div>
+    </div>
+
+    <!-- 2. LED Department -->
+    <div class="dashboard-section role-restricted" data-allowed="admin,dev,led">
+      <h2 class="dashboard-section-title">🔧 LED Department</h2>
+      <div class="menu-grid">
+        <a href="#" class="menu-card" onclick="alert('ระบบ Survey อยู่ระหว่างการพัฒนา'); return false;">
+          <div class="menu-icon">📏</div>
+          <div class="menu-title">ดูพื้นที่ (Survey)</div>
+          <div class="menu-desc">จัดการคิวดูพื้นที่และรายงานผลการสำรวจหน้างาน</div>
+        </a>
+        <a href="#" class="menu-card" onclick="alert('ระบบ Demo อยู่ระหว่างการพัฒนา'); return false;">
+          <div class="menu-icon">🎥</div>
+          <div class="menu-title">เดโม่สินค้า (Demo)</div>
+          <div class="menu-desc">ระบบขอเดโม่สินค้าและรายงานผลเดโม่</div>
+        </a>
+        <a href="#" class="menu-card" onclick="alert('ระบบ ติดตั้ง (Installation) อยู่ระหว่างการพัฒนา'); return false;">
+          <div class="menu-icon">🛠️</div>
+          <div class="menu-title">ติดตั้ง (Installation)</div>
+          <div class="menu-desc">ตารางงานติดตั้ง จัดทีมช่าง และรายงานผลการทำงาน</div>
+        </a>
+        <a href="led-products.html" class="menu-card">
+          <div class="menu-icon">🖥️</div>
+          <div class="menu-title">สต๊อก LED Display</div>
+          <div class="menu-desc">จัดการสต๊อกจอ LED: รับเข้า, นับสต๊อก และตรวจสอบ Lot/Batch</div>
+        </a>
+        <a href="controller-products.html" class="menu-card">
+          <div class="menu-icon">🕹️</div>
+          <div class="menu-title">สต๊อก Controller</div>
+          <div class="menu-desc">จัดการสต๊อก Controller และการ์ดส่ง: รับเข้า, นับสต๊อก และ Serial Number</div>
         </a>
       </div>
     </div>
