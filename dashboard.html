@@ -56,12 +56,12 @@
         <div class="menu-desc">เพิ่ม/ลบ/แก้ไข ราคาสินค้า, จอ LED, Controller ในฐานข้อมูล</div>
       </a>
 
-      <!-- Stock Management (Coming Soon - Dev/Admin/Store only) -->
-      <a href="#" class="menu-card role-restricted" data-allowed="admin,dev,store" id="menu-stock"
+      <!-- Stock Management (Coming Soon) -->
+      <a href="#" class="menu-card role-restricted" data-allowed="admin,dev,store,led" id="menu-stock"
         onclick="alert('ระบบจัดการสต๊อกสินค้า อยู่ระหว่างการพัฒนา'); return false;">
         <div class="menu-icon">📦</div>
-        <div class="menu-title">จัดการสต๊อก (Stock)</div>
-        <div class="menu-desc">ตรวจสอบและจัดการสต๊อกสินค้า LED (Coming Soon)</div>
+        <div class="menu-title">สต๊อกสินค้า (Stock)</div>
+        <div class="menu-desc">ตรวจสอบและจัดการสต๊อกสินค้า (Coming Soon)</div>
       </a>
 
       <!-- Job Request (Everyone) -->
@@ -92,6 +92,14 @@
         <div class="menu-icon">📢</div>
         <div class="menu-title">สินค้า Marketing</div>
         <div class="menu-desc">จัดการสินค้าและสื่อโฆษณาสำหรับฝ่าย Marketing (Coming Soon)</div>
+      </a>
+
+      <!-- Forecast (LED/Admin/Dev only) -->
+      <a href="#" class="menu-card role-restricted" data-allowed="admin,dev,led" id="menu-forecast"
+        onclick="alert('ระบบ Forecast จองสินค้า อยู่ระหว่างการพัฒนา'); return false;">
+        <div class="menu-icon">📊</div>
+        <div class="menu-title">Forecast จองสินค้า</div>
+        <div class="menu-desc">บันทึก Forecast และการจองสินค้าสำหรับงานโปรเจกต์ (Coming Soon)</div>
       </a>
     </div>
   </div>
