@@ -88,6 +88,93 @@
             displayResH: resH,
             pixelPitch: pixelPitch
         });
+
+        // Render Spec Table (New)
+        renderSpecTable({
+            cabinetW: g.w, cabinetH: g.h,
+            resW: led.rw, resH: led.rh,
+            avgW: led.avg, maxW: led.max,
+            pixelPitch: pixelPitch,
+            modelData: led,
+            wQty, hQty, totalQty,
+            screenW, screenH,
+            displayResW: resW,
+            displayResH: resH
+        });
+    }
+
+    function renderSpecTable(d) {
+        const specSection = document.getElementById('spec-section');
+        if (!specSection) return;
+
+        if (!d.wQty || !d.hQty) {
+            specSection.style.display = 'none';
+            return;
+        }
+        specSection.style.display = 'block';
+
+        const m = d.modelData || {};
+        let modW = m.mod_w, modH = m.mod_h;
+        let modResW = m.mod_res_w, modResH = m.mod_res_h;
+
+        if (!modW) {
+            if (d.cabinetW === 600) { modW = 300; modH = 168.75; }
+            else if (d.cabinetW === 640) { modW = 320; modH = 160; }
+            else if (d.cabinetW === 960) { modW = 320; modH = 160; }
+        }
+        if (!modResW && modW) {
+            modResW = Math.round((d.resW || 0) / ((d.cabinetW || 1) / modW));
+            modResH = Math.round((d.resH || 0) / ((d.cabinetH || 1) / (modH || 1)));
+        }
+
+        const ledType = (parseFloat(d.pixelPitch) || 0) < 2.5 ? 'COB' : 'SMD';
+        const diagM = Math.sqrt(Math.pow(d.screenW || 0, 2) + Math.pow(d.screenH || 0, 2)).toFixed(3);
+        const totalPx = (d.displayResW || 0) * (d.displayResH || 0);
+
+        const fmt = (v, dec) => {
+            if (v === null || v === undefined || v === '' || v === '?') return '?';
+            if (typeof v === 'number') return dec !== undefined ? v.toFixed(dec) : v.toLocaleString();
+            return v;
+        };
+
+        const LEFT = [
+            { l: App.t('pixelPitchLabel') || 'Pixel Pitch', v: `P${d.pixelPitch || '?'}`, u: 'mm.' },
+            { l: App.t('brightnessLabel') || 'Brightness', v: m.brightness || '?', u: 'cd/m²', hi: true },
+            { l: App.t('ledTypeLabel') || 'LED Type', v: `LED Indoor ${ledType}`, u: '', hi: true },
+            { l: App.t('cabSizeLabel') || 'Cabinet Size', v: `${d.cabinetW || '?'}×${d.cabinetH || '?'}`, u: 'mm.', hi: true },
+            { l: App.t('cabResLabel') || 'Cabinet Resolution', v: `${d.resW || '?'}×${d.resH || '?'}`, u: 'px' },
+            { l: App.t('modSizeLabel') || 'Module Size', v: modW ? `${modW}×${modH}` : '?', u: 'mm.', hi: true },
+            { l: App.t('modResLabel') || 'Module Resolution', v: modResW ? `${modResW}×${modResH}` : '?', u: 'px' }
+        ];
+
+        const RIGHT = [
+            { l: App.t('panelWidthLabel') || 'Panel Width', v: fmt(d.screenW, 2), u: 'm.' },
+            { l: App.t('panelHeightLabel') || 'Panel Height', v: fmt(d.screenH, 2), u: 'm.' },
+            { l: App.t('screenSize') || 'Area', v: fmt(d.screenW * d.screenH, 3), u: 'm²' },
+            { l: App.t('totalCabLabel') || 'Total Cabinets', v: fmt(d.wQty * d.hQty), u: 'Units', hi: true },
+            { l: App.t('displayResLabel') || 'Resolution', v: `${d.displayResW || 0}×${d.displayResH || 0}`, u: 'px' },
+            { l: App.t('totalPixels') || 'Total Pixels', v: fmt(totalPx), u: 'px' }
+        ];
+
+        const rows = Math.max(LEFT.length, RIGHT.length);
+        let html = '';
+        for (let i = 0; i < rows; i++) {
+            const ls = LEFT[i] || { l: '', v: '', u: '' };
+            const rs = RIGHT[i] || { l: '', v: '', u: '' };
+            const hiClass = (ls.hi || rs.hi) ? ' class="highlight-row"' : '';
+            const lVal = fmt(ls.v);
+            const rVal = fmt(rs.v);
+            const lUnit = (lVal && lVal !== '?') ? ls.u : '';
+            const rUnit = (rVal && rVal !== '?') ? rs.u : '';
+
+            html += `<tr${hiClass}>
+                <td style="font-weight:700; color:var(--text-main);">${ls.l}</td>
+                <td style="text-align:right; font-family:monospace; color:var(--engineering-orange);">${lVal} <span style="font-size:0.7rem; color:var(--text-muted);">${lUnit}</span></td>
+                <td style="font-weight:700; color:var(--text-main);">${rs.l}</td>
+                <td style="text-align:right; font-family:monospace; color:var(--engineering-orange);">${rVal} <span style="font-size:0.7rem; color:var(--text-muted);">${rUnit}</span></td>
+            </tr>`;
+        }
+        document.getElementById('spec-tbody').innerHTML = html;
     }
 
     function renderPreview(d) {

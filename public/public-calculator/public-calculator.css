@@ -483,3 +483,52 @@ select:focus, input:focus {
 @media (max-width: 600px) {
     .row { grid-template-columns: 1fr; }
 }
+
+/* Technical Specification Table (Public) */
+.spec-table-public {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 0.8rem;
+    color: var(--text-main);
+    border: 1px solid var(--engineering-orange);
+}
+
+.spec-table-public thead th {
+    background: var(--engineering-orange);
+    color: #fff;
+    font-weight: 800;
+    text-align: center;
+    padding: 8px;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+
+.spec-table-public td {
+    padding: 10px 12px;
+    border: 1px solid rgba(249, 144, 0, 0.2);
+    vertical-align: middle;
+}
+
+.spec-table-public tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.spec-table-public tr.highlight-row {
+    background: rgba(249, 144, 0, 0.05);
+}
+
+.table-wrap {
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid rgba(249, 144, 0, 0.3);
+}
+
+@media (max-width: 600px) {
+    .spec-table-public {
+        font-size: 0.7rem;
+    }
+    .spec-table-public td {
+        padding: 6px 8px;
+    }
+}
