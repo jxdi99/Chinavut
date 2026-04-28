@@ -34,73 +34,116 @@
       </div>
     </div>
 
-    <div class="menu-grid" id="menu-grid">
-      <!-- Calculator (Everyone) -->
-      <a href="calculator.html" class="menu-card" id="menu-calc">
-        <div class="menu-icon">🧮</div>
-        <div class="menu-title">คำนวณราคา LED</div>
-        <div class="menu-desc">โปรแกรมคำนวณราคาจอ LED, Controller และอุปกรณ์เสริมแบบ Real-time</div>
-      </a>
+    <!-- 1. Global Menu -->
+    <div class="dashboard-section">
+      <h2 class="dashboard-section-title">🌐 Global Menu (เมนูกลาง)</h2>
+      <div class="menu-grid">
+        <a href="#" class="menu-card" onclick="alert('ระบบ Reservation จองสินค้า อยู่ระหว่างการพัฒนา'); return false;">
+          <div class="menu-icon">📦</div>
+          <div class="menu-title">จองสินค้า (Reservation)</div>
+          <div class="menu-desc">ระบบจองสินค้าและเช็คคิวการจองสำหรับทุกแผนก</div>
+        </a>
+        <a href="service.html" class="menu-card">
+          <div class="menu-icon">📢</div>
+          <div class="menu-title">แจ้งงาน/แจ้งซ่อม</div>
+          <div class="menu-desc">แจ้งงานซ่อมงาน แจ้งซ่อม หรือแจ้งให้เข้าหน้างาน</div>
+        </a>
+        <a href="calculator.html" class="menu-card">
+          <div class="menu-icon">🧮</div>
+          <div class="menu-title">คำนวณราคา LED</div>
+          <div class="menu-desc">โปรแกรมคำนวณราคาจอ LED, Controller และอุปกรณ์เสริมแบบ Real-time</div>
+        </a>
+        <a href="#" class="menu-card" onclick="alert('ระบบจัดการ Projects อยู่ระหว่างการพัฒนา'); return false;">
+          <div class="menu-icon">📁</div>
+          <div class="menu-title">โปรเจกต์ (Projects)</div>
+          <div class="menu-desc">จัดการข้อมูลโปรเจกต์กลางของทุกแผนก</div>
+        </a>
+      </div>
+    </div>
 
-      <!-- Quotation (Everyone) -->
-      <a href="quote.html" class="menu-card" id="menu-quote">
-        <div class="menu-icon">📄</div>
-        <div class="menu-title">ใบเสนอราคา</div>
-        <div class="menu-desc">สร้างและพิมพ์ใบเสนอราคาเบื้องต้นสำหรับลูกค้า</div>
-      </a>
+    <!-- 2. LED Department -->
+    <div class="dashboard-section role-restricted" data-allowed="admin,dev,led">
+      <h2 class="dashboard-section-title">🔧 LED Department</h2>
+      <div class="menu-grid">
+        <a href="#" class="menu-card" onclick="alert('ระบบ Survey อยู่ระหว่างการพัฒนา'); return false;">
+          <div class="menu-icon">📏</div>
+          <div class="menu-title">ดูพื้นที่ (Survey)</div>
+          <div class="menu-desc">จัดการคิวดูพื้นที่และรายงานผลการสำรวจหน้างาน</div>
+        </a>
+        <a href="#" class="menu-card" onclick="alert('ระบบ Demo อยู่ระหว่างการพัฒนา'); return false;">
+          <div class="menu-icon">🎥</div>
+          <div class="menu-title">เดโม่สินค้า (Demo)</div>
+          <div class="menu-desc">ระบบขอเดโม่สินค้าและรายงานผลเดโม่</div>
+        </a>
+        <a href="#" class="menu-card" onclick="alert('ระบบ ติดตั้ง (Installation) อยู่ระหว่างการพัฒนา'); return false;">
+          <div class="menu-icon">🛠️</div>
+          <div class="menu-title">ติดตั้ง (Installation)</div>
+          <div class="menu-desc">ตารางงานติดตั้ง จัดทีมช่าง และรายงานผลการทำงาน</div>
+        </a>
+        <a href="led-products.html" class="menu-card">
+          <div class="menu-icon">📦</div>
+          <div class="menu-title">สต๊อกสินค้า (Stock)</div>
+          <div class="menu-desc">รับเข้า, นับสต๊อก และจัดการสินค้าจอ LED / Controller</div>
+        </a>
+      </div>
+    </div>
 
-      <!-- Admin / Master Data (Dev/Admin only) -->
-      <a href="backend/index.html" class="menu-card role-restricted" data-allowed="admin,dev" id="menu-admin">
-        <div class="menu-icon">⚙️</div>
-        <div class="menu-title">จัดการข้อมูล (Admin)</div>
-        <div class="menu-desc">เพิ่ม/ลบ/แก้ไข ราคาสินค้า, จอ LED, Controller ในฐานข้อมูล</div>
-      </a>
+    <!-- 3. Accounting Department -->
+    <div class="dashboard-section role-restricted" data-allowed="admin,dev,acc">
+      <h2 class="dashboard-section-title">💰 Accounting Department</h2>
+      <div class="menu-grid">
+        <a href="#" class="menu-card" onclick="alert('ระบบบัญชี อยู่ระหว่างการพัฒนา'); return false;">
+          <div class="menu-icon">🧾</div>
+          <div class="menu-title">ระบบบัญชี (Accounting)</div>
+          <div class="menu-desc">จัดการ Invoice, Billing, Payment และรายงานทางการเงิน</div>
+        </a>
+      </div>
+    </div>
 
-      <!-- Stock Management (Coming Soon) -->
-      <a href="#" class="menu-card role-restricted" data-allowed="admin,dev,store,led" id="menu-stock"
-        onclick="alert('ระบบจัดการสต๊อกสินค้า อยู่ระหว่างการพัฒนา'); return false;">
-        <div class="menu-icon">📦</div>
-        <div class="menu-title">สต๊อกสินค้า (Stock)</div>
-        <div class="menu-desc">ตรวจสอบและจัดการสต๊อกสินค้า (Coming Soon)</div>
-      </a>
+    <!-- 4. Sales Department -->
+    <div class="dashboard-section role-restricted" data-allowed="admin,dev,sale">
+      <h2 class="dashboard-section-title">🧲 Sales Department</h2>
+      <div class="menu-grid">
+        <a href="quote.html" class="menu-card">
+          <div class="menu-icon">📄</div>
+          <div class="menu-title">ใบเสนอราคา (Quotation)</div>
+          <div class="menu-desc">สร้างและพิมพ์ใบเสนอราคาเบื้องต้นสำหรับลูกค้า</div>
+        </a>
+        <a href="#" class="menu-card" onclick="alert('ระบบจัดการการขาย อยู่ระหว่างการพัฒนา'); return false;">
+          <div class="menu-icon">📈</div>
+          <div class="menu-title">จัดการการขาย (Sales)</div>
+          <div class="menu-desc">จัดการ Leads, ข้อมูลลูกค้า และ Sales Pipeline</div>
+        </a>
+      </div>
+    </div>
 
-      <!-- Job Request (Everyone) -->
-      <a href="service.html" class="menu-card" id="menu-service">
-        <div class="menu-icon">🛠️</div>
-        <div class="menu-title">แจ้งงาน/แจ้งซ่อม</div>
-        <div class="menu-desc">แจ้งงานซ่อมงาน แจ้งซ่อม หรือแจ้งให้เข้าหน้างาน</div>
-      </a>
+    <!-- 5. Marketing Department -->
+    <div class="dashboard-section role-restricted" data-allowed="admin,dev,mkt">
+      <h2 class="dashboard-section-title">📣 Marketing Department</h2>
+      <div class="menu-grid">
+        <a href="#" class="menu-card" onclick="alert('ระบบ Marketing อยู่ระหว่างการพัฒนา'); return false;">
+          <div class="menu-icon">🎯</div>
+          <div class="menu-title">การตลาด (Marketing)</div>
+          <div class="menu-desc">จัดการ Campaign, Content และ Analytics (Coming Soon)</div>
+        </a>
+      </div>
+    </div>
 
-      <!-- Manage Staff (Coming Soon - LED/Admin/Dev only) -->
-      <a href="#" class="menu-card role-restricted" data-allowed="admin,dev,led" id="menu-staff"
-        onclick="alert('ระบบจัดการพนักงาน อยู่ระหว่างการพัฒนา'); return false;">
-        <div class="menu-icon">👥</div>
-        <div class="menu-title">จัดการพนักงาน</div>
-        <div class="menu-desc">จัดการสิทธิ์ (Role), แผนก และรายชื่อพนักงานในระบบ (Coming Soon)</div>
-      </a>
-
-      <!-- LED Products (LED/Admin/Dev only) -->
-      <a href="led-products.html" class="menu-card role-restricted" data-allowed="admin,dev,led" id="menu-led-products">
-        <div class="menu-icon">💡</div>
-        <div class="menu-title">สินค้า LED</div>
-        <div class="menu-desc">รับเข้า, นับสต๊อก และจัดการสินค้าจอ LED ในระบบ</div>
-      </a>
-
-      <!-- Marketing Products (LED/Admin/Dev only) -->
-      <a href="#" class="menu-card role-restricted" data-allowed="admin,dev,led" id="menu-marketing-products"
-        onclick="alert('ระบบจัดการสินค้า Marketing อยู่ระหว่างการพัฒนา'); return false;">
-        <div class="menu-icon">📢</div>
-        <div class="menu-title">สินค้า Marketing</div>
-        <div class="menu-desc">จัดการสินค้าและสื่อโฆษณาสำหรับฝ่าย Marketing (Coming Soon)</div>
-      </a>
-
-      <!-- Forecast (LED/Admin/Dev only) -->
-      <a href="#" class="menu-card role-restricted" data-allowed="admin,dev,led" id="menu-forecast"
-        onclick="alert('ระบบ Forecast จองสินค้า อยู่ระหว่างการพัฒนา'); return false;">
-        <div class="menu-icon">📊</div>
-        <div class="menu-title">Forecast จองสินค้า</div>
-        <div class="menu-desc">บันทึก Forecast และการจองสินค้าสำหรับงานโปรเจกต์ (Coming Soon)</div>
-      </a>
+    <!-- 6. Settings -->
+    <div class="dashboard-section role-restricted" data-allowed="admin,dev">
+      <h2 class="dashboard-section-title">⚙️ Settings</h2>
+      <div class="menu-grid">
+        <a href="backend/index.html" class="menu-card">
+          <div class="menu-icon">⚙️</div>
+          <div class="menu-title">จัดการข้อมูล (Admin)</div>
+          <div class="menu-desc">เพิ่ม/ลบ/แก้ไข ราคาสินค้า, จอ LED, Controller ในฐานข้อมูล</div>
+        </a>
+        <a href="#" class="menu-card" onclick="alert('ระบบจัดการพนักงาน อยู่ระหว่างการพัฒนา'); return false;">
+          <div class="menu-icon">👥</div>
+          <div class="menu-title">จัดการพนักงาน</div>
+          <div class="menu-desc">จัดการสิทธิ์ผู้ใช้งาน, แผนก และการตั้งค่าระบบต่างๆ</div>
+        </a>
+      </div>
     </div>
   </div>
 

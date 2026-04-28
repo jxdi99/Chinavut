@@ -30,6 +30,22 @@
   letter-spacing: 0.5px;
 }
 
+.dashboard-section {
+  margin-bottom: 50px;
+}
+
+.dashboard-section-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

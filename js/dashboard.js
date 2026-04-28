@@ -36,11 +36,11 @@
       document.getElementById('user-role-display').style.background = '#f59e0b'; // Amber for store
     }
 
-    // เช็คสิทธิ์การมองเห็นเมนู
-    document.querySelectorAll('.role-restricted').forEach(card => {
-      const allowedRoles = card.getAttribute('data-allowed').split(',').map(r => r.trim());
+    // เช็คสิทธิ์การมองเห็นเมนูและ Section
+    document.querySelectorAll('.role-restricted').forEach(element => {
+      const allowedRoles = element.getAttribute('data-allowed').split(',').map(r => r.trim());
       if (allowedRoles.includes(userRole) || userRole === 'dev' || userRole === 'admin') {
-        card.style.display = 'flex'; // Show card
+        element.style.display = ''; // Reverts to CSS default (flex for cards, block for sections)
       }
     });
 
