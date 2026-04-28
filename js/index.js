@@ -45,6 +45,18 @@ import { StaffAPI } from '../src/api/client.js';
                 return;
             }
 
+            // Check Staff Status
+            const staffStatus = (staff.status || 'active').toLowerCase().trim();
+            if (staffStatus !== 'active') {
+                let msg = 'บัญชีของคุณถูกระงับการใช้งาน';
+                if (staffStatus === 'draft') msg = 'บัญชีของคุณยังไม่เปิดใช้งาน (Draft)';
+                else if (staffStatus === 'inactive') msg = 'บัญชีของคุณถูกระงับ (Inactive)';
+                else if (staffStatus === 'terminated') msg = 'บัญชีของคุณถูกยกเลิกการใช้งาน (Terminated)';
+                
+                App.showToast(msg);
+                return;
+            }
+
             // Authentication Success
             const cleanName = (fullName) => {
                 let name = fullName;

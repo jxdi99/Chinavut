@@ -23,7 +23,8 @@
     
     // ใช้ Role จากฐานข้อมูลโดยตรง
     let userRole = (user.role || 'sale').toLowerCase().trim();
-    if (userRole === 'developer') userRole = 'dev'; // Map developer to dev
+    if (userRole === 'developer' || userRole === 'development') userRole = 'dev'; // Map developer/development to dev
+    if (userRole === 'owner') userRole = 'admin'; // Map owner to admin
     
     // อัปเดตข้อมูลบนหน้าเว็บ
     document.getElementById('user-name-display').textContent = user.name || user.id;
