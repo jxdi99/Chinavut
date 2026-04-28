@@ -300,6 +300,103 @@
       pixelDensity: area > 0 ? Math.round(totalPixels / area) : 0,
       diagonal: Math.sqrt(screenW * screenW + screenH * screenH)
     }));
+
+    // Render Spec Table on same page
+    renderSpecTable({
+      modelName: led.name,
+      modelData: led,
+      groupKey: activeGroup,
+      groupType: g.type,
+      pixelPitch,
+      cabinetW: g.w, cabinetH: g.h,
+      cabinetWeight: g.weight,
+      resW: led.rw, resH: led.rh,
+      avgW: led.avg, maxW: led.max,
+      wQty, hQty, totalQty,
+      screenW, screenH, area,
+      displayResW: resW, displayResH: resH,
+      totalPixels
+    });
+  }
+
+  function renderSpecTable(d) {
+    const specSection = document.getElementById('spec-section');
+    if (!specSection) return;
+
+    if (!d.totalQty || d.totalQty <= 0) {
+      specSection.style.display = 'none';
+      return;
+    }
+    specSection.style.display = 'block';
+
+    const m = d.modelData || {};
+    let modW = m.mod_w, modH = m.mod_h;
+    let modResW = m.mod_res_w, modResH = m.mod_res_h;
+
+    if (!modW) {
+      if (d.cabinetW === 600) { modW = 300; modH = 168.75; }
+      else if (d.cabinetW === 640) { modW = 320; modH = 160; }
+      else if (d.cabinetW === 960) { modW = 320; modH = 160; }
+    }
+    if (!modResW && modW) {
+      modResW = Math.round((d.resW || 0) / ((d.cabinetW || 1) / modW));
+      modResH = Math.round((d.resH || 0) / ((d.cabinetH || 1) / (modH || 1)));
+    }
+
+    const ledType = (d.pixelPitch || 0) < 2.5 ? 'COB' : 'SMD';
+    const diagM = Math.sqrt(Math.pow(d.screenW || 0, 2) + Math.pow(d.screenH || 0, 2)).toFixed(3);
+    const totalPx = (d.displayResW || 0) * (d.displayResH || 0);
+
+    const fmt = (v, dec) => {
+      if (v === null || v === undefined || v === '' || v === '?') return '?';
+      if (typeof v === 'number') return dec !== undefined ? v.toFixed(dec) : v.toLocaleString();
+      return v;
+    };
+
+    const LEFT = [
+      { l: App.t('pixelPitchLabel'), v: `P${d.pixelPitch || '?'}`, u: 'mm.' },
+      { l: App.t('brightnessLabel'), v: m.brightness || '?', u: 'cd/m²', hi: true },
+      { l: App.t('ledTypeLabel'), v: `LED Indoor ${ledType}`, u: '', hi: true },
+      { l: App.t('cabSizeLabel'), v: `${d.cabinetW || '?'}×${d.cabinetH || '?'}`, u: 'mm.', hi: true },
+      { l: App.t('cabResLabel'), v: `${d.resW || '?'}×${d.resH || '?'}`, u: 'px' },
+      { l: App.t('modSizeLabel'), v: modW ? `${modW}×${modH}` : '?', u: 'mm.', hi: true },
+      { l: App.t('modResLabel'), v: modResW ? `${modResW}×${modResH}` : '?', u: 'px' },
+      { l: App.t('refreshRateLabel'), v: m.refresh_rate || '?', u: 'Hz', hi: true },
+      { l: App.t('materialLabel'), v: m.material || '?', u: '', hi: true },
+      { l: App.t('maintenanceLabel'), v: m.maintenance || '?', u: '', hi: true },
+      { l: App.t('cabWeightLabel'), v: fmt(d.cabinetWeight), u: 'Kg.' },
+      { l: App.t('typPowerLabel'), v: fmt(d.avgW), u: 'W/m²' },
+      { l: App.t('maxPowerLabel'), v: fmt(d.maxW), u: 'W/m²' },
+    ];
+
+    const RIGHT = [
+      { l: App.t('panelWidthLabel'), v: fmt(d.screenW, 2), u: 'm.' },
+      { l: App.t('panelHeightLabel'), v: fmt(d.screenH, 2), u: 'm.' },
+      { l: App.t('screenSize'), v: diagM, u: 'm²' },
+      { l: App.t('totalCabLabel'), v: fmt(d.totalQty), u: 'Units', hi: true },
+      { l: App.t('displayResLabel'), v: `${d.displayResW || 0}×${d.displayResH || 0}`, u: 'px' },
+      { l: App.t('totalPixels'), v: fmt(totalPx), u: 'px' },
+    ];
+
+    const rows = Math.max(LEFT.length, RIGHT.length);
+    let html = '';
+    for (let i = 0; i < rows; i++) {
+      const ls = LEFT[i] || { l: '', v: '', u: '' };
+      const rs = RIGHT[i] || { l: '', v: '', u: '' };
+      const hiClass = (ls.hi || rs.hi) ? ' class="highlight-row"' : '';
+      const lVal = fmt(ls.v);
+      const rVal = fmt(rs.v);
+      const lUnit = (lVal && lVal !== '?') ? ls.u : '';
+      const rUnit = (rVal && rVal !== '?') ? rs.u : '';
+
+      html += `<tr${hiClass}>
+        <td style="font-weight:700;">${ls.l}</td>
+        <td style="text-align:right; font-family:monospace;">${lVal} <span style="font-size:0.75rem; color:var(--muted);">${lUnit}</span></td>
+        <td style="font-weight:700;">${rs.l}</td>
+        <td style="text-align:right; font-family:monospace;">${rVal} <span style="font-size:0.75rem; color:var(--muted);">${rUnit}</span></td>
+      </tr>`;
+    }
+    document.getElementById('spec-tbody').innerHTML = html;
   }
 
   async function switchGroup(groupKey) {

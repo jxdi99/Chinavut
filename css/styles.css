@@ -587,6 +587,59 @@ td select {
   animation: fadeIn 0.6s ease-out forwards;
 }
 
+/* Technical Specification Table */
+.spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: .85rem;
+  border: 2px solid var(--primary);
+  margin-bottom: 20px;
+}
+
+.spec-table thead th {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 800;
+  text-align: center;
+  padding: 10px;
+  text-transform: uppercase;
+}
+
+.spec-table td {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.spec-table tr:nth-child(even) {
+  background: color-mix(in srgb, var(--border) 20%, transparent);
+}
+
+.spec-table tr.highlight-row {
+  background: color-mix(in srgb, var(--warning) 10%, transparent);
+}
+
+.spec-table tr.highlight-row td:nth-child(2),
+.spec-table tr.highlight-row td:nth-child(4) {
+  color: var(--warning);
+  font-weight: 800;
+}
+
+.unit-sfx {
+  font-size: .75rem;
+  color: var(--muted);
+  margin-left: 4px;
+}
+
+[data-theme="dark"] .spec-table thead th {
+  background: var(--primary);
+}
+
+[data-theme="dark"] .spec-table tr.highlight-row {
+  background: rgba(245, 158, 11, 0.15);
+}
+
 .welcome-banner {
   text-align: center;
   margin: 10px auto 25px;
