@@ -228,6 +228,13 @@
       unitHeight: "สูง (เมตร)",
       calcNoteTitle: "หมายเหตุ:",
       calcNoteDesc: "ราคาดังกล่าวเป็นราคารวมค่าติดตั้งและค่าใช้จ่ายอื่นๆ ที่เกี่ยวข้องแล้ว อย่างไรก็ตาม ราคานี้เป็นเพียงการประเมินเบื้องต้น อาจมีการเปลี่ยนแปลงได้ตามรายละเอียดหน้างานและเงื่อนไขเพิ่มเติม",
+      cabWidth: "กว้าง (จำนวนตู้)",
+      cabHeight: "สูง (จำนวนตู้)",
+      sizeWidthM: "กว้าง (เมตร)",
+      sizeHeightM: "สูง (เมตร)",
+      autoAdjustHint: "*ระบบจะปัดเศษให้พอดีกับขนาดตู้",
+      contactSales: "สนใจสั่งซื้อ หรือสอบถามราคา กรุณาติดต่อฝ่ายขาย CHINAVUT",
+      contactSalesSub: "ระบบคำนวณเบื้องต้นสำหรับลูกค้า",
     },
     en: {
       appTitle: "RAZR LED Solution Calculator Pro",
@@ -422,6 +429,13 @@
       unitHeight: "Height (Meter)",
       calcNoteTitle: "Note:",
       calcNoteDesc: "The above price includes installation and other related expenses. However, this is only a preliminary estimate and may change according to site details and additional conditions.",
+      cabWidth: "Width (Cabinets)",
+      cabHeight: "Height (Cabinets)",
+      sizeWidthM: "Width (Meters)",
+      sizeHeightM: "Height (Meters)",
+      autoAdjustHint: "*System auto-snaps to nearest cabinet size",
+      contactSales: "Interested in buying or more pricing info? Please contact CHINAVUT Sales",
+      contactSalesSub: "Preliminary calculation system for customers",
     },
   };
 })();

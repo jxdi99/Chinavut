@@ -94,12 +94,52 @@ body::before {
 }
 
 .brand-side span {
-    font-size: 1.4rem;
+    font-size: 1.1rem;
     font-weight: 800;
-    background: linear-gradient(to right, #fff, var(--primary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text-main);
     letter-spacing: -0.5px;
+}
+
+/* Contact Card */
+.contact-card {
+    margin-top: 30px;
+    padding: 24px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: #fff;
+    box-shadow: 0 15px 30px var(--primary-glow);
+    transition: transform 0.3s ease;
+}
+
+.contact-card:hover {
+    transform: scale(1.02);
+}
+
+.contact-icon {
+    font-size: 2rem;
+    background: rgba(255, 255, 255, 0.2);
+    min-width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    backdrop-filter: blur(5px);
+}
+
+.contact-info h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.contact-info p {
+    margin: 4px 0 0;
+    font-size: 0.85rem;
+    opacity: 0.8;
 }
 
 .action-side {
