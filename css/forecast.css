@@ -111,6 +111,66 @@
   font-size: 1.5rem;
 }
 
+/* Data Accountability Legend */
+.responsibility-legend {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.responsibility-legend h4 {
+  margin-bottom: 12px;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.legend-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.legend-item {
+  font-size: 0.9rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: white;
+}
+
+.badge-admin { background-color: #3b82f6; }
+.badge-led { background-color: #10b981; }
+.badge-sale { background-color: #f59e0b; }
+
+.resp-tag {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: rgba(0,0,0,0.05);
+  color: var(--muted);
+}
+
+.resp-tag.admin { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.resp-tag.led { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.resp-tag.sale { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+
+[data-theme="dark"] .resp-tag { background: rgba(255,255,255,0.05); }
+
 /* Table Card */
 .table-card {
   background: var(--surface);

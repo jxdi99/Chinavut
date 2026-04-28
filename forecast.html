@@ -87,6 +87,16 @@
       </div>
     </div>
 
+    <!-- Data Accountability Legend -->
+    <div class="responsibility-legend">
+      <h4>👤 ผู้รับผิดชอบข้อมูล (Data Accountability)</h4>
+      <div class="legend-grid">
+        <div class="legend-item"><span class="badge badge-admin">Admin/Store</span> จัดการสต๊อกรวม (ERP) และสินค้าขาเข้า</div>
+        <div class="legend-item"><span class="badge badge-led">LED Dept</span> จัดการคลังยืม, การติดตั้ง และสินค้าชำรุด</div>
+        <div class="legend-item"><span class="badge badge-sale">Sales</span> จัดการการจองสินค้า (Reservation)</div>
+      </div>
+    </div>
+
     <!-- Alert Banner for Low Stock -->
     <div class="alert-banner" id="low-stock-alert" style="display: none;">
       <span class="alert-icon">🔔</span>
@@ -114,14 +124,14 @@
             <tr>
               <th>รหัสสินค้า</th>
               <th>หมวดหมู่</th>
-              <th class="text-right">Total (ERP)</th>
-              <th class="text-right">คลังยืม</th>
-              <th class="text-right">จอง/ติดตั้ง</th>
-              <th class="text-right">ส่งซ่อม/เสีย</th>
-              <th class="text-right highlight-col">พร้อมใช้ (Ready)</th>
-              <th class="text-right">กำลังเข้า (In)</th>
-              <th class="text-right">วันที่เข้า</th>
-              <th class="text-right forecast-col">Forecast</th>
+              <th class="text-right">Total (ERP)<br><small class="resp-tag admin">Admin/Store</small></th>
+              <th class="text-right">คลังยืม<br><small class="resp-tag led">LED Dept</small></th>
+              <th class="text-right">จอง/ติดตั้ง<br><small class="resp-tag sale">Sales/LED</small></th>
+              <th class="text-right">ส่งซ่อม/เสีย<br><small class="resp-tag led">LED/Store</small></th>
+              <th class="text-right highlight-col">พร้อมใช้ (Ready)<br><small class="resp-tag">System</small></th>
+              <th class="text-right">กำลังเข้า (In)<br><small class="resp-tag admin">Purchasing</small></th>
+              <th class="text-right">วันที่เข้า<br><small class="resp-tag admin">Admin</small></th>
+              <th class="text-right forecast-col">Forecast<br><small class="resp-tag">System</small></th>
               <th class="text-center">สถานะ</th>
             </tr>
           </thead>
