@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สต๊อก Controller - CHINAVUT MARKETING</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/led-products.css">
+</head>
+
+<body>
+
+  <div class="topbar">
+    <div class="brand" style="display:flex; align-items:center; gap:12px;">
+      <img src="src/img/Logo_cm.png" alt="Chinavut Logo" style="height:40px;">
+      <h1 style="font-size: 1.2rem; margin: 0;">สต๊อก Controller</h1>
+    </div>
+    <div class="toolbar">
+      <a href="dashboard.html" class="btn btn-secondary">← กลับหน้าหลัก</a>
+      <button class="btn btn-secondary" id="theme-toggle">ธีม: สว่าง</button>
+      <button class="btn btn-danger" id="logout-btn">ออกจากระบบ</button>
+    </div>
+  </div>
+
+  <div class="led-container page-fade-in">
+
+    <!-- ═══ Sub-menu (default view) ═══ -->
+    <div id="led-main-menu">
+      <div class="section-header" style="margin-bottom: 24px;">
+        <h2>เลือกเมนูที่ต้องการ (Controller)</h2>
+      </div>
+      <div class="sub-menu-grid">
+        <div class="sub-menu-card" data-target="section-overview" id="btn-overview">
+          <div class="sub-menu-icon">📊</div>
+          <div class="sub-menu-title">Overview</div>
+          <div class="sub-menu-desc">ภาพรวมสต๊อก Controller และอุปกรณ์ส่งทั้งหมด</div>
+        </div>
+        <div class="sub-menu-card" data-target="section-receive" id="btn-receive">
+          <div class="sub-menu-icon">📥</div>
+          <div class="sub-menu-title">Stock In</div>
+          <div class="sub-menu-desc">บันทึกรับ Controller เข้าสต๊อก พร้อมระบุ Serial Number และสถานที่เก็บ</div>
+        </div>
+        <div class="sub-menu-card" data-target="section-manage" id="btn-manage">
+          <div class="sub-menu-icon">⚙️</div>
+          <div class="sub-menu-title">Manage</div>
+          <div class="sub-menu-desc">แก้ไขข้อมูล/ลบ รายการสต๊อก Controller</div>
+        </div>
+        <div class="sub-menu-card" data-target="section-stock" id="btn-stock">
+          <div class="sub-menu-icon">🔢</div>
+          <div class="sub-menu-title">Count (นับสต๊อก)</div>
+          <div class="sub-menu-desc">ตรวจสอบและบันทึกจำนวน Controller คงเหลือ</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Section 0: Overview ═══ -->
+    <div class="led-section" id="section-overview">
+      <div class="section-header">
+        <h2>📊 Controller Overview</h2>
+        <button class="back-link" id="back-from-overview">← กลับเมนู</button>
+      </div>
+      
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-value" id="ov-total-units">0</div>
+          <div class="stat-label">Total Units</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="ov-ready-units">0</div>
+          <div class="stat-label">พร้อมใช้งาน</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="ov-broken-units">0</div>
+          <div class="stat-label">ชำรุด/ส่งซ่อม</div>
+        </div>
+      </div>
+
+      <div class="card" style="padding: 20px;">
+        <h3 style="margin-bottom: 16px;">📈 สรุปแยกตามรุ่น (Summary by Model)</h3>
+        <div class="inventory-table-wrap">
+          <table class="inventory-table">
+            <thead>
+              <tr>
+                <th>รุ่น (Model)</th>
+                <th class="text-right">จำนวนทั้งหมด (Units)</th>
+                <th class="text-right">พร้อมใช้งาน</th>
+                <th class="text-right">ชำรุด</th>
+                <th class="text-center">สถานะ</th>
+              </tr>
+            </thead>
+            <tbody id="overview-table-body">
+              <tr><td colspan="5" class="text-center">กำลังประมวลผลข้อมูล...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Section 1: Stock In ═══ -->
+    <div class="led-section" id="section-receive">
+      <div class="section-header">
+        <h2>📥 รับเข้าสินค้า (Controller)</h2>
+        <button class="back-link" id="back-from-receive">← กลับเมนู</button>
+      </div>
+
+      <div class="card">
+        <div class="receive-form">
+          <div class="receive-row">
+            <div class="field">
+              <label>รุ่น (Model)</label>
+              <input type="text" id="receive-model" placeholder="เช่น VX4S, MCTRL300" autofocus>
+            </div>
+            <div class="field">
+              <label>Serial Number (SN)</label>
+              <input type="text" id="receive-lot" placeholder="SN12345678">
+            </div>
+            <div class="field">
+              <label>Location (สถานที่เก็บ)</label>
+              <input type="text" id="receive-location" placeholder="เช่น คลัง 1">
+            </div>
+            <div class="field">
+              <label>วันที่รับเข้า</label>
+              <input type="date" id="receive-date">
+            </div>
+            <div class="field">
+              <label>แหล่งที่มา</label>
+              <input type="text" id="receive-source" placeholder="เช่น NovaStar">
+            </div>
+            <div class="field">
+              <label>สภาพสินค้า</label>
+              <select id="receive-status">
+                <option value="ดี">ดี</option>
+                <option value="รอตรวจสอบ">รอตรวจสอบ</option>
+                <option value="เสีย">เสีย</option>
+              </select>
+            </div>
+            <div class="field" style="grid-column: 1 / -1;">
+              <label>หมายเหตุ</label>
+              <input type="text" id="receive-notes" placeholder="รายละเอียดเพิ่มเติม">
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; margin-top: 12px;">
+            <button class="btn btn-primary" id="receive-submit" style="flex: 1;">📥 บันทึกรับเข้า</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Section 2: Count ═══ -->
+    <div class="led-section" id="section-stock">
+      <div class="section-header">
+        <h2>🔢 นับสต๊อก Controller</h2>
+        <button class="back-link" id="back-from-stock">← กลับเมนู</button>
+      </div>
+
+      <div class="search-bar">
+        <input type="text" id="stock-search" placeholder="🔍 ค้นหาตาม SN, รุ่น หรือหมายเหตุ..." style="width: 100%;">
+      </div>
+
+      <div class="card">
+        <div class="inventory-table-wrap">
+          <table class="inventory-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>รุ่น (Model)</th>
+                <th>Serial Number</th>
+                <th>Location</th>
+                <th>สภาพ</th>
+                <th>วันที่บันทึก</th>
+                <th>หมายเหตุ</th>
+              </tr>
+            </thead>
+            <tbody id="stock-table-body">
+              <tr><td colspan="7" class="text-center">กำลังโหลดข้อมูล...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Section 3: Manage ═══ -->
+    <div class="led-section" id="section-manage">
+      <div class="section-header">
+        <h2>⚙️ จัดการสินค้า Controller</h2>
+        <button class="back-link" id="back-from-manage">← กลับเมนู</button>
+      </div>
+
+      <div class="search-bar">
+        <input type="text" id="manage-search" placeholder="🔍 ค้นหาเพื่อแก้ไข/ลบ..." style="width: 100%;">
+      </div>
+
+      <div class="card">
+        <div class="inventory-table-wrap">
+          <table class="inventory-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>รุ่น</th>
+                <th>SN</th>
+                <th>Location</th>
+                <th>สภาพ</th>
+                <th>จัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="manage-table-body">
+              <tr><td colspan="6" class="text-center">กำลังโหลดข้อมูล...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script type="module" src="js/shared.js"></script>
+  <script type="module" src="js/controller-products.js"></script>
+</body>
+
+</html>

@@ -14,7 +14,8 @@ import { supabase } from '../src/api/client.js';
         document.getElementById('led-main-menu').style.display = 'none';
         document.querySelectorAll('.led-section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-
+ 
+        if (id === 'section-overview') loadOverviewView();
         if (id === 'section-stock') loadStockView();
         if (id === 'section-manage') loadManageView();
         if (id === 'section-receive') loadRecentReceive();
@@ -26,6 +27,7 @@ import { supabase } from '../src/api/client.js';
         const { data, error } = await supabase
             .from('led_inventory')
             .select('*')
+            .eq('category', 'led') // Filter for LED products
             .order('created_at', { ascending: false });
         if (error) {
             console.error('Fetch inventory error:', error);
@@ -47,6 +49,7 @@ import { supabase } from '../src/api/client.js';
     // ── Insert item to DB ──
     async function insertItem(lot, location, cabinet, module, status, notes, model, pixel, spare_module, date_entered, source) {
         const payload = {
+            category: 'led', // Explicitly mark as LED
             lot_number: lot,
             location: location || null,
             cabinet: cabinet || 0,
@@ -141,6 +144,65 @@ import { supabase } from '../src/api/client.js';
                     <small>โดย ${item.received_by || '-'}</small>
                 </div>
             </div>
+        `).join('');
+    }
+
+    // ── SECTION: Overview ──
+    async function loadOverviewView() {
+        allInventory = await fetchInventory();
+        
+        // Stats
+        const totalCabinet = allInventory.reduce((s, i) => s + (parseInt(i.cabinet) || 0), 0);
+        const totalModule = allInventory.reduce((s, i) => s + (parseInt(i.module) || 0), 0);
+        const totalSpare = allInventory.reduce((s, i) => s + (parseInt(i.spare_module) || 0), 0);
+
+        document.getElementById('ov-total-cabinet').textContent = totalCabinet.toLocaleString('th-TH');
+        document.getElementById('ov-total-module').textContent = totalModule.toLocaleString('th-TH');
+        document.getElementById('ov-total-spare').textContent = totalSpare.toLocaleString('th-TH');
+
+        renderOverviewTable();
+    }
+
+    function renderOverviewTable() {
+        const tbody = document.getElementById('overview-table-body');
+        
+        // Group by Model
+        const summary = {};
+        allInventory.forEach(item => {
+            const key = item.model || 'Unknown';
+            if (!summary[key]) {
+                summary[key] = {
+                    model: key,
+                    pixel: item.pixel || '-',
+                    cabinet: 0,
+                    module: 0,
+                    spare: 0,
+                    status: 'ดี'
+                };
+            }
+            summary[key].cabinet += parseInt(item.cabinet) || 0;
+            summary[key].module += parseInt(item.module) || 0;
+            summary[key].spare += parseInt(item.spare_module) || 0;
+            if (item.status === 'เสีย') summary[key].status = 'มีของเสีย';
+        });
+
+        const rows = Object.values(summary);
+        if (rows.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center">ไม่พบข้อมูลสินค้า</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = rows.map(row => `
+            <tr>
+                <td><strong>${row.model}</strong></td>
+                <td>${row.pixel}</td>
+                <td class="text-right">${row.cabinet.toLocaleString()}</td>
+                <td class="text-right">${row.module.toLocaleString()}</td>
+                <td class="text-right">${row.spare.toLocaleString()}</td>
+                <td class="text-center">
+                    <span class="badge ${row.status === 'มีของเสีย' ? 'warn' : ''}">${row.status}</span>
+                </td>
+            </tr>
         `).join('');
     }
 
@@ -311,6 +373,7 @@ import { supabase } from '../src/api/client.js';
         });
 
         // Back buttons
+        document.getElementById('back-from-overview').addEventListener('click', showMenu);
         document.getElementById('back-from-receive').addEventListener('click', showMenu);
         document.getElementById('back-from-stock').addEventListener('click', showMenu);
         document.getElementById('back-from-manage').addEventListener('click', showMenu);
