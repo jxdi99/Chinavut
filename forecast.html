@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stock & Forecast - CHINAVUT MARKETING</title>
+  <link rel="icon" type="image/png" href="src/img/CM.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/forecast.css">
+</head>
+<body data-theme="light">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="brand" style="display:flex; align-items:center; gap:12px;">
+      <img src="src/img/CM.png" alt="Chinavut Logo" style="height:40px;">
+      <h1 style="font-size: 1.2rem; margin: 0;">CHINAVUT MARKETING</h1>
+    </div>
+    <div class="toolbar">
+      <span id="user-display" style="font-weight: 600; margin-right: 15px;">-</span>
+      <button class="btn btn-secondary" onclick="window.location.href='dashboard.html'">กลับหน้าหลัก</button>
+      <button class="btn btn-secondary" id="theme-toggle">ธีม: สว่าง</button>
+      <button class="btn btn-danger" id="logout-btn">ออกจากระบบ</button>
+    </div>
+  </div>
+
+  <div class="page-container page-fade-in">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">📦 Stock Management & Forecast</h1>
+        <p class="page-subtitle">ระบบจัดการสต๊อกรวม ภาพรวมสินค้า และการคำนวณ Forecast</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="alert('ระบบเพิ่มการรับเข้าสินค้า')">+ รับเข้าสินค้า (Admin)</button>
+        <button class="btn btn-secondary" onclick="alert('ดาวน์โหลดรายงาน Excel')">📥 Export Report</button>
+      </div>
+    </div>
+
+    <!-- Summary Dashboard Widgets -->
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-icon" style="background: rgba(37, 99, 235, 0.1); color: var(--primary);">📦</div>
+        <div class="summary-info">
+          <h3>Total Stock (ERP)</h3>
+          <p class="summary-value" id="val-total-stock">0</p>
+          <span class="summary-desc">ยอดรวมสินค้าทั้งหมดในระบบ</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">✅</div>
+        <div class="summary-info">
+          <h3>พร้อมใช้งาน (Ready)</h3>
+          <p class="summary-value" id="val-ready-stock">0</p>
+          <span class="summary-desc">สินค้าคลังหลักพร้อมขาย/ติดตั้ง</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">🔒</div>
+        <div class="summary-info">
+          <h3>จองแล้ว (Reserved)</h3>
+          <p class="summary-value" id="val-reserved-stock">0</p>
+          <span class="summary-desc">รอส่งมอบ / รอติดตั้ง</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">🔄</div>
+        <div class="summary-info">
+          <h3>คลังยืม (Borrowed)</h3>
+          <p class="summary-value" id="val-borrowed-stock">0</p>
+          <span class="summary-desc">Demo / สินค้าสำรอง (Spare)</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">⚠️</div>
+        <div class="summary-info">
+          <h3>ของเสีย/ไม่พร้อม (Broken)</h3>
+          <p class="summary-value" id="val-broken-stock">0</p>
+          <span class="summary-desc">Dead Stock / ส่งซ่อม</span>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">🚚</div>
+        <div class="summary-info">
+          <h3>สินค้ากำลังเข้า (Incoming)</h3>
+          <p class="summary-value" id="val-incoming-stock">0</p>
+          <span class="summary-desc">ของกำลังเข้าสต๊อกในอนาคต</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Banner for Low Stock -->
+    <div class="alert-banner" id="low-stock-alert" style="display: none;">
+      <span class="alert-icon">🔔</span>
+      <div class="alert-content">
+        <strong>แจ้งเตือน:</strong> มีสินค้าบางรายการที่สถานะ Forecast ติดลบ หรือพร้อมใช้งานต่ำกว่าเกณฑ์!
+      </div>
+    </div>
+
+    <!-- Main Table Section -->
+    <div class="table-card">
+      <div class="table-header-controls">
+        <h3>รายการ Forecast สินค้า (LED & Controller)</h3>
+        <div class="table-filters">
+          <input type="text" id="search-product" placeholder="ค้นหาสินค้า..." class="form-input">
+          <select id="filter-category" class="form-input">
+            <option value="all">ทุกหมวดหมู่</option>
+            <option value="led">LED Display</option>
+            <option value="controller">Controller</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>รหัสสินค้า</th>
+              <th>หมวดหมู่</th>
+              <th class="text-right">Total (ERP)</th>
+              <th class="text-right">คลังยืม</th>
+              <th class="text-right">จอง/ติดตั้ง</th>
+              <th class="text-right">ส่งซ่อม/เสีย</th>
+              <th class="text-right highlight-col">พร้อมใช้ (Ready)</th>
+              <th class="text-right">กำลังเข้า (In)</th>
+              <th class="text-right">วันที่เข้า</th>
+              <th class="text-right forecast-col">Forecast</th>
+              <th class="text-center">สถานะ</th>
+            </tr>
+          </thead>
+          <tbody id="forecast-tbody">
+            <!-- Data will be injected here via JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script type="module" src="js/shared.js"></script>
+  <script type="module" src="js/forecast.js"></script>
+</body>
+</html>

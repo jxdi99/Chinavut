@@ -38,10 +38,11 @@
     <div class="dashboard-section">
       <h2 class="dashboard-section-title">🌐 Global Menu (เมนูกลาง)</h2>
       <div class="menu-grid">
-        <a href="#" class="menu-card" onclick="alert('ระบบ Reservation จองสินค้า อยู่ระหว่างการพัฒนา'); return false;">
-          <div class="menu-icon">📦</div>
-          <div class="menu-title">จองสินค้า (Reservation)</div>
-          <div class="menu-desc">ระบบจองสินค้าและเช็คคิวการจองสำหรับทุกแผนก</div>
+        <!-- Forecast (Restricted to Admin, Dev, Store) -->
+        <a href="forecast.html" class="menu-card role-restricted" data-allowed="admin,dev,store">
+          <div class="menu-icon">📊</div>
+          <div class="menu-title">สรุปภาพรวมสินค้า (Forecast)</div>
+          <div class="menu-desc">ดูสต๊อกรวม, การจองสินค้า และประมาณการสินค้าคงเหลือ</div>
         </a>
         <a href="service.html" class="menu-card">
           <div class="menu-icon">📢</div>
@@ -150,7 +151,7 @@
   <script src="js/data.js"></script>
   <script src="js/storage.js"></script>
   <script type="module" src="js/shared.js"></script>
-  <script src="js/dashboard.js?v=3"></script>
+  <script src="js/dashboard.js?v=4"></script>
 </body>
 
 </html>
