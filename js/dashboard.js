@@ -24,7 +24,7 @@
     // ใช้ Role จากฐานข้อมูลโดยตรง
     let userRole = (user.role || 'sale').toLowerCase().trim();
     if (userRole === 'developer' || userRole === 'development') userRole = 'dev'; // Map developer/development to dev
-    if (userRole === 'owner') userRole = 'admin'; // Map owner to admin
+    if (userRole === 'owner' || userRole === 'ower') userRole = 'admin'; // Map owner (and typo ower) to admin
     
     // อัปเดตข้อมูลบนหน้าเว็บ
     document.getElementById('user-name-display').textContent = user.name || user.id;
@@ -41,7 +41,7 @@
     document.querySelectorAll('.role-restricted').forEach(element => {
       const allowedRoles = element.getAttribute('data-allowed').split(',').map(r => r.trim());
       if (allowedRoles.includes(userRole) || userRole === 'dev' || userRole === 'admin') {
-        element.style.display = ''; // Reverts to CSS default (flex for cards, block for sections)
+        element.classList.remove('role-restricted'); // ลบคลาสที่ซ่อนออก เพื่อให้แสดงผลตามปกติ
       }
     });
 
