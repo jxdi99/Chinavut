@@ -34,10 +34,11 @@
       </div>
     </div>
 
-    <!-- 1. Global Menu -->
-    <div class="dashboard-section">
-      <h2 class="dashboard-section-title">🌐 Global Menu (เมนูกลาง)</h2>
+    <!-- 1. LED Department -->
+    <div class="dashboard-section role-restricted" data-allowed="admin,dev,led">
+      <h2 class="dashboard-section-title">🔧 LED Department & Solutions</h2>
       <div class="menu-grid">
+        <!-- Calculation -->
         <a href="calculator.html" class="menu-card">
           <div class="menu-icon">🧮</div>
           <div class="menu-title">คำนวณราคา LED (Internal)</div>
@@ -48,18 +49,12 @@
           <div class="menu-title">คำนวณราคา LED (Public)</div>
           <div class="menu-desc">โปรแกรมคำนวณราคาสำหรับลูกค้า (เข้าถึงได้จากภายนอก)</div>
         </a>
-        <a href="forecast.html" class="menu-card role-restricted" data-allowed="admin,dev,store,LED">
+        <!-- Inventory/Forecast -->
+        <a href="forecast.html" class="menu-card role-restricted" data-allowed="admin,dev,store,led">
           <div class="menu-icon">📊</div>
           <div class="menu-title">สรุปภาพรวมสินค้า (Forecast)</div>
           <div class="menu-desc">ดูสต๊อกรวม, การจองสินค้า และประมาณการสินค้าคงเหลือ</div>
         </a>
-      </div>
-    </div>
- 
-    <!-- 2. LED Department -->
-    <div class="dashboard-section role-restricted" data-allowed="admin,dev,led">
-      <h2 class="dashboard-section-title">🔧 LED Department</h2>
-      <div class="menu-grid">
         <a href="#" class="menu-card" onclick="alert('ระบบ Survey อยู่ระหว่างการพัฒนา'); return false;">
           <div class="menu-icon">📏</div>
           <div class="menu-title">ดูพื้นที่ (Survey)</div>
