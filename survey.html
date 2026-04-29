@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบสำรวจหน้างาน (Survey) - RAZR LED Portal</title>
+  <link rel="icon" type="image/png" href="src/img/Logo_cm.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/led-products.css">
+  <style>
+    .survey-card {
+      border-left: 4px solid #f59e0b;
+    }
+    .badge-survey { background: #f59e0b; color: white; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand" style="display:flex; align-items:center; gap:12px;">
+      <img src="src/img/Logo_cm.png" alt="Chinavut Logo" style="height:40px;">
+      <h1 style="font-size: 1.2rem; margin: 0;">ระบบสำรวจหน้างาน (Survey)</h1>
+    </div>
+    <div class="toolbar">
+      <a href="dashboard.html" class="btn btn-secondary">← กลับหน้าหลัก</a>
+      <button class="btn btn-secondary" id="theme-toggle">ธีม: สว่าง</button>
+      <button class="btn btn-danger" id="logout-btn">ออกจากระบบ</button>
+    </div>
+  </div>
+
+  <div class="led-container page-fade-in">
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+      <div>
+        <h2 style="margin:0;">📋 รายการสำรวจหน้างาน</h2>
+        <p style="color:var(--muted); margin:4px 0 0;">จัดการคิวสำรวจและเรียกดูรายงานผลการสำรวจ</p>
+      </div>
+    </div>
+
+    <!-- Tabs/Filters -->
+    <div class="pipeline-bar" style="margin-bottom:20px;">
+      <div class="pipeline-step active" data-tab="queue">⏳ คิวที่ต้องสำรวจ</div>
+      <div class="pipeline-step" data-tab="reports">📄 รายงานผลการสำรวจทั้งหมด</div>
+    </div>
+
+    <!-- Queue Tab -->
+    <div id="tab-queue" class="tab-content">
+      <div class="card">
+        <div class="inventory-table-wrap">
+          <table class="inventory-table">
+            <thead>
+              <tr>
+                <th>Project ID</th>
+                <th>ชื่อโปรเจค</th>
+                <th>ลูกค้า</th>
+                <th>สถานที่</th>
+                <th>เซลส์</th>
+                <th>อัปเดตล่าสุด</th>
+                <th>การจัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="queue-table-body">
+              <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted);">กำลังโหลดคิวงาน...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reports Tab (Hidden by default) -->
+    <div id="tab-reports" class="tab-content" style="display:none;">
+      <div class="card">
+        <div class="inventory-table-wrap">
+          <table class="inventory-table">
+            <thead>
+              <tr>
+                <th>เลขที่เอกสาร</th>
+                <th>โปรเจคอ้างอิง</th>
+                <th>ลูกค้า</th>
+                <th>ผู้สำรวจ</th>
+                <th>วันที่สำรวจ</th>
+                <th>รายละเอียด</th>
+                <th>ไฟล์</th>
+              </tr>
+            </thead>
+            <tbody id="reports-table-body">
+              <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted);">กำลังโหลดรายงาน...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script type="module" src="js/shared.js"></script>
+  <script type="module" src="js/survey.js"></script>
+</body>
+</html>
