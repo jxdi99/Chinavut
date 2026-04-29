@@ -22,31 +22,41 @@ import { supabase } from '../src/api/client.js';
         }
 
         const idNum = parseInt(projectId);
-        console.log('Fetching data for Project ID:', idNum);
+        console.log('Loading data for Project:', idNum);
 
-        // Fetch data individually to catch specific errors
+        // Fetch data individually to isolate errors
         const projRes = await supabase.from('led_projects').select('*').eq('id', idNum).single();
-        const invRes = await supabase.from('led_inventory').select('*');
-        const txnRes = await supabase.from('led_transactions').select('*');
-        const modelRes = await supabase.from('led_models').select('name, id').order('name');
-
         if (projRes.error) {
-            console.error('Project fetch error:', projRes.error);
-            alert('โหลดข้อมูลโปรเจคไม่สำเร็จ: ' + projRes.error.message);
+            console.error('Project Error:', projRes.error);
+            alert('ไม่พบข้อมูลโปรเจค: ' + projRes.error.message);
             window.location.href = 'booking.html';
             return;
         }
 
-        if (invRes.error) console.error('Inventory fetch error:', invRes.error);
-        if (modelRes.error) console.error('Models fetch error:', modelRes.error);
+        const invRes = await supabase.from('led_inventory').select('*');
+        if (invRes.error) {
+            console.error('Inventory Error:', invRes.error);
+            alert('โหลดสต๊อกไม่สำเร็จ: ' + invRes.error.message);
+        }
+
+        const txnRes = await supabase.from('led_transactions').select('*');
+        const modelRes = await supabase.from('led_models').select('name, id').order('name');
+        if (modelRes.error) {
+            console.error('Models Error:', modelRes.error);
+            alert('โหลดรายชื่อรุ่นสินค้าไม่สำเร็จ: ' + modelRes.error.message);
+        }
 
         currentProject = projRes.data;
         allInventory = invRes.data || [];
         allTransactions = txnRes.data || [];
         const allModels = modelRes.data || [];
 
-        console.log('Inventory loaded:', allInventory.length, 'items');
-        console.log('Models loaded:', allModels.length, 'items');
+        console.log('Inventory items:', allInventory.length);
+        console.log('Models found:', allModels.length);
+
+        if (allModels.length === 0) {
+            alert('คำเตือน: ไม่พบรายชื่อรุ่นสินค้าในฐานข้อมูล (led_models)');
+        }
 
         // Pre-fill
         document.getElementById('bk-project-name').value = `${currentProject.project_id} - ${currentProject.project_name} (${currentProject.customer_name})`;

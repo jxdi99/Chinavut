@@ -21,23 +21,39 @@ import { supabase } from '../src/api/client.js';
         }
 
         const idNum = parseInt(projectId);
+        console.log('Loading data for Project:', idNum);
 
-        // Fetch data
-        const [projRes, invRes, modelRes] = await Promise.all([
-            supabase.from('led_projects').select('*').eq('id', idNum).single(),
-            supabase.from('led_inventory').select('*'),
-            supabase.from('led_models').select('name, id').order('name')
-        ]);
-
-        if (projRes.error || !projRes.data) {
-            alert('โหลดข้อมูลโปรเจคไม่สำเร็จ');
+        // Fetch data individually to isolate errors
+        const projRes = await supabase.from('led_projects').select('*').eq('id', idNum).single();
+        if (projRes.error) {
+            console.error('Project Error:', projRes.error);
+            alert('ไม่พบข้อมูลโปรเจค: ' + projRes.error.message);
             window.location.href = 'demo.html';
             return;
+        }
+
+        const invRes = await supabase.from('led_inventory').select('*');
+        if (invRes.error) {
+            console.error('Inventory Error:', invRes.error);
+            alert('โหลดสต๊อกไม่สำเร็จ: ' + invRes.error.message);
+        }
+
+        const modelRes = await supabase.from('led_models').select('name, id').order('name');
+        if (modelRes.error) {
+            console.error('Models Error:', modelRes.error);
+            alert('โหลดรายชื่อรุ่นสินค้าไม่สำเร็จ: ' + modelRes.error.message);
         }
 
         currentProject = projRes.data;
         allInventory = invRes.data || [];
         const allModels = modelRes.data || [];
+
+        console.log('Inventory items:', allInventory.length);
+        console.log('Models found:', allModels.length);
+
+        if (allModels.length === 0) {
+            alert('คำเตือน: ไม่พบรายชื่อรุ่นสินค้าในฐานข้อมูล (led_models)');
+        }
 
         // Pre-fill
         document.getElementById('dm-project-name').value = `${currentProject.project_id} - ${currentProject.project_name}`;
