@@ -656,6 +656,13 @@ import { supabase } from '../src/api/client.js';
             const search = document.getElementById('manage-search').value;
             renderManageTable(search);
         });
+
+        // Auto-navigate to section via URL param (e.g. ?section=movement)
+        const urlParams = new URLSearchParams(window.location.search);
+        const targetSection = urlParams.get('section');
+        if (targetSection) {
+            showSection('section-' + targetSection);
+        }
     }
 
     function waitForApp() {
