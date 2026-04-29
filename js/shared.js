@@ -31,7 +31,6 @@ import { MasterDataAPI } from "../src/api/client.js";
   };
 
   App.applyTheme = function (theme) {
-    if (!theme) theme = App.state?.ui?.theme || 'light';
     document.documentElement.setAttribute("data-theme", theme);
     const btn = document.getElementById("theme-toggle");
     if (btn)
@@ -101,9 +100,6 @@ import { MasterDataAPI } from "../src/api/client.js";
   };
 
   App.toggleTheme = async function () {
-    if (!App.state) App.state = await AppStorage.loadState();
-    if (!App.state.ui) App.state.ui = { theme: 'light', lang: 'th' };
-    
     App.state.ui.theme = App.state.ui.theme === "dark" ? "light" : "dark";
     await AppStorage.saveState(App.state);
     App.applyTheme(App.state.ui.theme);
@@ -158,8 +154,6 @@ import { MasterDataAPI } from "../src/api/client.js";
   };
 
   App.logout = async function () {
-    if (!App.state) App.state = await AppStorage.loadState();
-    
     if (App.state.currentUser) {
       try {
         const { supabase } = await import("../src/api/client.js");
@@ -173,22 +167,21 @@ import { MasterDataAPI } from "../src/api/client.js";
     App.state.currentUser = null;
     App.state.lastInputs = null;
     await AppStorage.saveState(App.state);
-    // Navigate to login page
+    // Navigate to login page (handles both root and subfolder deployments)
     const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-    window.location.href = (window.location.pathname.toLowerCase().includes('/public/') ? '../../' : '') + 'index.html';
+    window.location.href = basePath + 'index.html';
   };
 
   App.renderWelcomeBanner = function () {
     const container = document.getElementById("welcome-banner-section");
     if (!container) return;
 
-    const u = App.state?.currentUser;
+    const u = App.state.currentUser;
     if (u) {
-      const deptDisplay = (u.position || u.role || 'SALE').toUpperCase();
       container.innerHTML = `
         <div class="welcome-banner">
-          <div class="welcome-dept">${deptDisplay} DEPARTMENT</div>
-          <div class="welcome-title">${App.t("welcome")} คุณ ${u.name || u.fullName || u.username}</div>
+          <div class="welcome-dept">${u.dept} DEPARTMENT</div>
+          <div class="welcome-title">${App.t("welcome")} คุณ ${u.name}</div>
         </div>
       `;
     } else {
