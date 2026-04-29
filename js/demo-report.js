@@ -20,6 +20,8 @@ import { supabase } from '../src/api/client.js';
             return;
         }
 
+        const idNum = parseInt(projectId);
+
         // Fetch data
         const [projRes, invRes, modelRes] = await Promise.all([
             supabase.from('led_projects').select('*').eq('id', idNum).single(),
