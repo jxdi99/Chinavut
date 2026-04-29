@@ -29,7 +29,6 @@ import { supabase } from '../src/api/client.js';
         const { data, error } = await supabase
             .from('led_inventory')
             .select('*')
-            .eq('category', 'led') // Filter for LED products
             .order('created_at', { ascending: false });
         if (error) {
             console.error('Fetch inventory error:', error);
@@ -51,7 +50,6 @@ import { supabase } from '../src/api/client.js';
     // ── Insert item to DB ──
     async function insertItem(lot, location, cabinet, module, status, notes, model, pixel, spare_module, date_entered, source) {
         const payload = {
-            category: 'led', // Explicitly mark as LED
             lot_number: lot,
             location: location || null,
             cabinet: cabinet || 0,

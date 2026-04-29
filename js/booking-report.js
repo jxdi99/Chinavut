@@ -24,7 +24,7 @@ import { supabase } from '../src/api/client.js';
         // Fetch data parallel
         const [projRes, invRes, txnRes] = await Promise.all([
             supabase.from('led_projects').select('*').eq('id', projectId).single(),
-            supabase.from('led_inventory').select('*').eq('category', 'led'),
+            supabase.from('led_inventory').select('*'),
             supabase.from('led_transactions').select('*')
         ]);
 
@@ -43,7 +43,7 @@ import { supabase } from '../src/api/client.js';
         document.getElementById('bk-date').value = new Date().toISOString().split('T')[0];
 
         // Populate Model dropdown
-        const models = [...new Set(allInventory.map(i => i.model).filter(Boolean))].sort();
+        const models = [...new Set(allInventory.map(i => i.model || 'ไม่ระบุรุ่น'))].sort();
         const modelSel = document.getElementById('bk-model');
         modelSel.innerHTML = '<option value="">-- เลือกรุ่น --</option>' + 
             models.map(m => `<option value="${m}">${m}</option>`).join('');
@@ -64,7 +64,7 @@ import { supabase } from '../src/api/client.js';
             return;
         }
 
-        const lots = [...new Set(allInventory.filter(i => i.model === model).map(i => i.lot_number))].sort();
+        const lots = [...new Set(allInventory.filter(i => (i.model || 'ไม่ระบุรุ่น') === model).map(i => i.lot_number))].sort();
         lotSel.innerHTML = '<option value="">-- เลือก Lot --</option>' + 
             lots.map(l => `<option value="${l}">${l}</option>`).join('');
     }
