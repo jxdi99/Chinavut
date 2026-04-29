@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบเสนอราคา (Quotation) - RAZR LED Portal</title>
+  <link rel="icon" type="image/png" href="src/img/Logo_cm.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/led-products.css">
+  <style>
+    .badge-quote { background: #3b82f6; color: white; }
+    .img-preview {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand" style="display:flex; align-items:center; gap:12px;">
+      <img src="src/img/Logo_cm.png" alt="Chinavut Logo" style="height:40px;">
+      <h1 style="font-size: 1.2rem; margin: 0;">ระบบเสนอราคา (Quotation)</h1>
+    </div>
+    <div class="toolbar">
+      <a href="dashboard.html" class="btn btn-secondary">← กลับหน้าหลัก</a>
+      <button class="btn btn-danger" id="logout-btn">ออกจากระบบ</button>
+    </div>
+  </div>
+
+  <div class="led-container page-fade-in">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+      <div>
+        <h2 style="margin:0;">💰 รายการเสนอราคา</h2>
+        <p style="color:var(--muted); margin:4px 0 0;">บันทึกเลขที่ใบเสนอราคา และติดตามสถานะการเสนอราคา</p>
+      </div>
+    </div>
+
+    <div class="pipeline-bar" style="margin-bottom:20px;">
+      <div class="pipeline-step active" data-tab="queue">⏳ รอเสนอราคา</div>
+      <div class="pipeline-step" data-tab="history">📄 ประวัติการเสนอราคา</div>
+    </div>
+
+    <div id="tab-queue" class="tab-content">
+      <div class="card">
+        <div class="inventory-table-wrap">
+          <table class="inventory-table">
+            <thead>
+              <tr>
+                <th>Project ID</th>
+                <th>ชื่อโปรเจค</th>
+                <th>ลูกค้า</th>
+                <th>เซลส์</th>
+                <th>มูลค่าประมาณ</th>
+                <th>การจัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="queue-table-body">
+              <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);">กำลังโหลดคิวงาน...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-history" class="tab-content" style="display:none;">
+      <div class="card">
+        <div class="inventory-table-wrap">
+          <table class="inventory-table">
+            <thead>
+              <tr>
+                <th>เลขที่เอกสาร</th>
+                <th>โปรเจค</th>
+                <th>ลูกค้า</th>
+                <th>ผู้เสนอราคา</th>
+                <th>วันที่</th>
+                <th>รายละเอียด / รูปภาพ</th>
+                <th>ไฟล์</th>
+              </tr>
+            </thead>
+            <tbody id="history-table-body">
+              <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted);">กำลังโหลดข้อมูล...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script type="module" src="js/shared.js"></script>
+  <script type="module" src="js/quotation.js"></script>
+</body>
+</html>

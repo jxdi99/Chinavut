@@ -171,7 +171,16 @@
 
     // Controller 1 (Primary) with Qty
     const conQty = Number(document.getElementById('con-qty').value) || 1;
-    const con1Price = (selectedCon?.price || 0) * conQty;
+    let con1Price = (selectedCon?.price || 0) * conQty;
+    
+    // Use custom controller price if in custom mode and value is provided
+    if (pricingMode === 'custom') {
+      const customConPrice = parseFloat(document.getElementById('custom-controller-price').value);
+      if (!isNaN(customConPrice) && customConPrice > 0) {
+        con1Price = customConPrice * conQty;
+      }
+    }
+    
     const con1Html = selectedCon ? `<div class="result-row"><span>${App.t('controllerPrice')} (${escapeHtml(selectedCon.name)} x${conQty})</span><b>${con1Price.toLocaleString()} ${App.t('unitBaht')}</b></div>` : '';
 
     // Controller 2 (Select Only, Qty = 1)
@@ -406,6 +415,7 @@
 
     document.getElementById('custom-price-sqm').addEventListener('input', recalc);
     document.getElementById('custom-install').addEventListener('input', recalc);
+    document.getElementById('custom-controller-price').addEventListener('input', recalc);
     document.getElementById('custom-steel').addEventListener('input', recalc);
     document.getElementById('custom-alum').addEventListener('input', recalc);
     document.getElementById('custom-load-cab').addEventListener('input', recalc);
@@ -482,6 +492,7 @@
       // Reset custom fields
       document.getElementById('custom-price-sqm').value = '';
       document.getElementById('custom-install').value = '';
+      document.getElementById('custom-controller-price').value = '';
       document.getElementById('custom-steel').value = '';
       document.getElementById('custom-alum').value = '';
       document.getElementById('custom-load-cab').value = '';
