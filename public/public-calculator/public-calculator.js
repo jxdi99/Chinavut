@@ -80,6 +80,8 @@
         
         const pixelPitch = led.name.match(/[\d.]+$/)?.[0] || '?';
 
+        const totalQty = wQty * hQty;
+
         // Render Visualizer
         renderPreview({
             screenW, screenH,
