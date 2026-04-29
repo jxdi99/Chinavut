@@ -20,6 +20,7 @@ import { supabase } from '../src/api/client.js';
         if (id === 'section-manage') loadManageView();
         if (id === 'section-receive') loadRecentReceive();
         if (id === 'section-ledger') loadLedgerView();
+        if (id === 'section-movement') loadMovementView();
     }
 
     // ── Load inventory from Supabase ──
@@ -345,6 +346,134 @@ import { supabase } from '../src/api/client.js';
         });
     }
 
+    // ── SECTION: บันทึกการเคลื่อนไหว (Movement) ──
+    const TXN_LABELS = {
+        book:   { text: 'จองสินค้า',   color: '#f59e0b', emoji: '🟡' },
+        borrow: { text: 'ยืมสินค้า',   color: '#3b82f6', emoji: '🔵' },
+        sell:   { text: 'ขายสินค้า',   color: '#ef4444', emoji: '🔴' },
+        return: { text: 'คืนสินค้า',   color: '#22c55e', emoji: '🟢' },
+        cancel: { text: 'ยกเลิกจอง', color: '#6b7280', emoji: '⚪' },
+    };
+
+    async function fetchTransactions() {
+        if (!supabase) return [];
+        const { data, error } = await supabase
+            .from('led_transactions')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) { console.error('Fetch transactions error:', error); return []; }
+        return data || [];
+    }
+
+    async function loadMovementView() {
+        allInventory = await fetchInventory();
+
+        // Populate Model dropdown
+        const models = [...new Set(allInventory.map(i => i.model).filter(Boolean))].sort();
+        const modelSel = document.getElementById('mov-model');
+        const curModel = modelSel.value;
+        modelSel.innerHTML = '<option value="">เลือกรุ่น</option>' +
+            models.map(m => `<option value="${m}" ${m === curModel ? 'selected' : ''}>${m}</option>`).join('');
+
+        updateMovLotFilter();
+        await renderMovementTable();
+
+        // Set today's date by default
+        const dateEl = document.getElementById('mov-date');
+        if (!dateEl.value) dateEl.value = new Date().toISOString().split('T')[0];
+    }
+
+    function updateMovLotFilter() {
+        const selectedModel = document.getElementById('mov-model').value;
+        const filtered = selectedModel ? allInventory.filter(i => i.model === selectedModel) : allInventory;
+        const lots = [...new Set(filtered.map(i => i.lot_number).filter(Boolean))].sort();
+        const lotSel = document.getElementById('mov-lot');
+        const curLot = lotSel.value;
+        lotSel.innerHTML = '<option value="">เลือก Lot</option>' +
+            lots.map(l => `<option value="${l}" ${l === curLot ? 'selected' : ''}>${l}</option>`).join('');
+    }
+
+    async function handleMovement() {
+        const txnType   = document.getElementById('mov-type').value;
+        const model     = document.getElementById('mov-model').value;
+        const lot       = document.getElementById('mov-lot').value;
+        const cabinet   = parseInt(document.getElementById('mov-cabinet').value) || 0;
+        const module    = parseInt(document.getElementById('mov-module').value) || 0;
+        const txnDate   = document.getElementById('mov-date').value || null;
+        const sales     = document.getElementById('mov-salesperson').value.trim();
+        const customer  = document.getElementById('mov-customer').value.trim();
+        const reference = document.getElementById('mov-reference').value.trim();
+        const notes     = document.getElementById('mov-notes').value.trim();
+
+        if (!lot) { App.showToast('กรุณาเลือก Lot'); return; }
+        if (cabinet === 0 && module === 0) { App.showToast('กรุณาระบุจำนวน Cabinet หรือ Module'); return; }
+
+        App.showToast('กำลังบันทึก...');
+        const { error } = await supabase.from('led_transactions').insert({
+            lot_number: lot, model, pixel: null,
+            txn_type: txnType,
+            cabinet_qty: cabinet, module_qty: module,
+            salesperson: sales, customer, reference, notes,
+            txn_date: txnDate,
+            created_by: currentUser?.fullName || currentUser?.name || 'ไม่ทราบ',
+        });
+
+        if (error) { App.showToast('เกิดข้อผิดพลาด: ' + error.message); return; }
+
+        App.showToast(`✅ บันทึก ${TXN_LABELS[txnType].text} Lot ${lot} เรียบร้อย!`);
+
+        // Clear form partially (keep type, model, lot, sales for speed)
+        document.getElementById('mov-cabinet').value = '0';
+        document.getElementById('mov-module').value = '0';
+        document.getElementById('mov-customer').value = '';
+        document.getElementById('mov-reference').value = '';
+        document.getElementById('mov-notes').value = '';
+
+        await renderMovementTable();
+    }
+
+    let allTransactions = [];
+
+    async function renderMovementTable(searchText = '') {
+        allTransactions = await fetchTransactions();
+        const tbody = document.getElementById('movement-table-body');
+
+        let filtered = allTransactions;
+        if (searchText) {
+            const q = searchText.toLowerCase();
+            filtered = filtered.filter(t =>
+                (t.lot_number || '').toLowerCase().includes(q) ||
+                (t.customer || '').toLowerCase().includes(q) ||
+                (t.salesperson || '').toLowerCase().includes(q) ||
+                (t.model || '').toLowerCase().includes(q)
+            );
+        }
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:var(--muted);">\u0e44\u0e21\u0e48\u0e1e\u0e1a\u0e23\u0e32\u0e22\u0e01\u0e32\u0e23</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = filtered.map(t => {
+            const lbl = TXN_LABELS[t.txn_type] || { text: t.txn_type, color: '#888', emoji: '?' };
+            const dateStr = t.txn_date ? new Date(t.txn_date).toLocaleDateString('th-TH') : formatDate(t.created_at);
+            return `
+                <tr>
+                    <td><span class="badge" style="background:${lbl.color};color:white;margin-bottom:0;">${lbl.emoji} ${lbl.text}</span></td>
+                    <td>${dateStr}</td>
+                    <td><strong>${t.model || '-'}</strong><br><small style="color:var(--muted)">${t.lot_number}</small></td>
+                    <td class="text-right">${t.cabinet_qty || '-'}</td>
+                    <td class="text-right">${t.module_qty || '-'}</td>
+                    <td>${t.salesperson || '-'}</td>
+                    <td>${t.customer || '-'}</td>
+                    <td>${t.reference || '-'}</td>
+                    <td>${t.notes || '-'}</td>
+                    <td><small>${t.created_by || '-'}</small></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
     // ── SECTION: บัญชีคุมสต๊อก (Ledger) ──
     async function loadLedgerView() {
         allInventory = await fetchInventory();
@@ -474,6 +603,12 @@ import { supabase } from '../src/api/client.js';
         document.getElementById('back-from-stock').addEventListener('click', showMenu);
         document.getElementById('back-from-manage').addEventListener('click', showMenu);
         document.getElementById('back-from-ledger').addEventListener('click', showMenu);
+        document.getElementById('back-from-movement').addEventListener('click', showMenu);
+
+        // Movement
+        document.getElementById('mov-submit').addEventListener('click', handleMovement);
+        document.getElementById('mov-model').addEventListener('change', updateMovLotFilter);
+        document.getElementById('mov-search').addEventListener('input', (e) => renderMovementTable(e.target.value));
 
         // Ledger Filters
         document.getElementById('ledger-filter-model').addEventListener('change', () => {

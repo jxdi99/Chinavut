@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>สินค้า LED - RAZR LED Portal</title>
+  <link rel="icon" type="image/png" href="src/img/Logo_cm.png">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/led-products.css">
 </head>
@@ -46,10 +47,113 @@
           <div class="sub-menu-title">บัญชีคุมสต๊อก (Ledger)</div>
           <div class="sub-menu-desc">ดูประวัติการเข้า-ออก, การจอง และการขาย แยกตาม Lot แบบละเอียด</div>
         </div>
+        <div class="sub-menu-card" data-target="section-movement" id="btn-movement" style="border-color: #f59e0b;">
+          <div class="sub-menu-icon">🔄</div>
+          <div class="sub-menu-title">บันทึกการเคลื่อนไหว</div>
+          <div class="sub-menu-desc">จอง / ยืม / ขาย / คืน สินค้า LED พร้อมระบุลูกค้าและเอกสารอ้างอิง</div>
+        </div>
         <div class="sub-menu-card" data-target="section-manage" id="btn-manage">
           <div class="sub-menu-icon">⚙️</div>
           <div class="sub-menu-title">จัดการสินค้า LED</div>
           <div class="sub-menu-desc">เพิ่ม/ลบ/แก้ไข รายการสินค้า LED ในระบบ และดูประวัติการรับเข้า</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Section 5: บันทึกการเคลื่อนไหว ═══ -->
+    <div class="led-section" id="section-movement">
+      <div class="section-header">
+        <h2>🔄 บันทึกการเคลื่อนไหวสต๊อก</h2>
+        <button class="back-link" id="back-from-movement">← กลับเมนู</button>
+      </div>
+
+      <!-- Form บันทึก -->
+      <div class="card" style="margin-bottom: 20px;">
+        <h3 style="margin-bottom: 16px; color: var(--primary); font-size: 1rem;">➕ บันทึกรายการใหม่</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+          <div class="field" style="margin-bottom: 0;">
+            <label>ประเภทรายการ</label>
+            <select id="mov-type">
+              <option value="book">🟡 จองสินค้า (Book)</option>
+              <option value="borrow">🔵 ยืมสินค้า (Borrow)</option>
+              <option value="sell">🔴 ขายสินค้า (Sell)</option>
+              <option value="return">🟢 คืนสินค้า (Return)</option>
+              <option value="cancel">⚪ ยกเลิกจอง (Cancel)</option>
+            </select>
+          </div>
+          <div class="field" style="margin-bottom: 0;">
+            <label>รุ่น LED (Model)</label>
+            <select id="mov-model">
+              <option value="">-- เลือกรุ่น --</option>
+            </select>
+          </div>
+          <div class="field" style="margin-bottom: 0;">
+            <label>Lot</label>
+            <select id="mov-lot">
+              <option value="">-- เลือก Lot --</option>
+            </select>
+          </div>
+          <div class="field" style="margin-bottom: 0;">
+            <label>Cabinet (ตู้)</label>
+            <input type="number" id="mov-cabinet" placeholder="0" min="0" value="0">
+          </div>
+          <div class="field" style="margin-bottom: 0;">
+            <label>Module</label>
+            <input type="number" id="mov-module" placeholder="0" min="0" value="0">
+          </div>
+          <div class="field" style="margin-bottom: 0;">
+            <label>วันที่</label>
+            <input type="date" id="mov-date">
+          </div>
+          <div class="field" style="margin-bottom: 0;">
+            <label>เซลส์</label>
+            <input type="text" id="mov-salesperson" placeholder="ชื่อเซลส์">
+          </div>
+          <div class="field" style="margin-bottom: 0;">
+            <label>ลูกค้า / สถานที่</label>
+            <input type="text" id="mov-customer" placeholder="ชื่อลูกค้าหรือสถานที่">
+          </div>
+          <div class="field" style="margin-bottom: 0;">
+            <label>เลขเอกสารอ้างอิง</label>
+            <input type="text" id="mov-reference" placeholder="เลขบิล / PO">
+          </div>
+          <div class="field" style="margin-bottom: 0; grid-column: 1 / -1;">
+            <label>หมายเหตุ</label>
+            <input type="text" id="mov-notes" placeholder="รายละเอียดเพิ่มเติม">
+          </div>
+        </div>
+        <div style="margin-top: 14px; display: flex; gap: 10px; justify-content: flex-end;">
+          <button class="btn btn-primary" id="mov-submit">🔄 บันทึกรายการ</button>
+        </div>
+      </div>
+
+      <!-- ประวัติล่าสุด -->
+      <div class="search-bar" style="margin-bottom: 12px;">
+        <input type="text" id="mov-search" placeholder="🔍 ค้นหาตาม Lot, ลูกค้า, เซลส์..." style="width: 100%;">
+      </div>
+      <div class="card">
+        <div class="inventory-table-wrap">
+          <table class="inventory-table">
+            <thead>
+              <tr>
+                <th>ประเภท</th>
+                <th>วันที่</th>
+                <th>รุ่น / Lot</th>
+                <th>Cabinet</th>
+                <th>Module</th>
+                <th>เซลส์</th>
+                <th>ลูกค้า/สถานที่</th>
+                <th>เอกสาร</th>
+                <th>หมายเหตุ</th>
+                <th>ผู้บันทึก</th>
+              </tr>
+            </thead>
+            <tbody id="movement-table-body">
+              <tr>
+                <td colspan="10" style="text-align:center; padding:40px; color:var(--muted);">กำลังโหลด...</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -155,12 +259,14 @@
       </div>
 
       <!-- Quick Add -->
-      <div class="card" style="margin-bottom: 20px; border: 2px dashed color-mix(in srgb, var(--primary) 30%, var(--border));">
+      <div class="card"
+        style="margin-bottom: 20px; border: 2px dashed color-mix(in srgb, var(--primary) 30%, var(--border));">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
           <h3 style="margin: 0; color: var(--primary); font-size: 1rem;">➕ เพิ่มรายการ</h3>
         </div>
         <div class="receive-form" style="max-width: 100%;">
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; align-items: end;">
+          <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; align-items: end;">
             <div class="field" style="margin-bottom: 0;">
               <label style="font-size: 0.85rem;">Lot</label>
               <input type="text" id="stock-add-lot" placeholder="0478" style="padding: 9px 10px;">
@@ -195,7 +301,8 @@
 
       <!-- Search -->
       <div class="search-bar">
-        <input type="text" id="stock-search" placeholder="🔍 ค้นหาตาม Lot, Location หรือหมายเหตุ..." style="width: 100%;">
+        <input type="text" id="stock-search" placeholder="🔍 ค้นหาตาม Lot, Location หรือหมายเหตุ..."
+          style="width: 100%;">
       </div>
 
       <div class="card">
@@ -231,8 +338,8 @@
       <div class="section-header">
         <h2>📊 บัญชีคุมสต๊อก (Ledger)</h2>
         <div style="display:flex; gap:10px;">
-           <button class="btn btn-secondary" id="ledger-copy-btn">📋 คัดลอกตาราง (Excel)</button>
-           <button class="back-link" id="back-from-ledger">← กลับเมนู</button>
+          <button class="btn btn-secondary" id="ledger-copy-btn">📋 คัดลอกตาราง (Excel)</button>
+          <button class="back-link" id="back-from-ledger">← กลับเมนู</button>
         </div>
       </div>
 
@@ -297,7 +404,8 @@
 
       <!-- Search -->
       <div class="search-bar">
-        <input type="text" id="manage-search" placeholder="🔍 ค้นหาตาม Lot, Location หรือหมายเหตุ..." style="width: 100%;">
+        <input type="text" id="manage-search" placeholder="🔍 ค้นหาตาม Lot, Location หรือหมายเหตุ..."
+          style="width: 100%;">
       </div>
 
       <div class="card">
