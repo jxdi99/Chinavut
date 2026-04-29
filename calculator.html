@@ -157,6 +157,9 @@
                             <div style="flex:1;">
                                 <input type="number" id="con-qty" placeholder="Qty" min="1" value="1">
                             </div>
+                            <div class="custom-price-field" style="flex:1; display:none;">
+                                <input type="number" id="con-custom-price" placeholder="ราคา/ชิ้น" min="0">
+                            </div>
                         </div>
                     </div>
 
@@ -165,24 +168,39 @@
                         <label data-i18n="extraController">Controller เพิ่มเติม / อุปกรณ์เสริม</label>
 
                         <!-- Controller 2 -->
-                        <div style="margin-bottom:8px;">
-                            <select id="con2-select">
-                                <option value="-1" data-i18n="none">-- ไม่รับ --</option>
-                            </select>
+                        <div style="margin-bottom:8px; display:flex; gap:8px;">
+                            <div style="flex:2;">
+                                <select id="con2-select">
+                                    <option value="-1" data-i18n="none">-- ไม่รับ --</option>
+                                </select>
+                            </div>
+                            <div class="custom-price-field" style="flex:1; display:none;">
+                                <input type="number" id="con2-custom-price" placeholder="ราคา" min="0">
+                            </div>
                         </div>
 
                         <!-- Controller 3 -->
-                        <div style="margin-bottom:8px;">
-                            <select id="con3-select">
-                                <option value="-1" data-i18n="none">-- ไม่รับ --</option>
-                            </select>
+                        <div style="margin-bottom:8px; display:flex; gap:8px;">
+                            <div style="flex:2;">
+                                <select id="con3-select">
+                                    <option value="-1" data-i18n="none">-- ไม่รับ --</option>
+                                </select>
+                            </div>
+                            <div class="custom-price-field" style="flex:1; display:none;">
+                                <input type="number" id="con3-custom-price" placeholder="ราคา" min="0">
+                            </div>
                         </div>
 
                         <!-- Accessory -->
-                        <div>
-                            <select id="acc-select">
-                                <option value="-1" data-i18n="none">-- ไม่รับ --</option>
-                            </select>
+                        <div style="display:flex; gap:8px;">
+                            <div style="flex:2;">
+                                <select id="acc-select">
+                                    <option value="-1" data-i18n="none">-- ไม่รับ --</option>
+                                </select>
+                            </div>
+                            <div class="custom-price-field" style="flex:1; display:none;">
+                                <input type="number" id="acc-custom-price" placeholder="ราคา" min="0">
+                            </div>
                         </div>
                     </div>
 

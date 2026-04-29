@@ -27,7 +27,7 @@
       if (defaultIdx !== -1) ledSel.value = defaultIdx;
     }
 
-    const conItems = currentData().controllers.map((it, idx) => `<option value="${idx}">${escapeHtml(it.name)} (Cap: ${(it.load / 1000000).toFixed(2)}M px)</option>`).join('');
+    const conItems = currentData().controllers.map((it, idx) => `<option value="${idx}">${escapeHtml(it.name)} (${(it.load / 1000000).toFixed(2)}M px)</option>`).join('');
     
     const conSel = document.getElementById('con-select');
     conSel.innerHTML = conItems;
@@ -171,7 +171,12 @@
 
     // Controller 1 (Primary) with Qty
     const conQty = Number(document.getElementById('con-qty').value) || 1;
-    const con1Price = (selectedCon?.price || 0) * conQty;
+    let con1UnitPrice = selectedCon?.price || 0;
+    if (pricingMode === 'custom') {
+      const customVal = parseFloat(document.getElementById('con-custom-price').value);
+      if (!isNaN(customVal)) con1UnitPrice = customVal;
+    }
+    const con1Price = con1UnitPrice * conQty;
     const con1Html = selectedCon ? `<div class="result-row"><span>${App.t('controllerPrice')} (${escapeHtml(selectedCon.name)} x${conQty})</span><b>${con1Price.toLocaleString()} ${App.t('unitBaht')}</b></div>` : '';
 
     // Controller 2 (Select Only, Qty = 1)
@@ -181,6 +186,10 @@
     if (con2Idx >= 0) {
       const c2 = currentData().controllers[con2Idx];
       con2Price = c2.price;
+      if (pricingMode === 'custom') {
+        const customVal = parseFloat(document.getElementById('con2-custom-price').value);
+        if (!isNaN(customVal)) con2Price = customVal;
+      }
       con2Html = `<div class="result-row"><span>Controller 2 (${escapeHtml(c2.name)})</span><b>${con2Price.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
     }
 
@@ -191,6 +200,10 @@
     if (con3Idx >= 0) {
       const c3 = currentData().controllers[con3Idx];
       con3Price = c3.price;
+      if (pricingMode === 'custom') {
+        const customVal = parseFloat(document.getElementById('con3-custom-price').value);
+        if (!isNaN(customVal)) con3Price = customVal;
+      }
       con3Html = `<div class="result-row"><span>Controller 3 (${escapeHtml(c3.name)})</span><b>${con3Price.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
     }
 
@@ -201,6 +214,10 @@
     if (accIdx >= 0) {
       const aItem = currentData().accessories[accIdx];
       accPrice = aItem.price;
+      if (pricingMode === 'custom') {
+        const customVal = parseFloat(document.getElementById('acc-custom-price').value);
+        if (!isNaN(customVal)) accPrice = customVal;
+      }
       accHtml = `<div class="result-row"><span>${App.t('accLabel')} (${escapeHtml(aItem.name)})</span><b>${accPrice.toLocaleString()} ${App.t('unitBaht')}</b></div>`;
     }
 
@@ -498,6 +515,12 @@
       pricingMode = isCustom ? 'custom' : 'standard';
       document.getElementById('price-mode-label').textContent = isCustom ? 'พนักงาน' : 'มาตรฐาน';
       document.getElementById('input-custom-price').style.display = isCustom ? 'block' : 'none';
+      
+      // Show/Hide new custom fields for controllers and accessories
+      document.querySelectorAll('.custom-price-field').forEach(el => {
+        el.style.display = isCustom ? 'block' : 'none';
+      });
+      
       recalc();
     });
 
@@ -509,6 +532,11 @@
     document.getElementById('custom-cable').addEventListener('input', recalc);
     document.getElementById('custom-demo').addEventListener('input', recalc);
     document.getElementById('custom-foundation').addEventListener('input', recalc);
+
+    document.getElementById('con-custom-price').addEventListener('input', recalc);
+    document.getElementById('con2-custom-price').addEventListener('input', recalc);
+    document.getElementById('con3-custom-price').addEventListener('input', recalc);
+    document.getElementById('acc-custom-price').addEventListener('input', recalc);
 
     function snapToSize(elId, useW) {
       document.getElementById(elId).addEventListener('blur', (e) => {
@@ -585,6 +613,11 @@
       document.getElementById('custom-cable').value = '';
       document.getElementById('custom-demo').value = '';
       document.getElementById('custom-foundation').value = '';
+
+      document.getElementById('con-custom-price').value = '';
+      document.getElementById('con2-custom-price').value = '';
+      document.getElementById('con3-custom-price').value = '';
+      document.getElementById('acc-custom-price').value = '';
 
       manualController = false;
       recalc();
