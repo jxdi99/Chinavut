@@ -327,6 +327,65 @@
         <div style="display:flex; gap:8px; flex-wrap:wrap;" id="detail-status-btns"></div>
       </div>
 
+      <!-- Linked Documents / Reports -->
+      <div class="card" style="padding:16px; margin-top:16px; background:var(--bg); border: 1px solid var(--border);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+          <div style="font-size:0.9rem; font-weight:600; color:var(--primary);">📄 เอกสาร / รีพอร์ตที่เกี่ยวข้อง</div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-primary" id="btn-create-survey" style="font-size:0.75rem; padding:4px 8px; background:#f59e0b; border:none;">➕ สร้างใบสำรวจหน้างาน</button>
+            <button class="btn btn-secondary" id="btn-add-report" style="font-size:0.75rem; padding:4px 8px;">➕ เพิ่มเลขที่เอกสาร</button>
+          </div>
+        </div>
+        
+        <div id="report-form-container" style="display:none; background:var(--card); padding:12px; border-radius:8px; border:1px dashed var(--primary); margin-bottom:12px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+            <div>
+              <label style="font-size:0.75rem; font-weight:600; display:block; margin-bottom:4px;">เลขที่เอกสาร *</label>
+              <input type="text" id="rep-no" placeholder="เช่น QUO-2401001" style="width:100%; font-size:0.8rem; padding:6px; border:1px solid var(--border); border-radius:4px;">
+            </div>
+            <div>
+              <label style="font-size:0.75rem; font-weight:600; display:block; margin-bottom:4px;">ประเภทเอกสาร</label>
+              <select id="rep-type" style="width:100%; font-size:0.8rem; padding:6px; border:1px solid var(--border); border-radius:4px;">
+                <option value="Quotation">ใบเสนอราคา (Quotation)</option>
+                <option value="Survey">ใบสำรวจหน้างาน (Survey)</option>
+                <option value="Demo">เอกสาร Demo</option>
+                <option value="Installation">ใบส่งมอบงาน/ติดตั้ง</option>
+                <option value="Service">ใบ Service</option>
+                <option value="Other">อื่นๆ</option>
+              </select>
+            </div>
+            <div style="grid-column: 1 / -1;">
+              <label style="font-size:0.75rem; font-weight:600; display:block; margin-bottom:4px;">ลิงก์ไฟล์ / URL (ถ้ามี)</label>
+              <input type="text" id="rep-url" placeholder="https://..." style="width:100%; font-size:0.8rem; padding:6px; border:1px solid var(--border); border-radius:4px;">
+            </div>
+            <div style="grid-column: 1 / -1;">
+              <label style="font-size:0.75rem; font-weight:600; display:block; margin-bottom:4px;">หมายเหตุ</label>
+              <input type="text" id="rep-notes" placeholder="รายละเอียดเพิ่มเติม" style="width:100%; font-size:0.8rem; padding:6px; border:1px solid var(--border); border-radius:4px;">
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <button class="btn btn-secondary" id="btn-cancel-report" style="font-size:0.75rem; padding:4px 10px;">ยกเลิก</button>
+            <button class="btn btn-primary" id="btn-save-report" style="font-size:0.75rem; padding:4px 10px;">บันทึกเอกสาร</button>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table class="inventory-table" style="font-size:0.8rem;">
+            <thead>
+              <tr>
+                <th style="padding:6px; text-align:left;">เลขที่เอกสาร</th>
+                <th style="padding:6px; text-align:left;">ประเภท</th>
+                <th style="padding:6px; text-align:left;">หมายเหตุ</th>
+                <th style="padding:6px; text-align:left;">อ้างอิง</th>
+              </tr>
+            </thead>
+            <tbody id="report-table-body">
+              <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:10px;">ยังไม่มีเอกสารอ้างอิง</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div class="modal-actions" style="margin-top:16px;">
         <button class="btn btn-secondary" id="detail-edit">✏️ แก้ไขข้อมูล</button>
       </div>

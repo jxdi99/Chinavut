@@ -5,6 +5,7 @@ import { supabase } from '../src/api/client.js';
     let currentUser = null;
     let activeFilter = 'all';
     let editingId = null; // DB id when editing
+    let currentDetailId = null; // DB id currently viewed in detail modal
 
     const STAGES = ['new','survey','quotation','demo','booking','installation','service','complete','cancelled'];
     const STAGE_LABELS = {
@@ -119,6 +120,7 @@ import { supabase } from '../src/api/client.js';
     function openDetail(id) {
         const p = allProjects.find(x => x.id === id);
         if (!p) return;
+        currentDetailId = id;
 
         document.getElementById('detail-id').textContent = p.project_id;
         document.getElementById('detail-name').textContent = p.project_name;
@@ -186,6 +188,10 @@ import { supabase } from '../src/api/client.js';
             openEditModal(p.id);
         };
 
+        // Reset report form and fetch reports
+        document.getElementById('report-form-container').style.display = 'none';
+        fetchAndRenderReports(id);
+
         document.getElementById('modal-detail').classList.add('open');
     }
 
@@ -215,6 +221,88 @@ import { supabase } from '../src/api/client.js';
         allProjects = await fetchProjects();
         renderStats();
         renderTable(document.getElementById('project-search').value);
+    }
+
+    // ── Reports / Documents ──
+    async function fetchAndRenderReports(projectId) {
+        const tbody = document.getElementById('report-table-body');
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:10px;">กำลังโหลด...</td></tr>';
+        
+        if (!supabase) return;
+        const { data, error } = await supabase
+            .from('project_reports')
+            .select('*')
+            .eq('project_id', projectId)
+            .order('created_at', { ascending: false });
+            
+        if (error) {
+            console.error('Fetch reports error:', error);
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:red;padding:10px;">โหลดข้อมูลไม่สำเร็จ</td></tr>';
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:10px;">ยังไม่มีเอกสารอ้างอิง</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = data.map(r => {
+            const typeLabel = {
+                'Quotation': 'ใบเสนอราคา',
+                'Survey': 'ใบสำรวจหน้างาน',
+                'Demo': 'เอกสาร Demo',
+                'Installation': 'ใบส่งมอบ/ติดตั้ง',
+                'Service': 'ใบ Service',
+                'Other': 'อื่นๆ'
+            }[r.doc_type] || r.doc_type;
+            
+            const linkHtml = r.doc_url 
+                ? `<a href="${r.doc_url}" target="_blank" style="color:var(--primary);text-decoration:none;font-weight:600;">🔗 เปิดไฟล์</a>` 
+                : '<span style="color:var(--muted);">-</span>';
+
+            return `
+                <tr>
+                    <td style="font-weight:700;">${r.doc_no}</td>
+                    <td>${typeLabel}</td>
+                    <td>${r.notes || '-'}</td>
+                    <td>${linkHtml}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    async function saveReport() {
+        if (!currentDetailId) return;
+        const docNo = document.getElementById('rep-no').value.trim();
+        if (!docNo) { App.showToast('กรุณากรอกเลขที่เอกสาร'); return; }
+
+        const payload = {
+            project_id: currentDetailId,
+            doc_no: docNo,
+            doc_type: document.getElementById('rep-type').value,
+            doc_url: document.getElementById('rep-url').value.trim() || null,
+            notes: document.getElementById('rep-notes').value.trim() || null,
+            created_by: currentUser?.fullName || currentUser?.name || 'ไม่ทราบ',
+        };
+
+        App.showToast('กำลังบันทึกเอกสาร...');
+        const { error } = await supabase.from('project_reports').insert(payload);
+        
+        if (error) {
+            App.showToast('บันทึกไม่สำเร็จ: ' + error.message);
+            return;
+        }
+        
+        App.showToast('✅ บันทึกเอกสารเรียบร้อย!');
+        document.getElementById('report-form-container').style.display = 'none';
+        
+        // Clear inputs
+        document.getElementById('rep-no').value = '';
+        document.getElementById('rep-url').value = '';
+        document.getElementById('rep-notes').value = '';
+        
+        // Refresh table
+        fetchAndRenderReports(currentDetailId);
     }
 
     // ── Create/Edit Modal ──
@@ -348,6 +436,20 @@ import { supabase } from '../src/api/client.js';
         document.getElementById('modal-detail').addEventListener('click', (e) => {
             if (e.target === document.getElementById('modal-detail')) closeDetail();
         });
+
+        // Report controls
+        document.getElementById('btn-create-survey').addEventListener('click', () => {
+            if (!currentDetailId) return;
+            window.location.href = `survey-report.html?projectId=${currentDetailId}`;
+        });
+        document.getElementById('btn-add-report').addEventListener('click', () => {
+            document.getElementById('report-form-container').style.display = 'block';
+            document.getElementById('rep-no').focus();
+        });
+        document.getElementById('btn-cancel-report').addEventListener('click', () => {
+            document.getElementById('report-form-container').style.display = 'none';
+        });
+        document.getElementById('btn-save-report').addEventListener('click', saveReport);
     }
 
     function waitForApp() {

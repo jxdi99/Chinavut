@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ใบสำรวจหน้างาน (Survey Report) - RAZR LED</title>
+  <link rel="icon" type="image/png" href="src/img/Logo_cm.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .survey-container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 24px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .grid-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .grid-form .full { grid-column: 1 / -1; }
+    
+    .photo-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .photo-item {
+      aspect-ratio: 4/3;
+      background: var(--bg);
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+    
+    @media (max-width: 600px) {
+      .grid-form { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand" style="display:flex; align-items:center; gap:12px;">
+      <img src="src/img/Logo_cm.png" alt="Chinavut Logo" style="height:40px;">
+      <h1 style="font-size: 1.2rem; margin: 0;">ใบสำรวจหน้างาน (Survey)</h1>
+    </div>
+    <div class="toolbar">
+      <button class="btn btn-secondary" onclick="history.back()">← ยกเลิก</button>
+      <button class="btn btn-primary" id="btn-save-survey">💾 บันทึกและออกเลขที่เอกสาร</button>
+    </div>
+  </div>
+
+  <div class="survey-container page-fade-in">
+    <div class="card" style="padding:32px;">
+      <div style="text-align:center; margin-bottom:30px;">
+        <h2 style="margin:0; color:var(--primary);">LED SITE SURVEY REPORT</h2>
+        <div style="color:var(--muted); font-size:0.9rem;">ข้อมูลสำหรับการประเมินหน้างานและเตรียมการติดตั้ง</div>
+      </div>
+
+      <!-- Part 1: Project Info -->
+      <div class="section-title">📌 ข้อมูลโปรเจค</div>
+      <div class="grid-form">
+        <div class="field">
+          <label>อ้างอิงโปรเจค (Project ID)</label>
+          <input type="text" id="sv-project-id" readonly style="background:var(--bg); color:var(--muted);">
+        </div>
+        <div class="field">
+          <label>ชื่อโปรเจค</label>
+          <input type="text" id="sv-project-name" readonly style="background:var(--bg); color:var(--muted);">
+        </div>
+        <div class="field">
+          <label>ชื่อลูกค้า</label>
+          <input type="text" id="sv-customer" readonly style="background:var(--bg); color:var(--muted);">
+        </div>
+        <div class="field">
+          <label>ผู้สำรวจหน้างาน *</label>
+          <input type="text" id="sv-surveyor" placeholder="ระบุชื่อผู้เข้าสำรวจ">
+        </div>
+      </div>
+
+      <!-- Part 2: Technical Specs -->
+      <div class="section-title">📐 ข้อมูลด้านเทคนิคและพื้นที่</div>
+      <div class="grid-form">
+        <div class="field">
+          <label>ลักษณะหน้างาน</label>
+          <select id="sv-site-type">
+            <option value="Indoor">Indoor (ภายในอาคาร)</option>
+            <option value="Outdoor">Outdoor (ภายนอกอาคาร)</option>
+            <option value="Semi-Outdoor">Semi-Outdoor (มีหลังคาแต่ไม่มีผนัง)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>ขนาดจอที่ต้องการ (W x H) *</label>
+          <input type="text" id="sv-screen-size" placeholder="เช่น 4.0 x 2.4 เมตร">
+        </div>
+        <div class="field">
+          <label>ระยะห่างจากพื้นถึงขอบล่างจอ</label>
+          <input type="text" id="sv-ground-clearance" placeholder="เช่น 1.5 เมตร">
+        </div>
+        <div class="field">
+          <label>ระยะมองเห็นที่เหมาะสม (Viewing Distance)</label>
+          <input type="text" id="sv-view-dist" placeholder="เช่น 3-10 เมตร">
+        </div>
+        <div class="field full">
+          <label>รูปแบบการติดตั้ง (Mounting Type)</label>
+          <select id="sv-mount-type">
+            <option value="Wall Mounted">ติดผนัง (Wall Mounted)</option>
+            <option value="Standing Structure">เสาเดี่ยว/เสาคู่ (Standing Structure)</option>
+            <option value="Hanging">แขวน (Hanging)</option>
+            <option value="Mobile/Rental">ชุดเคลื่อนย้ายได้ (Mobile)</option>
+            <option value="Other">อื่นๆ (ระบุในหมายเหตุ)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Part 3: Infrastructure -->
+      <div class="section-title">⚡ ระบบไฟฟ้าและสัญญาณ</div>
+      <div class="grid-form">
+        <div class="field">
+          <label>จุดจ่ายไฟ (Power Point)</label>
+          <select id="sv-power">
+            <option value="Ready">พร้อมใช้งาน (มีตู้ MDB/DB ใกล้จุดติดตั้ง)</option>
+            <option value="Need Cable">ต้องเดินสายเพิ่ม (ระบุระยะทาง)</option>
+            <option value="Not Ready">ยังไม่มีจุดจ่ายไฟ</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>ระยะจากจอถึงห้องควบคุม (Signal Cable)</label>
+          <input type="text" id="sv-signal-dist" placeholder="เช่น 50 เมตร">
+        </div>
+        <div class="field">
+          <label>ทางเข้าสำหรับขนย้ายสินค้า</label>
+          <input type="text" id="sv-access" placeholder="เช่น ลิฟต์ขนของกว้าง 2ม., บันได">
+        </div>
+        <div class="field">
+          <label>ต้องใช้เครื่องจักรช่วยยกหรือไม่ (Crane/Lift)</label>
+          <select id="sv-machinery">
+            <option value="No">ไม่ต้องใช้ (ยกด้วยคนได้)</option>
+            <option value="Scaffold">ต้องใช้นั่งร้าน (Scaffold)</option>
+            <option value="X-Lift">ต้องใช้ X-Lift / Boom Lift</option>
+            <option value="Crane">ต้องใช้เครน (Crane)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Part 4: Files & Notes -->
+      <div class="section-title">📝 รูปภาพและหมายเหตุเพิ่มเติม</div>
+      <div class="grid-form">
+        <div class="field full">
+          <label>ลิงก์รูปภาพหน้างาน (Google Drive / Dropbox)</label>
+          <input type="text" id="sv-photo-url" placeholder="แปะลิงก์โฟลเดอร์รูปภาพที่นี่">
+        </div>
+        <div class="field full">
+          <label>รายละเอียด/อุปสรรคที่ตรวจพบ</label>
+          <textarea id="sv-notes" rows="4" placeholder="เช่น ผนังเป็นมวลเบาต้องเสริมโครงเหล็ก, จุดติดตั้งมีแสงแดดส่องย้อนตรงๆ ช่วงบ่าย..." style="width:100%; border-radius:12px; border:1px solid var(--border); padding:12px; font-family:inherit;"></textarea>
+        </div>
+      </div>
+
+      <div style="margin-top:40px; padding:20px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
+        <div style="font-size:0.8rem; color:var(--muted);">
+          * กรุณาตรวจสอบข้อมูลให้ครบถ้วนก่อนบันทึก<br>
+          ระบบจะสร้างเลขที่เอกสาร SURVEY-YYMMDD-XXX ให้โดยอัตโนมัติ
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script type="module" src="js/shared.js"></script>
+  <script type="module" src="js/survey-report.js"></script>
+</body>
+</html>
