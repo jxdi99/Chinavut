@@ -26,15 +26,20 @@
     if (userRole === 'developer' || userRole === 'development') userRole = 'dev'; // Map developer/development to dev
     if (userRole === 'owner' || userRole === 'ower') userRole = 'admin'; // Map owner (and typo ower) to admin
     
-    // อัปเดตข้อมูลบนหน้าเว็บ
-    document.getElementById('user-name-display').textContent = user.name || user.id;
-    document.getElementById('user-dept-display').textContent = user.position || '-';
-    document.getElementById('user-role-display').textContent = userRole.toUpperCase();
-    
-    if (userRole === 'dev' || userRole === 'admin') {
-      document.getElementById('user-role-display').style.background = '#ef4444'; // Red for admin
-    } else if (userRole === 'store') {
-      document.getElementById('user-role-display').style.background = '#f59e0b'; // Amber for store
+    // อัปเดตข้อมูลบนหน้าเว็บ (ถ้ามี element อยู่)
+    const nameEl = document.getElementById('user-name-display');
+    const deptEl = document.getElementById('user-dept-display');
+    const roleEl = document.getElementById('user-role-display');
+
+    if (nameEl) nameEl.textContent = user.name || user.id;
+    if (deptEl) deptEl.textContent = user.position || '-';
+    if (roleEl) {
+      roleEl.textContent = userRole.toUpperCase();
+      if (userRole === 'dev' || userRole === 'admin') {
+        roleEl.style.background = '#ef4444';
+      } else if (userRole === 'store') {
+        roleEl.style.background = '#f59e0b';
+      }
     }
 
     // เช็คสิทธิ์การมองเห็นเมนูและ Section
