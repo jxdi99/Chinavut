@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>โปรเจค LED - RAZR LED Portal</title>
+  <link rel="icon" type="image/png" href="src/img/Logo_cm.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/led-products.css">
+  <style>
+    .pipeline-bar {
+      display: flex;
+      gap: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    .pipeline-step {
+      flex: 1;
+      padding: 10px 6px;
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      background: var(--border);
+      color: var(--muted);
+      border-right: 2px solid var(--bg);
+    }
+    .pipeline-step:last-child { border-right: none; }
+    .pipeline-step.active { opacity: 1; color: white; }
+    .pipeline-step[data-s="new"].active       { background: #6366f1; }
+    .pipeline-step[data-s="survey"].active    { background: #f59e0b; }
+    .pipeline-step[data-s="quotation"].active { background: #3b82f6; }
+    .pipeline-step[data-s="demo"].active      { background: #8b5cf6; }
+    .pipeline-step[data-s="booking"].active   { background: #f97316; }
+    .pipeline-step[data-s="installation"].active { background: #06b6d4; }
+    .pipeline-step[data-s="service"].active   { background: #10b981; }
+    .pipeline-step[data-s="complete"].active  { background: #22c55e; }
+    .pipeline-step[data-s="cancelled"].active { background: #6b7280; }
+
+    .status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: white;
+    }
+    .s-new          { background: #6366f1; }
+    .s-survey       { background: #f59e0b; }
+    .s-quotation    { background: #3b82f6; }
+    .s-demo         { background: #8b5cf6; }
+    .s-booking      { background: #f97316; }
+    .s-installation { background: #06b6d4; }
+    .s-service      { background: #10b981; }
+    .s-complete     { background: #22c55e; }
+    .s-cancelled    { background: #6b7280; }
+
+    .project-table tbody tr { cursor: pointer; transition: background 0.15s; }
+    .project-table tbody tr:hover { background: color-mix(in srgb, var(--primary) 6%, transparent); }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 28px;
+      width: 100%;
+      max-width: 680px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .modal-grid .full { grid-column: 1 / -1; }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    /* Pipeline progress for detail */
+    .pipeline-progress {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin: 16px 0;
+      overflow-x: auto;
+    }
+    .pp-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+      min-width: 70px;
+    }
+    .pp-dot {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--muted);
+      transition: all 0.3s;
+      border: 3px solid var(--border);
+    }
+    .pp-dot.done { background: #22c55e; color: white; border-color: #22c55e; }
+    .pp-dot.current { background: var(--primary); color: white; border-color: var(--primary); }
+    .pp-label { font-size: 0.65rem; text-align: center; color: var(--muted); font-weight: 600; }
+    .pp-line {
+      flex: 1; height: 3px; background: var(--border);
+      min-width: 16px; margin-top: -20px;
+    }
+    .pp-line.done { background: #22c55e; }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="brand" style="display:flex; align-items:center; gap:12px;">
+      <img src="src/img/Logo_cm.png" alt="Chinavut Logo" style="height:40px;">
+      <h1 style="font-size: 1.2rem; margin: 0;">โปรเจค LED</h1>
+    </div>
+    <div class="toolbar">
+      <a href="dashboard.html" class="btn btn-secondary">← กลับหน้าหลัก</a>
+      <button class="btn btn-primary" id="btn-new-project">➕ สร้างโปรเจคใหม่</button>
+      <button class="btn btn-secondary" id="theme-toggle">ธีม: สว่าง</button>
+      <button class="btn btn-danger" id="logout-btn">ออกจากระบบ</button>
+    </div>
+  </div>
+
+  <div class="led-container page-fade-in">
+
+    <!-- Stats -->
+    <div class="stats-row" style="margin-bottom: 20px;">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-total">0</div>
+        <div class="stat-label">โปรเจคทั้งหมด</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-active" style="color:#3b82f6;">0</div>
+        <div class="stat-label">กำลังดำเนินการ</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-complete" style="color:#22c55e;">0</div>
+        <div class="stat-label">เสร็จสิ้น</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-value" style="color:var(--primary);">0</div>
+        <div class="stat-label">มูลค่ารวม (ล้านบาท)</div>
+      </div>
+    </div>
+
+    <!-- Pipeline Filter Bar -->
+    <div class="pipeline-bar" id="pipeline-filter">
+      <div class="pipeline-step active" data-s="all">🌐 ทั้งหมด</div>
+      <div class="pipeline-step" data-s="new">🆕 ใหม่</div>
+      <div class="pipeline-step" data-s="survey">📏 Survey</div>
+      <div class="pipeline-step" data-s="quotation">💰 เสนอราคา</div>
+      <div class="pipeline-step" data-s="demo">🎥 Demo</div>
+      <div class="pipeline-step" data-s="booking">📦 จองสินค้า</div>
+      <div class="pipeline-step" data-s="installation">🛠️ ติดตั้ง</div>
+      <div class="pipeline-step" data-s="service">🔧 Service</div>
+      <div class="pipeline-step" data-s="complete">✅ เสร็จ</div>
+      <div class="pipeline-step" data-s="cancelled">❌ ยกเลิก</div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-bar" style="margin-bottom: 16px;">
+      <input type="text" id="project-search" placeholder="🔍 ค้นหาตาม Project ID, ชื่อลูกค้า, เซลส์..." style="width:100%;">
+    </div>
+
+    <!-- Project Table -->
+    <div class="card">
+      <div class="inventory-table-wrap">
+        <table class="inventory-table project-table" id="project-table">
+          <thead>
+            <tr>
+              <th>Project ID</th>
+              <th>ชื่อโปรเจค</th>
+              <th>ลูกค้า</th>
+              <th>สถานที่</th>
+              <th>ขนาดจอ</th>
+              <th>เซลส์</th>
+              <th>มูลค่า</th>
+              <th>สถานะ</th>
+              <th>อัปเดตล่าสุด</th>
+            </tr>
+          </thead>
+          <tbody id="project-table-body">
+            <tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted);">กำลังโหลด...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Modal: Create / Edit Project ═══ -->
+  <div class="modal-overlay" id="modal-project">
+    <div class="modal-box">
+      <div class="modal-title" id="modal-title">➕ สร้างโปรเจคใหม่</div>
+      <input type="hidden" id="edit-project-id">
+
+      <div class="modal-grid">
+        <div class="field full" style="margin-bottom:0;">
+          <label>ชื่อโปรเจค *</label>
+          <input type="text" id="proj-name" placeholder="เช่น จอ LED โรงแรม ABC ชั้น 3">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>ชื่อลูกค้า / บริษัท *</label>
+          <input type="text" id="proj-customer" placeholder="บริษัท ABC จำกัด">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>ผู้ติดต่อ</label>
+          <input type="text" id="proj-contact" placeholder="คุณสมชาย">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>เบอร์โทร</label>
+          <input type="tel" id="proj-phone" placeholder="08X-XXX-XXXX">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>สถานที่ติดตั้ง</label>
+          <input type="text" id="proj-location" placeholder="กรุงเทพฯ">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>ประเภท LED</label>
+          <select id="proj-led-type">
+            <option value="Indoor">Indoor</option>
+            <option value="Outdoor">Outdoor</option>
+            <option value="Rental">Rental</option>
+            <option value="อื่นๆ">อื่นๆ</option>
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>ขนาดจอ (โดยประมาณ)</label>
+          <input type="text" id="proj-size" placeholder="เช่น 4m x 2m">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>เซลส์ที่รับผิดชอบ</label>
+          <input type="text" id="proj-sales" placeholder="ชื่อเซลส์">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>มูลค่าประมาณ (บาท)</label>
+          <input type="number" id="proj-value" placeholder="500000" min="0">
+        </div>
+        <div class="field" style="margin-bottom:0;">
+          <label>สถานะ Pipeline</label>
+          <select id="proj-status">
+            <option value="new">🆕 ใหม่</option>
+            <option value="survey">📏 Survey</option>
+            <option value="quotation">💰 เสนอราคา</option>
+            <option value="demo">🎥 Demo</option>
+            <option value="booking">📦 จองสินค้า</option>
+            <option value="installation">🛠️ ติดตั้ง</option>
+            <option value="service">🔧 Service</option>
+            <option value="complete">✅ เสร็จสิ้น</option>
+            <option value="cancelled">❌ ยกเลิก</option>
+          </select>
+        </div>
+        <div class="field full" style="margin-bottom:0;">
+          <label>หมายเหตุ</label>
+          <input type="text" id="proj-notes" placeholder="รายละเอียดเพิ่มเติม">
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="modal-cancel">ยกเลิก</button>
+        <button class="btn btn-primary" id="modal-save">💾 บันทึก</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Modal: Project Detail ═══ -->
+  <div class="modal-overlay" id="modal-detail">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
+        <div>
+          <div style="font-size:0.8rem; color:var(--muted);" id="detail-id"></div>
+          <div class="modal-title" style="margin-bottom:0;" id="detail-name"></div>
+        </div>
+        <button class="back-link" id="detail-close">✕ ปิด</button>
+      </div>
+
+      <!-- Pipeline Progress -->
+      <div class="pipeline-progress" id="detail-pipeline"></div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+        <div><small style="color:var(--muted);">ลูกค้า</small><div id="detail-customer" style="font-weight:600;"></div></div>
+        <div><small style="color:var(--muted);">ผู้ติดต่อ</small><div id="detail-contact"></div></div>
+        <div><small style="color:var(--muted);">เบอร์โทร</small><div id="detail-phone"></div></div>
+        <div><small style="color:var(--muted);">สถานที่</small><div id="detail-location"></div></div>
+        <div><small style="color:var(--muted);">ประเภท LED</small><div id="detail-type"></div></div>
+        <div><small style="color:var(--muted);">ขนาดจอ</small><div id="detail-size"></div></div>
+        <div><small style="color:var(--muted);">เซลส์</small><div id="detail-sales"></div></div>
+        <div><small style="color:var(--muted);">มูลค่าประมาณ</small><div id="detail-value" style="font-weight:700;color:var(--primary);"></div></div>
+        <div style="grid-column:1/-1;"><small style="color:var(--muted);">หมายเหตุ</small><div id="detail-notes"></div></div>
+      </div>
+
+      <!-- Quick Status Update -->
+      <div class="card" style="padding:16px; background: color-mix(in srgb, var(--primary) 5%, transparent); border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);">
+        <div style="font-size:0.9rem; font-weight:600; margin-bottom:10px; color:var(--primary);">⚡ อัปเดต Pipeline</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;" id="detail-status-btns"></div>
+      </div>
+
+      <div class="modal-actions" style="margin-top:16px;">
+        <button class="btn btn-secondary" id="detail-edit">✏️ แก้ไขข้อมูล</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script type="module" src="js/shared.js"></script>
+  <script type="module" src="js/led-projects.js"></script>
+</body>
+</html>
