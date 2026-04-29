@@ -20,12 +20,11 @@ import { supabase } from '../src/api/client.js';
             return;
         }
 
-        const idNum = parseInt(projectId);
-
         // Fetch data
-        const [projRes, invRes] = await Promise.all([
+        const [projRes, invRes, modelRes] = await Promise.all([
             supabase.from('led_projects').select('*').eq('id', idNum).single(),
-            supabase.from('led_inventory').select('*')
+            supabase.from('led_inventory').select('*'),
+            supabase.from('led_models').select('name, id').order('name')
         ]);
 
         if (projRes.error || !projRes.data) {
@@ -36,6 +35,7 @@ import { supabase } from '../src/api/client.js';
 
         currentProject = projRes.data;
         allInventory = invRes.data || [];
+        const allModels = modelRes.data || [];
 
         // Pre-fill
         document.getElementById('dm-project-name').value = `${currentProject.project_id} - ${currentProject.project_name}`;
@@ -70,17 +70,30 @@ import { supabase } from '../src/api/client.js';
         });
 
         // Populate Model dropdown
-        const models = [...new Set(allInventory.map(i => i.model || 'ไม่ระบุรุ่น'))].sort();
         const modelSel = document.getElementById('dm-model');
         modelSel.innerHTML = '<option value="">-- เลือกรุ่น --</option>' + 
-            models.map(m => `<option value="${m}">${m}</option>`).join('');
+            allModels.map(m => `<option value="${m.name}" data-id="${m.id}">${m.name}</option>`).join('') +
+            '<option value="unspecified">-- ไม่ระบุรุ่น --</option>';
 
         modelSel.addEventListener('change', () => {
             const model = modelSel.value;
+            const modelId = modelSel.options[modelSel.selectedIndex]?.dataset.id;
             const lotSel = document.getElementById('dm-lot');
             if (!model) { lotSel.innerHTML = '<option value="">-- เลือก Lot --</option>'; return; }
-            const lots = [...new Set(allInventory.filter(i => (i.model || 'ไม่ระบุรุ่น') === model).map(i => i.lot_number))].sort();
-            lotSel.innerHTML = '<option value="">-- เลือก Lot --</option>' + lots.map(l => `<option value="${l}">${l}</option>`).join('');
+            
+            let filteredLots = [];
+            if (model === 'unspecified') {
+                filteredLots = allInventory.filter(i => !i.model);
+            } else {
+                filteredLots = allInventory.filter(i => i.model === model || i.model === modelId);
+            }
+
+            if (filteredLots.length === 0) {
+                lotSel.innerHTML = '<option value="">-- ไม่มีสินค้าในสต๊อก --</option>';
+            } else {
+                const lots = [...new Set(filteredLots.map(i => i.lot_number))].sort();
+                lotSel.innerHTML = '<option value="">-- เลือก Lot --</option>' + lots.map(l => `<option value="${l}">${l}</option>`).join('');
+            }
         });
 
         document.getElementById('btn-save-demo').addEventListener('click', saveDemo);

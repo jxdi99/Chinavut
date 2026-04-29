@@ -28,6 +28,7 @@ import { supabase } from '../src/api/client.js';
         const projRes = await supabase.from('led_projects').select('*').eq('id', idNum).single();
         const invRes = await supabase.from('led_inventory').select('*');
         const txnRes = await supabase.from('led_transactions').select('*');
+        const modelRes = await supabase.from('led_models').select('name, id').order('name');
 
         if (projRes.error) {
             console.error('Project fetch error:', projRes.error);
@@ -36,25 +37,26 @@ import { supabase } from '../src/api/client.js';
             return;
         }
 
-        if (invRes.error) {
-            console.error('Inventory fetch error:', invRes.error);
-        }
+        if (invRes.error) console.error('Inventory fetch error:', invRes.error);
+        if (modelRes.error) console.error('Models fetch error:', modelRes.error);
 
         currentProject = projRes.data;
         allInventory = invRes.data || [];
         allTransactions = txnRes.data || [];
+        const allModels = modelRes.data || [];
 
         console.log('Inventory loaded:', allInventory.length, 'items');
+        console.log('Models loaded:', allModels.length, 'items');
 
         // Pre-fill
         document.getElementById('bk-project-name').value = `${currentProject.project_id} - ${currentProject.project_name} (${currentProject.customer_name})`;
         document.getElementById('bk-date').value = new Date().toISOString().split('T')[0];
 
-        // Populate Model dropdown
-        const models = [...new Set(allInventory.map(i => i.model || 'ไม่ระบุรุ่น'))].sort();
+        // Populate Model dropdown from master list (led_models)
         const modelSel = document.getElementById('bk-model');
         modelSel.innerHTML = '<option value="">-- เลือกรุ่น --</option>' + 
-            models.map(m => `<option value="${m}">${m}</option>`).join('');
+            allModels.map(m => `<option value="${m.name}" data-id="${m.id}">${m.name}</option>`).join('') +
+            '<option value="unspecified">-- ไม่ระบุรุ่น --</option>';
 
         // Event listeners
         modelSel.addEventListener('change', updateLotDropdown);
@@ -63,7 +65,8 @@ import { supabase } from '../src/api/client.js';
     }
 
     function updateLotDropdown() {
-        const model = document.getElementById('bk-model').value;
+        const model = modelSel.value;
+        const modelId = modelSel.options[modelSel.selectedIndex]?.dataset.id;
         const lotSel = document.getElementById('bk-lot');
         document.getElementById('stock-display').style.display = 'none';
 
@@ -72,7 +75,20 @@ import { supabase } from '../src/api/client.js';
             return;
         }
 
-        const lots = [...new Set(allInventory.filter(i => (i.model || 'ไม่ระบุรุ่น') === model).map(i => i.lot_number))].sort();
+        let filteredLots = [];
+        if (model === 'unspecified') {
+            filteredLots = allInventory.filter(i => !i.model);
+        } else {
+            // Match by name or ID
+            filteredLots = allInventory.filter(i => i.model === model || i.model === modelId);
+        }
+
+        if (filteredLots.length === 0) {
+            lotSel.innerHTML = '<option value="">-- ไม่มีสินค้าในสต๊อก --</option>';
+            return;
+        }
+
+        const lots = [...new Set(filteredLots.map(i => i.lot_number))].sort();
         lotSel.innerHTML = '<option value="">-- เลือก Lot --</option>' + 
             lots.map(l => `<option value="${l}">${l}</option>`).join('');
     }
