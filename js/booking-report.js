@@ -21,22 +21,30 @@ import { supabase } from '../src/api/client.js';
             return;
         }
 
-        // Fetch data parallel
-        const [projRes, invRes, txnRes] = await Promise.all([
-            supabase.from('led_projects').select('*').eq('id', projectId).single(),
-            supabase.from('led_inventory').select('*'),
-            supabase.from('led_transactions').select('*')
-        ]);
+        const idNum = parseInt(projectId);
+        console.log('Fetching data for Project ID:', idNum);
 
-        if (projRes.error || !projRes.data) {
-            alert('โหลดข้อมูลโปรเจคไม่สำเร็จ');
+        // Fetch data individually to catch specific errors
+        const projRes = await supabase.from('led_projects').select('*').eq('id', idNum).single();
+        const invRes = await supabase.from('led_inventory').select('*');
+        const txnRes = await supabase.from('led_transactions').select('*');
+
+        if (projRes.error) {
+            console.error('Project fetch error:', projRes.error);
+            alert('โหลดข้อมูลโปรเจคไม่สำเร็จ: ' + projRes.error.message);
             window.location.href = 'booking.html';
             return;
+        }
+
+        if (invRes.error) {
+            console.error('Inventory fetch error:', invRes.error);
         }
 
         currentProject = projRes.data;
         allInventory = invRes.data || [];
         allTransactions = txnRes.data || [];
+
+        console.log('Inventory loaded:', allInventory.length, 'items');
 
         // Pre-fill
         document.getElementById('bk-project-name').value = `${currentProject.project_id} - ${currentProject.project_name} (${currentProject.customer_name})`;

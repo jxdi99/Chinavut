@@ -241,33 +241,71 @@
       ? `<div class="result-row"><span>${App.t("controllerPrice")} (${escapeHtml(selectedCon.name)} x${conQty})</span><b>${con1Price.toLocaleString()} ${App.t("unitBaht")}</b></div>`
       : "";
 
-    // Controller 2 (Select Only, Qty = 1)
+    // Controller 2 (Select + Qty + optional custom price)
     const con2Idx = Number(document.getElementById("con2-select").value);
     let con2Price = 0;
     let con2Html = "";
     if (con2Idx >= 0) {
       const c2 = currentData().controllers[con2Idx];
-      con2Price = c2.price;
-      con2Html = `<div class="result-row"><span>Controller 2 (${escapeHtml(c2.name)})</span><b>${con2Price.toLocaleString()} ${App.t("unitBaht")}</b></div>`;
+      const con2Qty = Number(document.getElementById("con2-qty").value) || 1;
+      let unitPrice = c2.price;
+
+      // Use custom price if in custom mode and provided
+      if (pricingMode === "custom") {
+        const customCon2Price = parseFloat(
+          document.getElementById("con2-price").value,
+        );
+        if (!isNaN(customCon2Price) && customCon2Price > 0) {
+          unitPrice = customCon2Price;
+        }
+      }
+
+      con2Price = unitPrice * con2Qty;
+      con2Html = `<div class="result-row"><span>Controller 2 (${escapeHtml(c2.name)} x${con2Qty})</span><b>${con2Price.toLocaleString()} ${App.t("unitBaht")}</b></div>`;
     }
 
-    // Controller 3 (Select Only, Qty = 1)
+    // Controller 3 (Select + Qty + optional custom price)
     const con3Idx = Number(document.getElementById("con3-select").value);
     let con3Price = 0;
     let con3Html = "";
     if (con3Idx >= 0) {
       const c3 = currentData().controllers[con3Idx];
-      con3Price = c3.price;
-      con3Html = `<div class="result-row"><span>Controller 3 (${escapeHtml(c3.name)})</span><b>${con3Price.toLocaleString()} ${App.t("unitBaht")}</b></div>`;
+      const con3Qty = Number(document.getElementById("con3-qty").value) || 1;
+      let unitPrice = c3.price;
+
+      // Use custom price if in custom mode and provided
+      if (pricingMode === "custom") {
+        const customCon3Price = parseFloat(
+          document.getElementById("con3-price").value,
+        );
+        if (!isNaN(customCon3Price) && customCon3Price > 0) {
+          unitPrice = customCon3Price;
+        }
+      }
+
+      con3Price = unitPrice * con3Qty;
+      con3Html = `<div class="result-row"><span>Controller 3 (${escapeHtml(c3.name)} x${con3Qty})</span><b>${con3Price.toLocaleString()} ${App.t("unitBaht")}</b></div>`;
     }
 
-    // Accessory (Select Only, Qty = 1)
+    // Accessory (Select + optional custom price)
     const accIdx = Number(document.getElementById("acc-select").value);
     let accPrice = 0;
     let accHtml = "";
     if (accIdx >= 0) {
       const aItem = currentData().accessories[accIdx];
-      accPrice = aItem.price;
+      let unitPrice = aItem.price;
+
+      // Use custom price if in custom mode and provided
+      if (pricingMode === "custom") {
+        const customAccPrice = parseFloat(
+          document.getElementById("acc-price").value,
+        );
+        if (!isNaN(customAccPrice) && customAccPrice > 0) {
+          unitPrice = customAccPrice;
+        }
+      }
+
+      accPrice = unitPrice;
       accHtml = `<div class="result-row"><span>${App.t("accLabel")} (${escapeHtml(aItem.name)})</span><b>${accPrice.toLocaleString()} ${App.t("unitBaht")}</b></div>`;
     }
 
@@ -490,7 +528,9 @@
 
     document.getElementById("con-qty").addEventListener("input", recalc);
     document.getElementById("con2-select").addEventListener("change", recalc);
+    document.getElementById("con2-qty").addEventListener("input", recalc);
     document.getElementById("con3-select").addEventListener("change", recalc);
+    document.getElementById("con3-qty").addEventListener("input", recalc);
     document.getElementById("acc-select").addEventListener("change", recalc);
 
     document
@@ -504,6 +544,18 @@
         document.getElementById("input-custom-price").style.display = isCustom
           ? "block"
           : "none";
+
+        // Show/hide price fields for con2, con3, acc
+        document.getElementById("con2-price").style.display = isCustom
+          ? "block"
+          : "none";
+        document.getElementById("con3-price").style.display = isCustom
+          ? "block"
+          : "none";
+        document.getElementById("acc-price").style.display = isCustom
+          ? "block"
+          : "none";
+
         recalc();
       });
 
@@ -524,6 +576,11 @@
     document
       .getElementById("custom-foundation")
       .addEventListener("input", recalc);
+
+    // Event listeners for con2, con3, acc price fields
+    document.getElementById("con2-price").addEventListener("input", recalc);
+    document.getElementById("con3-price").addEventListener("input", recalc);
+    document.getElementById("acc-price").addEventListener("input", recalc);
 
     function snapToSize(elId, useW) {
       document.getElementById(elId).addEventListener("blur", (e) => {
@@ -606,8 +663,13 @@
       document.getElementById("height_m").value = "";
       document.getElementById("con-qty").value = "1";
       document.getElementById("con2-select").value = "-1";
+      document.getElementById("con2-qty").value = "1";
+      document.getElementById("con2-price").value = "";
       document.getElementById("con3-select").value = "-1";
+      document.getElementById("con3-qty").value = "1";
+      document.getElementById("con3-price").value = "";
       document.getElementById("acc-select").value = "-1";
+      document.getElementById("acc-price").value = "";
 
       // Reset custom fields
       document.getElementById("custom-price-sqm").value = "";
