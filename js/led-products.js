@@ -19,6 +19,7 @@ import { supabase } from '../src/api/client.js';
         if (id === 'section-stock') loadStockView();
         if (id === 'section-manage') loadManageView();
         if (id === 'section-receive') loadRecentReceive();
+        if (id === 'section-ledger') loadLedgerView();
     }
 
     // ── Load inventory from Supabase ──
@@ -344,6 +345,101 @@ import { supabase } from '../src/api/client.js';
         });
     }
 
+    // ── SECTION: บัญชีคุมสต๊อก (Ledger) ──
+    async function loadLedgerView() {
+        allInventory = await fetchInventory();
+        
+        // Populate Model Filter
+        const models = [...new Set(allInventory.map(i => i.model).filter(Boolean))].sort();
+        const modelSel = document.getElementById('ledger-filter-model');
+        const currentModel = modelSel.value;
+        modelSel.innerHTML = '<option value="">-- ทั้งหมด --</option>' + 
+            models.map(m => `<option value="${m}" ${m === currentModel ? 'selected' : ''}>${m}</option>`).join('');
+
+        updateLedgerLotFilter();
+        renderLedgerTable();
+    }
+
+    function updateLedgerLotFilter() {
+        const selectedModel = document.getElementById('ledger-filter-model').value;
+        const filteredByModel = selectedModel ? allInventory.filter(i => i.model === selectedModel) : allInventory;
+        
+        const lots = [...new Set(filteredByModel.map(i => i.lot_number).filter(Boolean))].sort();
+        const lotSel = document.getElementById('ledger-filter-lot');
+        const currentLot = lotSel.value;
+        lotSel.innerHTML = '<option value="">-- ทั้งหมด --</option>' + 
+            lots.map(l => `<option value="${l}" ${l === currentLot ? 'selected' : ''}>${l}</option>`).join('');
+    }
+
+    function renderLedgerTable() {
+        const selectedModel = document.getElementById('ledger-filter-model').value;
+        const selectedLot = document.getElementById('ledger-filter-lot').value;
+        const tbody = document.getElementById('ledger-table-body');
+
+        if (!selectedModel && !selectedLot) {
+            tbody.innerHTML = '<tr><td colspan="12" style="text-align: center; padding: 40px; color: var(--muted);">กรุณาเลือก Model หรือ Lot เพื่อดูรายละเอียด</td></tr>';
+            return;
+        }
+
+        let filtered = allInventory;
+        if (selectedModel) filtered = filtered.filter(i => i.model === selectedModel);
+        if (selectedLot) filtered = filtered.filter(i => i.lot_number === selectedLot);
+
+        // Sort by creation date ascending for ledger flow
+        filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+        let balanceCab = 0;
+        let balanceMod = 0;
+
+        tbody.innerHTML = filtered.map(item => {
+            const cab = parseInt(item.cabinet) || 0;
+            const mod = parseInt(item.module) || 0;
+            
+            // In this simplified version, every entry in led_inventory is a "Receive" (In)
+            // unless we add a transaction_type field later. 
+            // For now, let's treat them as additions.
+            balanceCab += cab;
+            balanceMod += mod;
+
+            return `
+                <tr>
+                    <td><span class="badge" style="background: var(--success); color: white;">รับเข้า</span></td>
+                    <td>${formatDate(item.created_at)}</td>
+                    <td class="text-right">${cab > 0 ? cab : '-'}</td>
+                    <td class="text-right">-</td>
+                    <td class="text-right" style="font-weight:bold; color:var(--primary);">${balanceCab}</td>
+                    <td class="text-right">${mod > 0 ? mod : '-'}</td>
+                    <td class="text-right">-</td>
+                    <td class="text-right" style="font-weight:bold; color:var(--primary);">${balanceMod}</td>
+                    <td>${item.received_by || '-'}</td>
+                    <td>${item.location || '-'}</td>
+                    <td>${item.source || '-'}</td>
+                    <td>${item.notes || '-'}</td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function copyLedgerToClipboard() {
+        const table = document.getElementById('ledger-table');
+        if (!table) return;
+
+        let tsv = '';
+        const rows = table.querySelectorAll('tr');
+        rows.forEach(row => {
+            const cols = row.querySelectorAll('th, td');
+            const rowData = Array.from(cols).map(col => col.innerText.replace(/\n/g, ' ')).join('\t');
+            tsv += rowData + '\n';
+        });
+
+        navigator.clipboard.writeText(tsv).then(() => {
+            App.showToast('✅ คัดลอกตารางสำหรับ Excel เรียบร้อย!');
+        }).catch(err => {
+            console.error('Copy failed:', err);
+            App.showToast('❌ คัดลอกไม่สำเร็จ');
+        });
+    }
+
     // ── Init ──
     async function init() {
         // Check auth
@@ -377,6 +473,15 @@ import { supabase } from '../src/api/client.js';
         document.getElementById('back-from-receive').addEventListener('click', showMenu);
         document.getElementById('back-from-stock').addEventListener('click', showMenu);
         document.getElementById('back-from-manage').addEventListener('click', showMenu);
+        document.getElementById('back-from-ledger').addEventListener('click', showMenu);
+
+        // Ledger Filters
+        document.getElementById('ledger-filter-model').addEventListener('change', () => {
+            updateLedgerLotFilter();
+            renderLedgerTable();
+        });
+        document.getElementById('ledger-filter-lot').addEventListener('change', renderLedgerTable);
+        document.getElementById('ledger-copy-btn').addEventListener('click', copyLedgerToClipboard);
 
         // Receive form submit
         document.getElementById('receive-submit').addEventListener('click', handleReceive);
