@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>จองสินค้า (Booking Record) - RAZR LED</title>
+  <link rel="icon" type="image/png" href="src/img/Logo_cm.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .form-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+    .stock-info {
+      background: color-mix(in srgb, var(--primary) 5%, transparent);
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 8px;
+      font-size: 0.85rem;
+      border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand" style="display:flex; align-items:center; gap:12px;">
+      <img src="src/img/Logo_cm.png" alt="Chinavut Logo" style="height:40px;">
+      <h1 style="font-size: 1.2rem; margin: 0;">จองสินค้าจากสต๊อก</h1>
+    </div>
+    <div class="toolbar">
+      <button class="btn btn-secondary" onclick="history.back()">← ยกเลิก</button>
+      <button class="btn btn-primary" id="btn-save-booking">📦 ยืนยันการจองสินค้า</button>
+    </div>
+  </div>
+
+  <div class="form-container page-fade-in">
+    <div class="card" style="padding:32px;">
+      <h2 style="margin:0 0 24px; color:var(--primary); text-align:center;">PRODUCT BOOKING</h2>
+      
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+        <div class="field full">
+          <label>สำหรับโปรเจค (Project)</label>
+          <input type="text" id="bk-project-name" readonly style="background:var(--bg); color:var(--muted);">
+        </div>
+
+        <div class="field">
+          <label>รุ่นสินค้า (Model) *</label>
+          <select id="bk-model">
+            <option value="">-- เลือกรุ่น --</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Lot สินค้า *</label>
+          <select id="bk-lot">
+            <option value="">-- เลือก Lot --</option>
+          </select>
+        </div>
+
+        <div class="field full" id="stock-display" style="display:none;">
+          <div class="stock-info">
+            <strong>📊 สินค้าคงเหลือใน Lot นี้:</strong> 
+            Cabinet: <span id="avail-cab" style="color:var(--primary); font-weight:700;">0</span>, 
+            Module: <span id="avail-mod" style="color:var(--primary); font-weight:700;">0</span>
+            <br>
+            <small style="color:var(--muted);">* ข้อมูลจากคลังสินค้าล่าสุด</small>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>จำนวนที่จอง (Cabinet)</label>
+          <input type="number" id="bk-cabinet" value="0" min="0">
+        </div>
+        <div class="field">
+          <label>จำนวนที่จอง (Module)</label>
+          <input type="number" id="bk-module" value="0" min="0">
+        </div>
+
+        <div class="field">
+          <label>วันที่จอง</label>
+          <input type="date" id="bk-date">
+        </div>
+        <div class="field">
+          <label>เลขที่เอกสารอ้างอิง (ถ้ามี)</label>
+          <input type="text" id="bk-ref" placeholder="เช่น BK2404001">
+        </div>
+
+        <div class="field full">
+          <label>หมายเหตุ</label>
+          <textarea id="bk-notes" rows="2" placeholder="ระบุรายละเอียดเพิ่มเติม..." style="width:100%; border-radius:12px; border:1px solid var(--border); padding:12px; font-family:inherit;"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script type="module" src="js/shared.js"></script>
+  <script type="module" src="js/booking-report.js"></script>
+</body>
+</html>
