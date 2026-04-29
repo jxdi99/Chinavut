@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>บันทึกการเดโม่สินค้า (Demo Report) - RAZR LED</title>
+  <link rel="icon" type="image/png" href="src/img/Logo_cm.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .form-container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+    .demo-type-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      transition: all 0.2s;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .demo-type-card.active {
+      border-color: var(--primary);
+      background: color-mix(in srgb, var(--primary) 5%, transparent);
+    }
+    .demo-type-card input { width: 20px; height: 20px; }
+    .stock-section {
+      background: var(--bg);
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 15px;
+      border: 1px solid var(--border);
+    }
+    .qty-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .qty-btn {
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .qty-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="brand" style="display:flex; align-items:center; gap:12px;">
+      <img src="src/img/Logo_cm.png" alt="Chinavut Logo" style="height:40px;">
+      <h1 style="font-size: 1.2rem; margin: 0;">บันทึกการเดโม่สินค้า</h1>
+    </div>
+    <div class="toolbar">
+      <button class="btn btn-secondary" onclick="history.back()">← ยกเลิก</button>
+      <button class="btn btn-primary" id="btn-save-demo">💾 บันทึกรายงาน</button>
+    </div>
+  </div>
+
+  <div class="form-container page-fade-in">
+    <div class="card" style="padding:32px;">
+      <h2 style="margin:0 0 24px; color:var(--primary); text-align:center;">DEMO REPORT</h2>
+      
+      <div class="field full">
+        <label>โปรเจค (Project)</label>
+        <input type="text" id="dm-project-name" readonly style="background:var(--bg); color:var(--muted);">
+      </div>
+
+      <div style="margin-bottom:24px;">
+        <label style="display:block; margin-bottom:12px; font-weight:700;">ลักษณะการทำเดโม่ *</label>
+        
+        <div class="demo-type-card active" id="type-new">
+          <input type="radio" name="demo-type" value="new" checked>
+          <div>
+            <strong style="display:block;">ลูกค้าใหม่ / ต้องการเบิกของไปเดโม่</strong>
+            <small style="color:var(--muted);">ทำการเบิกสินค้าออกจากสต๊อกเพื่อนำไปแสดงให้ลูกค้าดู</small>
+          </div>
+        </div>
+
+        <div class="demo-type-card" id="type-existing">
+          <input type="radio" name="demo-type" value="existing">
+          <div>
+            <strong style="display:block;">ลูกค้าเก่า (เคยซื้อแล้ว) / ข้ามขั้นตอนเบิกของ</strong>
+            <small style="color:var(--muted);">ใช้สำหรับบันทึกข้อมูลการเข้าพบลูกค้าหรือสาธิตเบื้องต้นโดยไม่ต้องเบิกสินค้า</small>
+          </div>
+        </div>
+      </div>
+
+      <div id="section-withdrawal" class="stock-section">
+        <h3 style="margin:0 0 15px; font-size:1rem; color:var(--primary);">📦 รายละเอียดการเบิกสินค้าเดโม่</h3>
+        
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+          <div class="field">
+            <label>รุ่นสินค้า (Model)</label>
+            <select id="dm-model">
+              <option value="">-- เลือกรุ่น --</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Lot สินค้า</label>
+            <select id="dm-lot">
+              <option value="">-- เลือก Lot --</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:15px;">
+          <label style="display:block; margin-bottom:8px;">จำนวนที่เบิก (Cabinet) - สูงสุด 4 ตู้</label>
+          <div class="qty-grid">
+            <div class="qty-btn" data-val="1">1</div>
+            <div class="qty-btn" data-val="2">2</div>
+            <div class="qty-btn" data-val="3">3</div>
+            <div class="qty-btn active" data-val="4">4</div>
+          </div>
+          <input type="hidden" id="dm-qty" value="4">
+        </div>
+      </div>
+
+      <div style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+        <div class="field">
+          <label>วันที่เดโม่</label>
+          <input type="date" id="dm-date">
+        </div>
+        <div class="field">
+          <label>ลิงก์รูปภาพผลงาน (URL)</label>
+          <input type="text" id="dm-image-url" placeholder="https://...">
+        </div>
+        <div class="field full" style="grid-column: 1 / -1;">
+          <label>หมายเหตุ / ผลสรุปการเดโม่</label>
+          <textarea id="dm-notes" rows="3" placeholder="เช่น ลูกค้าประทับใจความสว่าง, ติดขัดเรื่องงบประมาณ..." style="width:100%; border-radius:12px; border:1px solid var(--border); padding:12px; font-family:inherit;"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script type="module" src="js/shared.js"></script>
+  <script type="module" src="js/demo-report.js"></script>
+</body>
+</html>
