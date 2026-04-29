@@ -2,6 +2,7 @@ import { supabase } from '../src/api/client.js';
 
 (function () {
     let allInventory = [];
+    let allModels = [];
     let currentUser = null;
 
     // ── Navigation ──
@@ -567,6 +568,33 @@ import { supabase } from '../src/api/client.js';
         });
     }
 
+    async function fetchModels() {
+        if (!supabase) return;
+        const { data, error } = await supabase.from('led_models').select('*').order('name');
+        if (error) { console.error('Fetch models error:', error); return; }
+        allModels = data || [];
+        populateModelDropdown();
+    }
+
+    function populateModelDropdown() {
+        const modelSel = document.getElementById('receive-model');
+        if (!modelSel) return;
+        modelSel.innerHTML = '<option value="">-- เลือกรุ่น --</option>' + 
+            allModels.map(m => `<option value="${m.name}" data-pixel="${m.pixel}" data-mperc="${m.m_per_c}">${m.name}</option>`).join('');
+        
+        modelSel.addEventListener('change', () => {
+            const selected = modelSel.options[modelSel.selectedIndex];
+            document.getElementById('receive-pixel').value = selected.dataset.pixel || '';
+            
+            // Auto calculate module if cabinet is already entered
+            const cab = parseInt(document.getElementById('receive-cabinet').value) || 0;
+            const mperc = parseInt(selected.dataset.mperc) || 0;
+            if (cab > 0 && mperc > 0) {
+                document.getElementById('receive-module').value = cab * mperc;
+            }
+        });
+    }
+
     // ── Init ──
     async function init() {
         // Check auth
@@ -586,6 +614,9 @@ import { supabase } from '../src/api/client.js';
         if (themeToggle) themeToggle.addEventListener('click', App.toggleTheme);
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) logoutBtn.addEventListener('click', App.logout);
+
+        // Fetch models and populate dropdown
+        await fetchModels();
 
         // Sub-menu navigation
         document.querySelectorAll('.sub-menu-card').forEach(card => {

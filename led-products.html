@@ -170,11 +170,13 @@
           <div class="receive-row">
             <div class="field">
               <label>รุ่น (Model)</label>
-              <input type="text" id="receive-model" placeholder="เช่น UIRx" autofocus>
+              <select id="receive-model">
+                <option value="">-- เลือกรุ่น --</option>
+              </select>
             </div>
             <div class="field">
               <label>Pixel</label>
-              <input type="text" id="receive-pixel" placeholder="เช่น 2.5">
+              <input type="text" id="receive-pixel" placeholder="เช่น 2.5" readonly style="background:var(--bg);">
             </div>
             <div class="field">
               <label>Lot เต็ม</label>
