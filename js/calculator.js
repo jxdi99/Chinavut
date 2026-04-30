@@ -539,20 +539,47 @@
         if (newMode === pricingMode) return;
 
         if (newMode === "audit") {
-          const pwd = prompt("กรุณากรอกรหัสผ่านสำหรับโหมดตรวจสอบ:");
-          if (pwd !== "1234") {
-            App.showToast("รหัสผ่านไม่ถูกต้อง");
-            return;
-          }
+          const modal = document.getElementById("audit-modal");
+          const pwdInput = document.getElementById("audit-pwd-input");
+          pwdInput.value = "";
+          modal.style.display = "flex";
+          pwdInput.focus();
+          
+          document.getElementById("audit-cancel").onclick = () => {
+            modal.style.display = "none";
+          };
+          
+          document.getElementById("audit-confirm").onclick = () => {
+            if (pwdInput.value !== "CM1234") {
+              App.showToast("รหัสผ่านไม่ถูกต้อง");
+              pwdInput.value = "";
+              pwdInput.focus();
+              return;
+            }
+            modal.style.display = "none";
+            setMode("audit");
+          };
+          
+          pwdInput.onkeyup = (ev) => {
+            if (ev.key === "Enter") {
+              document.getElementById("audit-confirm").click();
+            }
+          };
+          return;
         }
 
+        setMode(newMode);
+      });
+    });
+
+    function setMode(newMode) {
         pricingMode = newMode;
         
         // Update active class
         document.querySelectorAll(".mode-opt").forEach(b => b.classList.remove("active"));
-        e.target.classList.add("active");
+        document.querySelector(`.mode-opt[data-mode="${newMode}"]`)?.classList.add("active");
 
-        const showInputs = pricingMode === "custom" || pricingMode === "audit";
+        const showInputs = pricingMode === "custom";
         
         document.getElementById("input-custom-price").style.display = showInputs
           ? "grid"
@@ -573,8 +600,7 @@
           : "none";
 
         recalc();
-      });
-    });
+    }
 
     document
       .getElementById("custom-price-sqm")
