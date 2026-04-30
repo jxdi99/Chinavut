@@ -152,7 +152,10 @@ import { MasterDataAPI } from "../src/api/client.js";
     const state = await AppStorage.loadState();
     if (!state.currentUser) {
       if (window.location.pathname.includes("/backend/")) {
-        window.location.href = '../index.html';
+        // If we're not already on the backend login page (index.html)
+        if (!window.location.pathname.endsWith("index.html") && !window.location.pathname.endsWith("/backend/")) {
+           window.location.href = './index.html';
+        }
       } else {
         const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
         window.location.href = basePath + 'index.html';
