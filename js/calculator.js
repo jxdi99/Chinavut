@@ -165,7 +165,7 @@
       customFoundPrice = 0;
     let customBreakdownHtml = "";
 
-    if (pricingMode === "custom") {
+    if (pricingMode === "custom" || pricingMode === "audit") {
       const customPriceSqm =
         parseFloat(document.getElementById("custom-price-sqm").value) || 0;
       const customInstall =
@@ -228,7 +228,7 @@
     let con1Price = (selectedCon?.price || 0) * conQty;
 
     // Use custom controller price if in custom mode and value is provided
-    if (pricingMode === "custom") {
+    if (pricingMode === "custom" || pricingMode === "audit") {
       const customConPrice = parseFloat(
         document.getElementById("custom-controller-price").value,
       );
@@ -533,34 +533,48 @@
     document.getElementById("con3-qty").addEventListener("input", recalc);
     document.getElementById("acc-select").addEventListener("change", recalc);
 
-    document
-      .getElementById("price-mode-toggle")
-      .addEventListener("change", (e) => {
-        const isCustom = e.target.checked;
-        pricingMode = isCustom ? "custom" : "standard";
-        document.getElementById("price-mode-label").textContent = isCustom
-          ? "พนักงาน"
-          : "มาตรฐาน";
-        document.getElementById("input-custom-price").style.display = isCustom
+    document.querySelectorAll(".mode-opt").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const newMode = e.target.getAttribute("data-mode");
+        if (newMode === pricingMode) return;
+
+        if (newMode === "audit") {
+          const pwd = prompt("กรุณากรอกรหัสผ่านสำหรับโหมดตรวจสอบ:");
+          if (pwd !== "1234") {
+            App.showToast("รหัสผ่านไม่ถูกต้อง");
+            return;
+          }
+        }
+
+        pricingMode = newMode;
+        
+        // Update active class
+        document.querySelectorAll(".mode-opt").forEach(b => b.classList.remove("active"));
+        e.target.classList.add("active");
+
+        const showInputs = pricingMode === "custom" || pricingMode === "audit";
+        
+        document.getElementById("input-custom-price").style.display = showInputs
           ? "grid"
           : "none";
 
         // Show/hide price fields for con1, con2, con3, acc
-        document.getElementById("custom-controller-price").style.display = isCustom
+        document.getElementById("custom-controller-price").style.display = showInputs
           ? "block"
           : "none";
-        document.getElementById("con2-price").style.display = isCustom
+        document.getElementById("con2-price").style.display = showInputs
           ? "block"
           : "none";
-        document.getElementById("con3-price").style.display = isCustom
+        document.getElementById("con3-price").style.display = showInputs
           ? "block"
           : "none";
-        document.getElementById("acc-price").style.display = isCustom
+        document.getElementById("acc-price").style.display = showInputs
           ? "block"
           : "none";
 
         recalc();
       });
+    });
 
     document
       .getElementById("custom-price-sqm")

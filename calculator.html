@@ -21,12 +21,10 @@
                 </div>
             </div>
             <div class="toolbar">
-                <div class="ios-toggle-wrap" id="price-mode-wrapper" style="display:none;">
-                    <span class="ios-toggle-label" id="price-mode-label">มาตรฐาน</span>
-                    <label class="ios-toggle" for="price-mode-toggle">
-                        <input type="checkbox" id="price-mode-toggle">
-                        <span class="ios-toggle-track"></span>
-                    </label>
+                <div class="mode-toggle-pill" id="price-mode-wrapper" style="display:none;">
+                    <button class="mode-opt active" data-mode="standard" data-i18n="modeStandard">มาตรฐาน</button>
+                    <button class="mode-opt" data-mode="custom" data-i18n="modeStaff">พนักงาน</button>
+                    <button class="mode-opt" data-mode="audit" data-i18n="modeAudit">ตรวจสอบ</button>
                 </div>
                 <div class="lang-toggle-pill" id="lang-toggle">
                     <button class="lang-opt active" data-lang="th">TH</button>

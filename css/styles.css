@@ -152,7 +152,7 @@ a {
 }
 
 /* ── Language Toggle Pill ── */
-.lang-toggle-pill {
+.lang-toggle-pill, .mode-toggle-pill {
   display: inline-flex;
   gap: 2px;
   padding: 3px;
@@ -162,7 +162,7 @@ a {
   overflow: hidden;
 }
 
-.lang-opt {
+.lang-opt, .mode-opt {
   border: none;
   background: transparent;
   color: var(--muted);
@@ -176,18 +176,18 @@ a {
   position: relative;
 }
 
-.lang-opt:hover:not(.active) {
+.lang-opt:hover:not(.active), .mode-opt:hover:not(.active) {
   color: var(--text);
   background: color-mix(in srgb, var(--border) 40%, transparent);
 }
 
-.lang-opt.active {
+.lang-opt.active, .mode-opt.active {
   background: linear-gradient(135deg, var(--primary), var(--primary-2));
   color: #fff;
   box-shadow: 0 2px 8px rgba(124, 140, 255, .35);
 }
 
-[data-theme="dark"] .lang-toggle-pill {
+[data-theme="dark"] .lang-toggle-pill, [data-theme="dark"] .mode-toggle-pill {
   background: rgba(255, 255, 255, .06);
 }
 
