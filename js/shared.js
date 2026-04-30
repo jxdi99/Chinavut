@@ -140,16 +140,23 @@ import { MasterDataAPI } from "../src/api/client.js";
     if (
       window.location.pathname.endsWith("/") ||
       window.location.pathname.endsWith("index.html")
-    )
-      return;
-    if (window.location.pathname.includes("/backend")) return;
+    ) {
+      // Don't redirect if we're already on the root index (login page)
+      if (!window.location.pathname.includes("/backend/")) {
+         return;
+      }
+    }
     if (window.location.pathname.toLowerCase().includes("/public")) return;
     if (window.location.pathname.includes("reset-password")) return;
     
     const state = await AppStorage.loadState();
     if (!state.currentUser) {
-      const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-      window.location.href = basePath + 'index.html';
+      if (window.location.pathname.includes("/backend/")) {
+        window.location.href = '../index.html';
+      } else {
+        const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+        window.location.href = basePath + 'index.html';
+      }
     }
   };
 
@@ -167,9 +174,13 @@ import { MasterDataAPI } from "../src/api/client.js";
     App.state.currentUser = null;
     App.state.lastInputs = null;
     await AppStorage.saveState(App.state);
-    // Navigate to login page (handles both root and subfolder deployments)
-    const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-    window.location.href = basePath + 'index.html';
+    
+    if (window.location.pathname.includes("/backend/")) {
+      window.location.href = '../index.html';
+    } else {
+      const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+      window.location.href = basePath + 'index.html';
+    }
   };
 
   App.renderWelcomeBanner = function () {
