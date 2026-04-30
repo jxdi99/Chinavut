@@ -706,7 +706,31 @@
         window.location.href = "detail.html";
       }
     });
+    document.getElementById("copy-btn").addEventListener("click", () => {
+      const rows = document.querySelectorAll("#result-display .result-row, #result-display .result-total, #result-display .result-note");
+      let text = "Chinavut LED Solution Calculator Pro\n\n";
+      rows.forEach(row => {
+        if (row.classList.contains("result-note") || row.classList.contains("result-total")) {
+          text += "\n" + row.innerText + "\n";
+        } else {
+          const span = row.querySelector("span");
+          const b = row.querySelector("b");
+          if (span && b) {
+            text += `${span.innerText}\t${b.innerText}\n`;
+          } else {
+            text += `${row.innerText}\n`;
+          }
+        }
+      });
+      navigator.clipboard.writeText(text).then(() => {
+        App.showToast(App.t("copySuccess") || "คัดลอกผลลัพธ์แล้ว");
+      }).catch(err => {
+        console.error("Copy failed", err);
+        App.showToast(App.t("copyError") || "เกิดข้อผิดพลาดในการคัดลอก");
+      });
+    });
   }
+
 
   function waitForDeps() {
     if (typeof App !== "undefined" && typeof AppStorage !== "undefined") {
