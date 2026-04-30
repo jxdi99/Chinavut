@@ -179,7 +179,7 @@ import { MasterDataAPI } from "../src/api/client.js";
     await AppStorage.saveState(App.state);
     
     if (window.location.pathname.includes("/backend/")) {
-      window.location.href = '../index.html';
+      window.location.href = './index.html';
     } else {
       const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
       window.location.href = basePath + 'index.html';
