@@ -381,7 +381,13 @@
     await App.checkAuth();
     state = await AppStorage.loadState();
     state.ui = state.ui || { theme: "light", lang: "th" };
-    state.masterData = state.masterData || App.clone(DEFAULT_DATA);
+    // Ensure masterData exists and has items. If empty, seed from DEFAULT_DATA.
+    const isDataEmpty = !state.masterData || !state.masterData.UIR || !state.masterData.UIR.items || state.masterData.UIR.items.length === 0;
+    if (isDataEmpty) {
+      state.masterData = App.clone(DEFAULT_DATA);
+    }
+    
+    // Ensure nested structures like accessories exist
     if (!state.masterData.accessories) {
       state.masterData.accessories = App.clone(DEFAULT_DATA.accessories);
     }
@@ -391,9 +397,11 @@
       const syncSuccess = await App.syncFromDB();
       if (syncSuccess) {
         state.masterData = App.state.masterData;
+      } else {
+        console.warn("Supabase sync returned false, using local/default data.");
       }
     } catch (err) {
-      console.warn("Supabase sync not available, using local data");
+      console.error("Supabase sync exception:", err);
     }
 
     App.state = state;
