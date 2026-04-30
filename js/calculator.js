@@ -542,10 +542,13 @@
           ? "พนักงาน"
           : "มาตรฐาน";
         document.getElementById("input-custom-price").style.display = isCustom
-          ? "block"
+          ? "grid"
           : "none";
 
-        // Show/hide price fields for con2, con3, acc
+        // Show/hide price fields for con1, con2, con3, acc
+        document.getElementById("custom-controller-price").style.display = isCustom
+          ? "block"
+          : "none";
         document.getElementById("con2-price").style.display = isCustom
           ? "block"
           : "none";
