@@ -98,6 +98,11 @@ export const MasterDataAPI = {
         console.error("Supabase Error (accessories):", accessories.error);
 
       if (models.error || controllers.error || accessories.error) {
+        console.error("MasterData sync failed due to table errors:", {
+          models: models.error,
+          controllers: controllers.error,
+          accessories: accessories.error
+        });
         return null;
       }
 
