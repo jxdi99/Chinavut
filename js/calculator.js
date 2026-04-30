@@ -349,7 +349,7 @@
     const moneyRows = isLogged
       ? `
       ${makeRow(App.t("elecCost"), `${App.t("perHour")} ${(((area * led.max) / 1000) * 5).toFixed(2)} ${App.t("unitBaht")}`, `<b>ที่มา:</b> การประมาณค่าไฟฟ้ารายชั่วโมง<br><b>สูตร:</b> ((พื้นที่ * Max Power) / 1000) * 5 บาท/หน่วย<br>= ((${Number(area.toFixed(4))} * ${led.max}) / 1000) * 5`)}
-      ${makeRow(App.t("productPrice"), prodPrice > 0 ? prodPrice.toLocaleString() + " " + App.t("unitBaht") : App.t("notQuoted"), `<b>ที่มา:</b> ราคาผลิตภัณฑ์หลัก (LED)<br><b>สูตร:</b> พื้นที่ * ราคาต่อตารางเมตร<br>= ${Number(area.toFixed(4))} * ${unitPrice.toLocaleString()}`, "margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);")}
+      ${makeRow(App.t("productPrice"), prodPrice > 0 ? prodPrice.toLocaleString() + " " + App.t("unitBaht") : App.t("notQuoted"), `<b>ที่มา:</b> ราคาผลิตภัณฑ์หลัก (LED)<br><b>สูตร:</b> พื้นที่ * ราคาต่อตารางเมตร<br>= ${Number(area.toFixed(4))} * ${(pricingMode === "custom" ? customPriceSqm : led.price).toLocaleString()}`, "margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);")}
       ${con1Html}
       ${con2Html}
       ${con3Html}
