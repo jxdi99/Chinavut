@@ -237,8 +237,15 @@
       }
     }
 
+    function makeRow(label, value, infoHtml, customStyle = "") {
+      const iconHtml = (pricingMode === "audit" && infoHtml)
+        ? ` <span class="audit-icon" data-info="${encodeURIComponent(infoHtml)}" style="cursor:pointer; filter:grayscale(1) opacity(0.6); font-size:1.1em; transition:0.2s;" title="ดูข้อมูลการคำนวณ" onmouseover="this.style.filter='grayscale(0) opacity(1)'" onmouseout="this.style.filter='grayscale(1) opacity(0.6)'">ℹ️</span>`
+        : "";
+      return `<div class="result-row" ${customStyle ? `style="${customStyle}"` : ""}><span>${label}${iconHtml}</span><b ${customStyle.includes('color:') ? 'style="color:inherit;"' : ''}>${value}</b></div>`;
+    }
+
     const con1Html = selectedCon
-      ? `<div class="result-row"><span>${App.t("controllerPrice")} (${escapeHtml(selectedCon.name)} x${conQty})</span><b>${con1Price.toLocaleString()} ${App.t("unitBaht")}</b></div>`
+      ? makeRow(`${App.t("controllerPrice")} (${escapeHtml(selectedCon.name)} x${conQty})`, `${con1Price.toLocaleString()} ${App.t("unitBaht")}`, `<b>ที่มา:</b> ราคา Controller หลัก<br><b>สูตร:</b> ราคาต่อตัว * จำนวน<br>= ${selectedCon.price.toLocaleString()} * ${conQty} = ${con1Price.toLocaleString()} บาท`)
       : "";
 
     // Controller 2 (Select + Qty + optional custom price)
@@ -250,18 +257,13 @@
       const con2Qty = Number(document.getElementById("con2-qty").value) || 1;
       let unitPrice = c2.price;
 
-      // Use custom price if in custom mode and provided
       if (pricingMode === "custom") {
-        const customCon2Price = parseFloat(
-          document.getElementById("con2-price").value,
-        );
-        if (!isNaN(customCon2Price) && customCon2Price > 0) {
-          unitPrice = customCon2Price;
-        }
+        const customCon2Price = parseFloat(document.getElementById("con2-price").value);
+        if (!isNaN(customCon2Price) && customCon2Price > 0) unitPrice = customCon2Price;
       }
 
       con2Price = unitPrice * con2Qty;
-      con2Html = `<div class="result-row"><span>Controller 2 (${escapeHtml(c2.name)} x${con2Qty})</span><b>${con2Price.toLocaleString()} ${App.t("unitBaht")}</b></div>`;
+      con2Html = makeRow(`Controller 2 (${escapeHtml(c2.name)} x${con2Qty})`, `${con2Price.toLocaleString()} ${App.t("unitBaht")}`, `<b>ที่มา:</b> ราคา Controller 2<br><b>สูตร:</b> ราคาต่อตัว * จำนวน<br>= ${unitPrice.toLocaleString()} * ${con2Qty} = ${con2Price.toLocaleString()} บาท`);
     }
 
     // Controller 3 (Select + Qty + optional custom price)
@@ -273,18 +275,13 @@
       const con3Qty = Number(document.getElementById("con3-qty").value) || 1;
       let unitPrice = c3.price;
 
-      // Use custom price if in custom mode and provided
       if (pricingMode === "custom") {
-        const customCon3Price = parseFloat(
-          document.getElementById("con3-price").value,
-        );
-        if (!isNaN(customCon3Price) && customCon3Price > 0) {
-          unitPrice = customCon3Price;
-        }
+        const customCon3Price = parseFloat(document.getElementById("con3-price").value);
+        if (!isNaN(customCon3Price) && customCon3Price > 0) unitPrice = customCon3Price;
       }
 
       con3Price = unitPrice * con3Qty;
-      con3Html = `<div class="result-row"><span>Controller 3 (${escapeHtml(c3.name)} x${con3Qty})</span><b>${con3Price.toLocaleString()} ${App.t("unitBaht")}</b></div>`;
+      con3Html = makeRow(`Controller 3 (${escapeHtml(c3.name)} x${con3Qty})`, `${con3Price.toLocaleString()} ${App.t("unitBaht")}`, `<b>ที่มา:</b> ราคา Controller 3<br><b>สูตร:</b> ราคาต่อตัว * จำนวน<br>= ${unitPrice.toLocaleString()} * ${con3Qty} = ${con3Price.toLocaleString()} บาท`);
     }
 
     // Accessory (Select + optional custom price)
@@ -295,18 +292,13 @@
       const aItem = currentData().accessories[accIdx];
       let unitPrice = aItem.price;
 
-      // Use custom price if in custom mode and provided
       if (pricingMode === "custom") {
-        const customAccPrice = parseFloat(
-          document.getElementById("acc-price").value,
-        );
-        if (!isNaN(customAccPrice) && customAccPrice > 0) {
-          unitPrice = customAccPrice;
-        }
+        const customAccPrice = parseFloat(document.getElementById("acc-price").value);
+        if (!isNaN(customAccPrice) && customAccPrice > 0) unitPrice = customAccPrice;
       }
 
       accPrice = unitPrice;
-      accHtml = `<div class="result-row"><span>${App.t("accLabel")} (${escapeHtml(aItem.name)})</span><b>${accPrice.toLocaleString()} ${App.t("unitBaht")}</b></div>`;
+      accHtml = makeRow(`${App.t("accLabel")} (${escapeHtml(aItem.name)})`, `${accPrice.toLocaleString()} ${App.t("unitBaht")}`, `<b>ที่มา:</b> ราคาอุปกรณ์เสริม<br><b>สูตร:</b> ราคาตามฐานข้อมูล (ต่อชิ้น)<br>= ${accPrice.toLocaleString()} บาท`);
     }
 
     const total =
@@ -356,13 +348,13 @@
 
     const moneyRows = isLogged
       ? `
-      <div class="result-row"><span>${App.t("elecCost")}</span><b>${App.t("perHour")} ${(((area * led.max) / 1000) * 5).toFixed(2)} ${App.t("unitBaht")}</b></div>
-      <div class="result-row" style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);"><span>${App.t("productPrice")}</span><b>${prodPrice > 0 ? prodPrice.toLocaleString() + " " + App.t("unitBaht") : App.t("notQuoted")}</b></div>
+      ${makeRow(App.t("elecCost"), `${App.t("perHour")} ${(((area * led.max) / 1000) * 5).toFixed(2)} ${App.t("unitBaht")}`, `<b>ที่มา:</b> การประมาณค่าไฟฟ้ารายชั่วโมง<br><b>สูตร:</b> ((พื้นที่ * Max Power) / 1000) * 5 บาท/หน่วย<br>= ((${Number(area.toFixed(4))} * ${led.max}) / 1000) * 5`)}
+      ${makeRow(App.t("productPrice"), prodPrice > 0 ? prodPrice.toLocaleString() + " " + App.t("unitBaht") : App.t("notQuoted"), `<b>ที่มา:</b> ราคาผลิตภัณฑ์หลัก (LED)<br><b>สูตร:</b> พื้นที่ * ราคาต่อตารางเมตร<br>= ${Number(area.toFixed(4))} * ${unitPrice.toLocaleString()}`, "margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);")}
       ${con1Html}
       ${con2Html}
       ${con3Html}
       ${accHtml}
-      <div class="result-row"><span>${App.t("installPrice")}</span><b>${installText}</b></div>
+      ${makeRow(App.t("installPrice"), installText, `<b>ที่มา:</b> ค่าติดตั้งเบื้องต้น<br><b>สูตร:</b> ตามที่ตั้งค่าไว้ในตารางราคา<br>= ${installPrice.toLocaleString()} บาท`)}
       ${customBreakdownHtml}
       <div class="result-total">${App.t("total")}: ${prodPrice > 0 ? total.toLocaleString() + " " + App.t("unitBaht") : App.t("notQuoted2")}</div>
     `
@@ -373,21 +365,43 @@
     `;
 
     document.getElementById("result-display").innerHTML = `
-      <div class="result-row"><span>${App.t("screenSize")}</span><b>${screenW.toFixed(2)} x ${screenH.toFixed(2)} ${App.t("unitMeter")}</b></div>
-      <div class="result-row"><span>${App.t("totalCabLabel")}</span><b>${wQty} x ${hQty} = ${totalQty} ${App.t("unitUnits")}</b></div>
-      <div class="result-row"><span>${App.t("diagonalLabel")}</span><b>${diagonalInch.toFixed(1)} ${App.t("unitInch")}</b></div>
-      ${ratioText ? `<div class="result-row"><span>${App.t("aspectRatio")}</span><b style="color:var(--primary);">${ratioText}</b></div>` : ""}
-      <div class="result-row"><span>${App.t("area")}</span><b>${Number(area.toFixed(4))} ${App.t("unitSqM")}</b></div>
-      <div class="result-row"><span>${App.t("resolution")}</span><b>${resW} x ${resH} ${App.t("unitPixels")}</b></div>
-      <div class="result-row"><span>${App.t("pixels")}</span><b>${totalPixels.toLocaleString()} ${App.t("pixels")}</b></div>
-      <div class="result-row"><span>${App.t("weight")}</span><b>${(totalQty * g.weight).toFixed(1)} ${App.t("unitKg")}</b></div>
-      <div class="result-row"><span>${App.t("power")}</span><b>${Math.round(area * led.avg).toLocaleString()} / ${Math.round(area * led.max).toLocaleString()} ${App.t("unitWatts")}</b></div>
-      <div class="result-row"><span>${App.t("amps")}</span><b>${(((area * led.max) / 220) * 1.25).toFixed(2)} ${App.t("unitAmps")}</b></div>
+      ${makeRow(App.t("screenSize"), `${screenW.toFixed(2)} x ${screenH.toFixed(2)} ${App.t("unitMeter")}`, `<b>ที่มา:</b> ขนาดจอภาพ (กว้าง x สูง)<br><b>สูตร:</b> จำนวนตู้กว้าง * ขนาดตู้กว้าง = กว้างรวม<br>${wQty} * ${g.w} = ${screenW.toFixed(2)} ม.<br>จำนวนตู้สูง * ขนาดตู้สูง = สูงรวม<br>${hQty} * ${g.h} = ${screenH.toFixed(2)} ม.`)}
+      ${makeRow(App.t("totalCabLabel"), `${wQty} x ${hQty} = ${totalQty} ${App.t("unitUnits")}`, `<b>ที่มา:</b> จำนวนตู้ทั้งหมด<br><b>สูตร:</b> ตู้แนวนอน * ตู้แนวตั้ง<br>${wQty} * ${hQty} = ${totalQty} ตู้`)}
+      ${makeRow(App.t("diagonalLabel"), `${diagonalInch.toFixed(1)} ${App.t("unitInch")}`, `<b>ที่มา:</b> ความยาวเส้นทแยงมุม<br><b>สูตร:</b> √(กว้าง² + สูง²) * 39.3701<br>= √(${screenW.toFixed(2)}² + ${screenH.toFixed(2)}²) * 39.3701`)}
+      ${ratioText ? makeRow(App.t("aspectRatio"), ratioText, `<b>ที่มา:</b> สัดส่วนจอภาพ<br><b>สูตร:</b> ความกว้าง / ความสูง<br>= ${screenW.toFixed(2)} / ${screenH.toFixed(2)} = ${(screenW/screenH).toFixed(2)}`, "color:var(--primary);") : ""}
+      ${makeRow(App.t("area"), `${Number(area.toFixed(4))} ${App.t("unitSqM")}`, `<b>ที่มา:</b> พื้นที่จอภาพรวม<br><b>สูตร:</b> ความกว้าง * ความสูง<br>= ${screenW.toFixed(2)} * ${screenH.toFixed(2)} = ${area.toFixed(4)} ตร.ม.`)}
+      ${makeRow(App.t("resolution"), `${resW} x ${resH} ${App.t("unitPixels")}`, `<b>ที่มา:</b> ความละเอียดจอภาพ (Resolution)<br><b>สูตร:</b> จำนวนพิกเซลของตู้ * จำนวนตู้<br>กว้าง: ${led.rw} * ${wQty} = ${resW} px<br>สูง: ${led.rh} * ${hQty} = ${resH} px`)}
+      ${makeRow(App.t("pixels"), `${totalPixels.toLocaleString()} ${App.t("pixels")}`, `<b>ที่มา:</b> จำนวนพิกเซลทั้งหมด<br><b>สูตร:</b> ความละเอียดกว้าง * ความละเอียดสูง<br>= ${resW} * ${resH} = ${totalPixels} px`)}
+      ${makeRow(App.t("weight"), `${(totalQty * g.weight).toFixed(1)} ${App.t("unitKg")}`, `<b>ที่มา:</b> น้ำหนักรวมของจอภาพ<br><b>สูตร:</b> จำนวนตู้ทั้งหมด * น้ำหนักต่อตู้<br>= ${totalQty} * ${g.weight} = ${(totalQty * g.weight).toFixed(1)} กก.`)}
+      ${makeRow(App.t("power"), `${Math.round(area * led.avg).toLocaleString()} / ${Math.round(area * led.max).toLocaleString()} ${App.t("unitWatts")}`, `<b>ที่มา:</b> การกินไฟ (เฉลี่ย / สูงสุด)<br><b>สูตร:</b> พื้นที่ * อัตรากินไฟต่อ ตร.ม.<br>Avg: ${area.toFixed(4)} * ${led.avg} = ${Math.round(area*led.avg)} W<br>Max: ${area.toFixed(4)} * ${led.max} = ${Math.round(area*led.max)} W`)}
+      ${makeRow(App.t("amps"), `${(((area * led.max) / 220) * 1.25).toFixed(2)} ${App.t("unitAmps")}`, `<b>ที่มา:</b> กระแสไฟสูงสุดเพื่อเผื่อขนาดสายไฟ<br><b>สูตร:</b> ((Max Power / 220V) * 1.25)<br>= ((${area.toFixed(4)} * ${led.max}) / 220) * 1.25`)}
       ${moneyRows}
       <div class="result-note">
         <b>${App.t("calcNoteTitle")}</b> ${App.t("calcNoteDesc")}
       </div>
     `;
+
+    // Bind click events to audit icons
+    if (pricingMode === "audit") {
+        document.querySelectorAll(".audit-icon").forEach(icon => {
+            icon.addEventListener("click", function() {
+                const infoHTML = decodeURIComponent(this.getAttribute("data-info"));
+                const modal = document.getElementById("audit-info-modal");
+                document.getElementById("audit-info-content").innerHTML = infoHTML;
+                modal.style.display = "flex";
+            });
+        });
+        
+        const closeBtn = document.getElementById("audit-info-close");
+        if (closeBtn && !closeBtn.onclick) {
+            closeBtn.onclick = function() {
+                document.getElementById("audit-info-modal").style.display = "none";
+            };
+            document.getElementById("audit-info-modal").onclick = function(e) {
+                if (e.target === this) this.style.display = "none";
+            };
+        }
+    }
 
     // Save current specs to sessionStorage for Detail page
     const pixelPitch = led.name.match(/[\d.]+$/)?.[0] || "?";
