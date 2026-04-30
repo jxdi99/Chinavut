@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chinavut LED Solution Calculator Pro</title>
     <link rel="icon" type="image/png" href="src/img/Logo_cm.png">
-    <link rel="stylesheet" href="css/styles.css?v=2">
+    <link rel="stylesheet" href="css/styles.css?v=3">
 </head>
 
 <body>
@@ -21,10 +21,16 @@
                 </div>
             </div>
             <div class="toolbar">
-                <div class="mode-toggle-pill" id="price-mode-wrapper" style="display:none;">
-                    <button class="mode-opt active" data-mode="standard" data-i18n="modeStandard">มาตรฐาน</button>
-                    <button class="mode-opt" data-mode="custom" data-i18n="modeStaff">พนักงาน</button>
-                    <button class="mode-opt" data-mode="audit" data-i18n="modeAudit">ตรวจสอบ</button>
+                <div class="tri-state-toggle" id="price-mode-wrapper" style="display:none;">
+                    <input type="radio" id="mode-standard" name="mode-toggle" value="standard" checked>
+                    <input type="radio" id="mode-custom" name="mode-toggle" value="custom">
+                    <input type="radio" id="mode-audit" name="mode-toggle" value="audit">
+                    
+                    <label for="mode-standard" data-i18n="modeStandard">มาตรฐาน</label>
+                    <label for="mode-custom" data-i18n="modeStaff">พนักงาน</label>
+                    <label for="mode-audit" data-i18n="modeAudit">ตรวจสอบ</label>
+                    
+                    <div class="thumb"></div>
                 </div>
                 <div class="lang-toggle-pill" id="lang-toggle">
                     <button class="lang-opt active" data-lang="th">TH</button>
@@ -237,7 +243,7 @@
     <script type="module" src="js/data.js"></script>
     <script type="module" src="js/storage.js"></script>
     <script type="module" src="js/shared.js"></script>
-    <script type="module" src="js/calculator.js?v=4"></script>
+    <script type="module" src="js/calculator.js?v=5"></script>
 </body>
 
 </html>

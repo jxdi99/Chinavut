@@ -533,9 +533,9 @@
     document.getElementById("con3-qty").addEventListener("input", recalc);
     document.getElementById("acc-select").addEventListener("change", recalc);
 
-    document.querySelectorAll(".mode-opt").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const newMode = e.target.getAttribute("data-mode");
+    document.querySelectorAll('input[name="mode-toggle"]').forEach((radio) => {
+      radio.addEventListener("change", (e) => {
+        const newMode = e.target.value;
         if (newMode === pricingMode) return;
 
         if (newMode === "audit") {
@@ -547,6 +547,9 @@
           
           document.getElementById("audit-cancel").onclick = () => {
             modal.style.display = "none";
+            // Revert radio visually to the previous mode
+            const oldRadio = document.getElementById(`mode-${pricingMode}`);
+            if (oldRadio) oldRadio.checked = true;
           };
           
           document.getElementById("audit-confirm").onclick = () => {
@@ -575,9 +578,9 @@
     function setMode(newMode) {
         pricingMode = newMode;
         
-        // Update active class
-        document.querySelectorAll(".mode-opt").forEach(b => b.classList.remove("active"));
-        document.querySelector(`.mode-opt[data-mode="${newMode}"]`)?.classList.add("active");
+        // Ensure the correct radio is checked visually (useful when set programmatically)
+        const activeRadio = document.getElementById(`mode-${newMode}`);
+        if (activeRadio) activeRadio.checked = true;
 
         const showInputs = pricingMode === "custom";
         
