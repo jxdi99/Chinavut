@@ -12,24 +12,50 @@
       h: 480,
       weight: 7.8,
       type: "indoor",
-      items: [],
+      items: [
+        { name: "UIR1.2", rw: 512, rh: 384, max: 600, avg: 200, price: 45000, brightness: 600, refresh_rate: 3840, material: "Die-casting Aluminum", maintenance: "Front", ingress_protection: "IP30", led_type: "SMD1010", beam_angle: "160/160", color_temperature: "3200-9500K", processing_depth: "14-16 bit", life_hours: 100000, video_support: "2K/4K", display_type: "Indoor Fixed" },
+        { name: "UIR1.5", rw: 410, rh: 307, max: 600, avg: 200, price: 35000, brightness: 600, refresh_rate: 3840, material: "Die-casting Aluminum", maintenance: "Front", ingress_protection: "IP30", led_type: "SMD1212", beam_angle: "160/160", color_temperature: "3200-9500K", processing_depth: "14-16 bit", life_hours: 100000, video_support: "2K/4K", display_type: "Indoor Fixed" },
+        { name: "UIR1.8", rw: 344, rh: 258, max: 600, avg: 200, price: 28000, brightness: 600, refresh_rate: 3840, material: "Die-casting Aluminum", maintenance: "Front", ingress_protection: "IP30", led_type: "SMD1515", beam_angle: "160/160", color_temperature: "3200-9500K", processing_depth: "14-16 bit", life_hours: 100000, video_support: "2K/4K", display_type: "Indoor Fixed" },
+        { name: "UIR2.5", rw: 256, rh: 192, max: 600, avg: 200, price: 18000, brightness: 800, refresh_rate: 3840, material: "Die-casting Aluminum", maintenance: "Front", ingress_protection: "IP30", led_type: "SMD2121", beam_angle: "160/160", color_temperature: "3200-9500K", processing_depth: "14-16 bit", life_hours: 100000, video_support: "2K/4K", display_type: "Indoor Fixed" }
+      ],
     },
     UOS: {
       w: 960,
       h: 960,
       weight: 26.5,
       type: "outdoor",
-      items: [],
+      items: [
+        { name: "UOS2.5", rw: 384, rh: 384, max: 800, avg: 260, price: 42000, brightness: 5000, refresh_rate: 3840, material: "Magnesium Alloy", maintenance: "Front/Rear", ingress_protection: "IP65", led_type: "SMD1415", beam_angle: "140/140", color_temperature: "3200-9500K", processing_depth: "14-16 bit", life_hours: 100000, video_support: "2K/4K", display_type: "Outdoor Fixed" },
+        { name: "UOS3.9", rw: 244, rh: 244, max: 800, avg: 260, price: 32000, brightness: 5500, refresh_rate: 3840, material: "Magnesium Alloy", maintenance: "Front/Rear", ingress_protection: "IP65", led_type: "SMD1921", beam_angle: "140/140", color_temperature: "3200-9500K", processing_depth: "14-16 bit", life_hours: 100000, video_support: "2K/4K", display_type: "Outdoor Fixed" }
+      ],
     },
     CIH: {
       w: 600,
       h: 337.5,
       weight: 4.0,
       type: "indoor",
-      items: [],
+      items: [
+        { name: "CIH1.2", rw: 480, rh: 270, max: 500, avg: 160, price: 55000, brightness: 600, refresh_rate: 3840, material: "Die-casting Aluminum", maintenance: "Front", ingress_protection: "IP30", led_type: "COB", beam_angle: "170/170", color_temperature: "3200-9500K", processing_depth: "14-16 bit", life_hours: 100000, video_support: "2K/4K", display_type: "Indoor COB" },
+        { name: "CIH0.9", rw: 640, rh: 360, max: 500, avg: 160, price: 85000, brightness: 600, refresh_rate: 3840, material: "Die-casting Aluminum", maintenance: "Front", ingress_protection: "IP30", led_type: "COB", beam_angle: "170/170", color_temperature: "3200-9500K", processing_depth: "14-16 bit", life_hours: 100000, video_support: "2K/4K", display_type: "Indoor COB" }
+      ],
     },
-    controllers: [],
-    accessories: [],
+    controllers: [
+      { name: "Novastar TB1-4G", load: 650000, price: 12500 },
+      { name: "Novastar TB2-4G", load: 650000, price: 15500 },
+      { name: "Novastar TB30", load: 1300000, price: 18500 },
+      { name: "Novastar TB40", load: 1300000, price: 22500 },
+      { name: "Novastar TB60", load: 2300000, price: 32500 },
+      { name: "Novastar VX400", load: 2600000, price: 45000 },
+      { name: "Novastar VX600", load: 3900000, price: 58000 },
+      { name: "Novastar VX1000", load: 6500000, price: 85000 }
+    ],
+    accessories: [
+      { name: "Sending Card (Novastar MSD300)", price: 6500 },
+      { name: "Standard Video Processor", price: 18000 },
+      { name: "Professional Video Processor (4K)", price: 45000 },
+      { name: "Light Sensor", price: 3500 },
+      { name: "Multi-function Card", price: 8500 }
+    ],
   };
 
   window.I18N = {
