@@ -1,4 +1,5 @@
-import { MasterDataAPI } from "../src/api/client.js";
+// Removed static import to handle cache busting
+// import { MasterDataAPI } from "../src/api/client.js";
 
 (function () {
   window.App = window.App || {};
@@ -6,6 +7,8 @@ import { MasterDataAPI } from "../src/api/client.js";
 
   App.syncFromDB = async function () {
     try {
+      // Use dynamic import with cache bust
+      const { MasterDataAPI } = await import(`../src/api/client.js?v=${Date.now()}`);
       const dbData = await MasterDataAPI.fetchFull();
       if (dbData && App.state) {
         App.state.masterData = dbData;

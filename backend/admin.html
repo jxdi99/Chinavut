@@ -2,76 +2,82 @@
 <html lang="th">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RAZR LED Admin</title>
-  <link rel="stylesheet" href="../css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAZR LED Admin</title>
+    <link rel="icon" type="image/png" href="../src/img/Logo_cm.png">
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 
 <body>
-  <div class="container page-fade-in">
-    <div class="topbar">
-      <div class="brand">
-        <h1 id="admin-title">Admin: จัดการ Master Data</h1>
-        <div class="subtitle" id="admin-subtitle">แก้ไขสินค้า/Controller ได้ทันที และบันทึกลงฐานข้อมูลของเบราว์เซอร์
+    <div class="container page-fade-in">
+        <div class="topbar">
+            <div class="brand">
+                <h1 id="admin-title">Admin: จัดการ Master Data</h1>
+                <div class="subtitle" id="admin-subtitle">แก้ไขสินค้า/Controller ได้ทันที
+                    และบันทึกลงฐานข้อมูลของเบราว์เซอร์
+                </div>
+            </div>
+            <div class="toolbar">
+                <div class="lang-toggle-pill" id="lang-toggle">
+                    <button class="lang-opt active" data-lang="th">TH</button>
+                    <button class="lang-opt" data-lang="en">EN</button>
+                </div>
+                <button class="btn btn-secondary" id="theme-toggle" data-i18n="themeLabel">ธีม: สว่าง</button>
+                <a class="btn btn-primary" id="home-link" href="../dashboard.html" data-i18n="dashboardHome">กลับหน้า
+                    Dashboard</a>
+                <button class="btn btn-danger" id="admin-logout-btn" data-i18n="adminLogout">ออกจากระบบ</button>
+            </div>
         </div>
-      </div>
-      <div class="toolbar">
-        <div class="lang-toggle-pill" id="lang-toggle">
-          <button class="lang-opt active" data-lang="th">TH</button>
-          <button class="lang-opt" data-lang="en">EN</button>
+
+        <div id="welcome-banner-section" style="margin-top: -10px;"></div>
+
+        <div class="card">
+            <div class="row" style="margin-bottom:12px;">
+                <div class="field">
+                    <label id="admin-group-label">เลือกหมวดที่ต้องการแก้ไข</label>
+                    <select id="admin-group">
+                        <option value="UIR" data-i18n="tab1">UIR</option>
+                        <option value="UOS" data-i18n="tab2">UOS</option>
+                        <option value="CIH" data-i18n="tab3">CIH</option>
+                        <option value="controllers" data-i18n="controller">Controllers</option>
+                        <option value="accessories" data-i18n="accessories">อุปกรณ์เสริม (Accessories)</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <button class="btn btn-secondary" id="admin-add-btn" style="width:100%;" data-i18n="addRow">+
+                        เพิ่มแถวใหม่</button>
+                </div>
+            </div>
+
+            <div class="panel" id="admin-panel" style="display:block;">
+                <div class="panel-head">
+                    <div class="small-muted" data-i18n="adminPanelInfo">แก้ไขข้อมูลในตารางได้ทันที
+                        ระบบจะบันทึกให้อัตโนมัติ</div>
+                    <div class="toolbar">
+                        <button class="btn btn-primary" id="admin-sync-btn" data-i18n="syncFromDB">ดึงข้อมูลจาก
+                            Database</button>
+                        <button class="btn btn-danger" id="admin-reset-btn"
+                            data-i18n="reset">รีเซ็ตเป็นค่าเริ่มต้น</button>
+                        <button class="btn btn-success" id="admin-save-btn" data-i18n="saveAll">บันทึกทั้งหมด</button>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead id="admin-thead"></thead>
+                        <tbody id="admin-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-        <button class="btn btn-secondary" id="theme-toggle" data-i18n="themeLabel">ธีม: สว่าง</button>
-        <a class="btn btn-primary" id="home-link" href="../dashboard.html" data-i18n="dashboardHome">กลับหน้า Dashboard</a>
-        <button class="btn btn-danger" id="admin-logout-btn" data-i18n="adminLogout">ออกจากระบบ</button>
-      </div>
     </div>
 
-    <div id="welcome-banner-section" style="margin-top: -10px;"></div>
-
-    <div class="card">
-      <div class="row" style="margin-bottom:12px;">
-        <div class="field">
-          <label id="admin-group-label">เลือกหมวดที่ต้องการแก้ไข</label>
-          <select id="admin-group">
-            <option value="UIR" data-i18n="tab1">UIR</option>
-            <option value="UOS" data-i18n="tab2">UOS</option>
-            <option value="CIH" data-i18n="tab3">CIH</option>
-            <option value="controllers" data-i18n="controller">Controllers</option>
-            <option value="accessories" data-i18n="accessories">อุปกรณ์เสริม (Accessories)</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>&nbsp;</label>
-          <button class="btn btn-secondary" id="admin-add-btn" style="width:100%;" data-i18n="addRow">+
-            เพิ่มแถวใหม่</button>
-        </div>
-      </div>
-
-      <div class="panel" id="admin-panel" style="display:block;">
-        <div class="panel-head">
-          <div class="small-muted" data-i18n="adminPanelInfo">แก้ไขข้อมูลในตารางได้ทันที ระบบจะบันทึกให้อัตโนมัติ</div>
-          <div class="toolbar">
-            <button class="btn btn-primary" id="admin-sync-btn" data-i18n="syncFromDB">ดึงข้อมูลจาก Database</button>
-            <button class="btn btn-danger" id="admin-reset-btn" data-i18n="reset">รีเซ็ตเป็นค่าเริ่มต้น</button>
-            <button class="btn btn-success" id="admin-save-btn" data-i18n="saveAll">บันทึกทั้งหมด</button>
-          </div>
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <thead id="admin-thead"></thead>
-            <tbody id="admin-tbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script defer src="../js/data.js"></script>
-  <script defer src="../js/storage.js"></script>
-  <script defer type="module" src="../js/shared.js"></script>
-  <script defer src="admin.js?v=2"></script>
+    <script defer src="../js/data.js"></script>
+    <script defer src="../js/storage.js"></script>
+    <script defer type="module" src="../js/shared.js?v=2"></script>
+    <script defer src="admin.js?v=2"></script>
 </body>
 
 </html>
