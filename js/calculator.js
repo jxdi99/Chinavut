@@ -228,7 +228,7 @@
     let con1Price = (selectedCon?.price || 0) * conQty;
 
     // Use custom controller price if in custom mode and value is provided
-    if (pricingMode === "custom" || pricingMode === "audit") {
+    if (pricingMode === "custom") {
       const customConPrice = parseFloat(
         document.getElementById("custom-controller-price").value,
       );
@@ -238,7 +238,7 @@
     }
 
     function makeRow(label, value, infoHtml, customStyle = "") {
-      const iconHtml = (pricingMode === "audit" && infoHtml)
+      const iconHtml = infoHtml
         ? ` <span class="audit-icon" data-info="${encodeURIComponent(infoHtml)}" style="cursor:pointer; filter:grayscale(1) opacity(0.6); font-size:1.1em; transition:0.2s;" title="ดูข้อมูลการคำนวณ" onmouseover="this.style.filter='grayscale(0) opacity(1)'" onmouseout="this.style.filter='grayscale(1) opacity(0.6)'">ℹ️</span>`
         : "";
       return `<div class="result-row" ${customStyle ? `style="${customStyle}"` : ""}><span>${label}${iconHtml}</span><b ${customStyle.includes('color:') ? 'style="color:inherit;"' : ''}>${value}</b></div>`;
@@ -382,25 +382,23 @@
     `;
 
     // Bind click events to audit icons
-    if (pricingMode === "audit") {
-        document.querySelectorAll(".audit-icon").forEach(icon => {
-            icon.addEventListener("click", function() {
-                const infoHTML = decodeURIComponent(this.getAttribute("data-info"));
-                const modal = document.getElementById("audit-info-modal");
-                document.getElementById("audit-info-content").innerHTML = infoHTML;
-                modal.style.display = "flex";
-            });
+    document.querySelectorAll(".audit-icon").forEach(icon => {
+        icon.addEventListener("click", function() {
+            const infoHTML = decodeURIComponent(this.getAttribute("data-info"));
+            const modal = document.getElementById("audit-info-modal");
+            document.getElementById("audit-info-content").innerHTML = infoHTML;
+            modal.style.display = "flex";
         });
-        
-        const closeBtn = document.getElementById("audit-info-close");
-        if (closeBtn && !closeBtn.onclick) {
-            closeBtn.onclick = function() {
-                document.getElementById("audit-info-modal").style.display = "none";
-            };
-            document.getElementById("audit-info-modal").onclick = function(e) {
-                if (e.target === this) this.style.display = "none";
-            };
-        }
+    });
+    
+    const closeBtn = document.getElementById("audit-info-close");
+    if (closeBtn && !closeBtn.onclick) {
+        closeBtn.onclick = function() {
+            document.getElementById("audit-info-modal").style.display = "none";
+        };
+        document.getElementById("audit-info-modal").onclick = function(e) {
+            if (e.target === this) this.style.display = "none";
+        };
     }
 
     // Save current specs to sessionStorage for Detail page
@@ -551,40 +549,6 @@
       radio.addEventListener("change", (e) => {
         const newMode = e.target.value;
         if (newMode === pricingMode) return;
-
-        if (newMode === "audit") {
-          const modal = document.getElementById("audit-modal");
-          const pwdInput = document.getElementById("audit-pwd-input");
-          pwdInput.value = "";
-          modal.style.display = "flex";
-          pwdInput.focus();
-          
-          document.getElementById("audit-cancel").onclick = () => {
-            modal.style.display = "none";
-            // Revert radio visually to the previous mode
-            const oldRadio = document.getElementById(`mode-${pricingMode}`);
-            if (oldRadio) oldRadio.checked = true;
-          };
-          
-          document.getElementById("audit-confirm").onclick = () => {
-            if (pwdInput.value !== "CM1234") {
-              App.showToast("รหัสผ่านไม่ถูกต้อง");
-              pwdInput.value = "";
-              pwdInput.focus();
-              return;
-            }
-            modal.style.display = "none";
-            setMode("audit");
-          };
-          
-          pwdInput.onkeyup = (ev) => {
-            if (ev.key === "Enter") {
-              document.getElementById("audit-confirm").click();
-            }
-          };
-          return;
-        }
-
         setMode(newMode);
       });
     });

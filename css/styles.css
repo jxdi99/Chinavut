@@ -191,8 +191,8 @@ a {
   background: rgba(255, 255, 255, .06);
 }
 
-/* ── 3-State iOS Toggle ── */
-.tri-state-toggle {
+/* ── 2-State iOS Toggle ── */
+.ios-toggle-slider {
     position: relative;
     display: inline-flex;
     background: color-mix(in srgb, var(--border) 60%, transparent);
@@ -200,10 +200,10 @@ a {
     padding: 3px;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
 }
-.tri-state-toggle input[type="radio"] {
+.ios-toggle-slider input[type="radio"] {
     display: none;
 }
-.tri-state-toggle label {
+.ios-toggle-slider label {
     position: relative;
     z-index: 2;
     width: 80px;
@@ -216,7 +216,7 @@ a {
     transition: color 0.3s ease;
     user-select: none;
 }
-.tri-state-toggle .thumb {
+.ios-toggle-slider .thumb {
     position: absolute;
     top: 3px;
     left: 3px;
@@ -229,24 +229,20 @@ a {
     z-index: 1;
 }
 
-[data-theme="dark"] .tri-state-toggle .thumb {
+[data-theme="dark"] .ios-toggle-slider .thumb {
     background: var(--surface);
 }
 
-.tri-state-toggle input[id="mode-standard"]:checked ~ label[for="mode-standard"],
-.tri-state-toggle input[id="mode-custom"]:checked ~ label[for="mode-custom"],
-.tri-state-toggle input[id="mode-audit"]:checked ~ label[for="mode-audit"] {
+.ios-toggle-slider input[id="mode-standard"]:checked ~ label[for="mode-standard"],
+.ios-toggle-slider input[id="mode-custom"]:checked ~ label[for="mode-custom"] {
     color: var(--text);
 }
 
-.tri-state-toggle input[id="mode-standard"]:checked ~ .thumb {
+.ios-toggle-slider input[id="mode-standard"]:checked ~ .thumb {
     transform: translateX(0);
 }
-.tri-state-toggle input[id="mode-custom"]:checked ~ .thumb {
+.ios-toggle-slider input[id="mode-custom"]:checked ~ .thumb {
     transform: translateX(80px);
-}
-.tri-state-toggle input[id="mode-audit"]:checked ~ .thumb {
-    transform: translateX(160px);
 }
 
 .card {
