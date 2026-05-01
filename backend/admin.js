@@ -383,6 +383,8 @@
 
   function toggleEditMode() {
     isEditMode = !isEditMode;
+    const toggleBtn = document.getElementById("admin-edit-toggle-btn");
+    const saveBtn = document.getElementById("admin-save-btn");
     const addBtn = document.getElementById("admin-add-btn");
     const importBtn = document.getElementById("admin-import-btn");
 
