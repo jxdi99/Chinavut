@@ -213,12 +213,16 @@ export const MasterDataAPI = {
       }
 
       if (modelsToSync.length > 0) {
-        const { error: modelsError } = await supabase
+        const { data: insertedModels, error: modelsError } = await supabase
           .from("led_models")
-          .insert(modelsToSync);
+          .insert(modelsToSync)
+          .select();
         if (modelsError) {
           console.error("Error inserting models:", modelsError);
           return { success: false, error: "led_models Insert Error: " + modelsError.message };
+        }
+        if (!insertedModels || insertedModels.length === 0) {
+           return { success: false, error: "led_models บันทึกสำเร็จแต่ Database ไม่ยอมรับข้อมูล (น่าจะลืมปิด RLS)" };
         }
       }
 
@@ -234,7 +238,7 @@ export const MasterDataAPI = {
           return { success: false, error: "controllers Delete Error: " + delControllersErr.message };
         }
 
-        const { error: controllersError } = await supabase
+        const { data: insertedControllers, error: controllersError } = await supabase
           .from("controllers")
           .insert(
             masterData.controllers.map((c) => ({
@@ -242,10 +246,14 @@ export const MasterDataAPI = {
               load_pixels: c.load || 0,
               price: c.price || 0,
             })),
-          );
+          )
+          .select();
         if (controllersError) {
           console.error("Error inserting controllers:", controllersError);
           return { success: false, error: "controllers Insert Error: " + controllersError.message };
+        }
+        if (!insertedControllers || insertedControllers.length === 0) {
+           return { success: false, error: "controllers บันทึกสำเร็จแต่ Database ไม่ยอมรับข้อมูล (น่าจะลืมปิด RLS)" };
         }
       }
 
@@ -261,17 +269,21 @@ export const MasterDataAPI = {
           return { success: false, error: "accessories Delete Error: " + delAccessoriesErr.message };
         }
 
-        const { error: accessoriesError } = await supabase
+        const { data: insertedAcc, error: accessoriesError } = await supabase
           .from("accessories")
           .insert(
             masterData.accessories.map((a) => ({
               name: a.name,
               price: a.price || 0,
             })),
-          );
+          )
+          .select();
         if (accessoriesError) {
           console.error("Error inserting accessories:", accessoriesError);
           return { success: false, error: "accessories Insert Error: " + accessoriesError.message };
+        }
+        if (!insertedAcc || insertedAcc.length === 0) {
+           return { success: false, error: "accessories บันทึกสำเร็จแต่ Database ไม่ยอมรับข้อมูล (น่าจะลืมปิด RLS)" };
         }
       }
 
