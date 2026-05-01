@@ -24,6 +24,23 @@
     }
   };
 
+  App.syncToDB = async function () {
+    try {
+      const { MasterDataAPI } = await import(`../src/api/client.js?v=${Date.now()}`);
+      const success = await MasterDataAPI.syncToDb(App.state.masterData);
+      if (success) {
+        App.showToast("อัปเดตข้อมูลลง Database เรียบร้อยแล้ว");
+        return true;
+      } else {
+        console.error("MasterData sync to DB failed.");
+        return false;
+      }
+    } catch (err) {
+      console.error("Sync to DB Error Exception:", err);
+      return false;
+    }
+  };
+
   App.t = function (key) {
     const lang = App.state?.ui?.lang || "th";
     return (
