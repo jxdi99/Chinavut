@@ -44,7 +44,7 @@
                         <option value="accessories" data-i18n="accessories">อุปกรณ์เสริม (Accessories)</option>
                     </select>
                 </div>
-                <div class="field">
+                <div class="field" id="add-row-wrapper" style="display:none;">
                     <label>&nbsp;</label>
                     <button class="btn btn-secondary" id="admin-add-btn" style="width:100%;" data-i18n="addRow">+
                         เพิ่มแถวใหม่</button>
@@ -56,9 +56,8 @@
                     <div class="small-muted" data-i18n="adminPanelInfo">แก้ไขข้อมูลในตารางได้ทันที
                         ระบบจะบันทึกให้อัตโนมัติ</div>
                     <div class="toolbar">
-                        <button class="btn btn-danger" id="admin-reset-btn"
-                            data-i18n="reset">รีเซ็ตเป็นค่าเริ่มต้น</button>
-                        <button class="btn btn-success" id="admin-save-btn" data-i18n="saveAll">บันทึกทั้งหมด</button>
+                        <button class="btn btn-primary" id="admin-edit-toggle-btn">🔓 แก้ไขข้อมูล</button>
+                        <button class="btn btn-success" id="admin-save-btn" data-i18n="saveAll" style="display:none;">บันทึกทั้งหมด</button>
                     </div>
                 </div>
 

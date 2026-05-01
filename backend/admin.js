@@ -2,6 +2,7 @@
   let state;
   let loggedIn = false;
   let selectedGroup = "UIR";
+  let isEditMode = false;
   let saveTimer = null;
 
   function data() {
@@ -33,9 +34,11 @@
     App.renderWelcomeBanner();
 
     document.getElementById("admin-panel").style.display = "block";
-    document.getElementById("admin-add-btn").style.display = "inline-block";
-    document.getElementById("admin-save-btn").style.display = "inline-block";
-    document.getElementById("admin-reset-btn").style.display = "inline-block";
+    document.getElementById("admin-add-btn").style.display = isEditMode ? "inline-block" : "none";
+    document.getElementById("admin-save-btn").style.display = isEditMode ? "inline-block" : "none";
+    
+    const addBtnWrapper = document.getElementById("add-row-wrapper");
+    if (addBtnWrapper) addBtnWrapper.style.display = isEditMode ? "block" : "none";
     
     document.getElementById("admin-group").value = selectedGroup;
     renderTable();
@@ -71,11 +74,11 @@
           (it, idx) => `
         <tr data-index="${idx}">
           <td class="drag-handle" style="cursor:grab; text-align:center; font-size:1.2rem; color:var(--muted); user-select:none;">☰</td>
-          <td><input data-kind="controller" data-field="name" data-index="${idx}" type="text" value="${escapeHtml(it.name)}"></td>
-          <td><input data-kind="controller" data-field="load" data-index="${idx}" type="number" value="${it.load}"></td>
-          <td><input data-kind="controller" data-field="price" data-index="${idx}" type="number" value="${it.price}"></td>
+          <td><input data-kind="controller" data-field="name" data-index="${idx}" type="text" value="${escapeHtml(it.name)}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="controller" data-field="load" data-index="${idx}" type="number" value="${it.load}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="controller" data-field="price" data-index="${idx}" type="number" value="${it.price}" ${!isEditMode ? "disabled" : ""}></td>
           <td>
-            <button class="mini-btn delete" data-action="delete-controller" data-index="${idx}">${App.t("delete")}</button>
+            ${isEditMode ? `<button class="mini-btn delete" data-action="delete-controller" data-index="${idx}">${App.t("delete")}</button>` : "-"}
           </td>
         </tr>
       `,
@@ -94,10 +97,10 @@
           (it, idx) => `
         <tr data-index="${idx}">
           <td class="drag-handle" style="cursor:grab; text-align:center; font-size:1.2rem; color:var(--muted); user-select:none;">☰</td>
-          <td><input data-kind="accessory" data-field="name" data-index="${idx}" type="text" value="${escapeHtml(it.name)}"></td>
-          <td><input data-kind="accessory" data-field="price" data-index="${idx}" type="number" value="${it.price}"></td>
+          <td><input data-kind="accessory" data-field="name" data-index="${idx}" type="text" value="${escapeHtml(it.name)}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="accessory" data-field="price" data-index="${idx}" type="number" value="${it.price}" ${!isEditMode ? "disabled" : ""}></td>
           <td>
-            <button class="mini-btn delete" data-action="delete-accessory" data-index="${idx}">${App.t("delete")}</button>
+            ${isEditMode ? `<button class="mini-btn delete" data-action="delete-accessory" data-index="${idx}">${App.t("delete")}</button>` : "-"}
           </td>
         </tr>
       `,
@@ -133,26 +136,26 @@
           (it, idx) => `
         <tr data-index="${idx}">
           <td class="drag-handle" style="cursor:grab; text-align:center; font-size:1.2rem; color:var(--muted); user-select:none;">☰</td>
-          <td><input data-kind="item" data-field="name" data-index="${idx}" type="text" value="${escapeHtml(it.name)}"></td>
-          <td><input data-kind="item" data-field="rw" data-index="${idx}" type="number" value="${it.rw || 0}"></td>
-          <td><input data-kind="item" data-field="rh" data-index="${idx}" type="number" value="${it.rh || 0}"></td>
-          <td><input data-kind="item" data-field="max" data-index="${idx}" type="number" value="${it.max || 0}"></td>
-          <td><input data-kind="item" data-field="avg" data-index="${idx}" type="number" value="${it.avg || 0}"></td>
-          <td><input data-kind="item" data-field="price" data-index="${idx}" type="number" value="${it.price || 0}"></td>
-          <td><input data-kind="item" data-field="brightness" data-index="${idx}" type="number" value="${it.brightness || 0}"></td>
-          <td><input data-kind="item" data-field="refresh_rate" data-index="${idx}" type="number" value="${it.refresh_rate || 0}"></td>
-          <td><input data-kind="item" data-field="material" data-index="${idx}" type="text" value="${escapeHtml(it.material || "")}"></td>
-          <td><input data-kind="item" data-field="maintenance" data-index="${idx}" type="text" value="${escapeHtml(it.maintenance || "")}"></td>
-          <td><input data-kind="item" data-field="ingress_protection" data-index="${idx}" type="text" value="${escapeHtml(it.ingress_protection || "")}"></td>
-          <td><input data-kind="item" data-field="led_type" data-index="${idx}" type="text" value="${escapeHtml(it.led_type || "")}"></td>
-          <td><input data-kind="item" data-field="beam_angle" data-index="${idx}" type="text" value="${escapeHtml(it.beam_angle || "")}"></td>
-          <td><input data-kind="item" data-field="color_temperature" data-index="${idx}" type="text" value="${escapeHtml(it.color_temperature || "")}"></td>
-          <td><input data-kind="item" data-field="processing_depth" data-index="${idx}" type="text" value="${escapeHtml(it.processing_depth || "")}"></td>
-          <td><input data-kind="item" data-field="life_hours" data-index="${idx}" type="number" value="${it.life_hours || 0}"></td>
-          <td><input data-kind="item" data-field="video_support" data-index="${idx}" type="text" value="${escapeHtml(it.video_support || "")}"></td>
-          <td><input data-kind="item" data-field="display_type" data-index="${idx}" type="text" value="${escapeHtml(it.display_type || "")}"></td>
+          <td><input data-kind="item" data-field="name" data-index="${idx}" type="text" value="${escapeHtml(it.name)}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="rw" data-index="${idx}" type="number" value="${it.rw || 0}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="rh" data-index="${idx}" type="number" value="${it.rh || 0}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="max" data-index="${idx}" type="number" value="${it.max || 0}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="avg" data-index="${idx}" type="number" value="${it.avg || 0}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="price" data-index="${idx}" type="number" value="${it.price || 0}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="brightness" data-index="${idx}" type="number" value="${it.brightness || 0}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="refresh_rate" data-index="${idx}" type="number" value="${it.refresh_rate || 0}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="material" data-index="${idx}" type="text" value="${escapeHtml(it.material || "")}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="maintenance" data-index="${idx}" type="text" value="${escapeHtml(it.maintenance || "")}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="ingress_protection" data-index="${idx}" type="text" value="${escapeHtml(it.ingress_protection || "")}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="led_type" data-index="${idx}" type="text" value="${escapeHtml(it.led_type || "")}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="beam_angle" data-index="${idx}" type="text" value="${escapeHtml(it.beam_angle || "")}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="color_temperature" data-index="${idx}" type="text" value="${escapeHtml(it.color_temperature || "")}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="processing_depth" data-index="${idx}" type="text" value="${escapeHtml(it.processing_depth || "")}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="life_hours" data-index="${idx}" type="number" value="${it.life_hours || 0}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="video_support" data-index="${idx}" type="text" value="${escapeHtml(it.video_support || "")}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="display_type" data-index="${idx}" type="text" value="${escapeHtml(it.display_type || "")}" ${!isEditMode ? "disabled" : ""}></td>
           <td>
-            <button class="mini-btn delete" data-action="delete-item" data-index="${idx}">${App.t("delete")}</button>
+            ${isEditMode ? `<button class="mini-btn delete" data-action="delete-item" data-index="${idx}">${App.t("delete")}</button>` : "-"}
           </td>
         </tr>
       `,
@@ -380,17 +383,28 @@
 
 
 
-  async function resetToDefault() {
-    // Double confirm: ให้พิมพ์คำว่า "RESET" เพื่อยืนยัน
-    const userInput = prompt('⚠️ คำเตือน! การรีเซ็ตจะลบข้อมูลทั้งหมดที่คุณแก้ไขไว้\n\nพิมพ์คำว่า "RESET" เพื่อยืนยัน:');
-    if (userInput !== "RESET") {
-      App.showToast("❌ ยกเลิกการรีเซ็ต");
-      return;
+  function toggleEditMode() {
+    isEditMode = !isEditMode;
+    const toggleBtn = document.getElementById("admin-edit-toggle-btn");
+    const saveBtn = document.getElementById("admin-save-btn");
+    const addBtnWrapper = document.getElementById("add-row-wrapper");
+
+    if (isEditMode) {
+      toggleBtn.innerHTML = "🔒 ปิดโหมดแก้ไข (ยกเลิก)";
+      toggleBtn.classList.replace("btn-primary", "btn-danger");
+      saveBtn.style.display = "inline-block";
+      if (addBtnWrapper) addBtnWrapper.style.display = "block";
+      App.showToast("🔓 เปิดโหมดแก้ไขแล้ว");
+    } else {
+      toggleBtn.innerHTML = "🔓 แก้ไขข้อมูล";
+      toggleBtn.classList.replace("btn-danger", "btn-primary");
+      saveBtn.style.display = "none";
+      if (addBtnWrapper) addBtnWrapper.style.display = "none";
+      App.showToast("🔒 ปิดโหมดแก้ไข");
+      // Re-load data from state to undo unsaved changes
+      renderTable();
     }
-    state.masterData = App.clone(DEFAULT_DATA);
-    await AppStorage.saveState(state);
     renderTable();
-    App.showToast("🔄 รีเซ็ตข้อมูลเป็นค่าเริ่มต้นแล้ว");
   }
 
   async function boot() {
@@ -408,6 +422,7 @@
       accessories: [],
     };
     state.masterData = emptyData;
+    App.state = state;
 
     try {
       const syncSuccess = await App.syncFromDB();
@@ -423,7 +438,6 @@
       App.showToast("❌ เชื่อมต่อ Database ไม่ได้");
     }
 
-    App.state = state;
     await AppStorage.saveState(state);
 
     document.documentElement.setAttribute(
@@ -448,9 +462,8 @@
     const saveBtn = document.getElementById("admin-save-btn");
     if (saveBtn) saveBtn.addEventListener("click", saveAll);
 
-
-    const resetBtn = document.getElementById("admin-reset-btn");
-    if (resetBtn) resetBtn.addEventListener("click", resetToDefault);
+    const editToggleBtn = document.getElementById("admin-edit-toggle-btn");
+    if (editToggleBtn) editToggleBtn.addEventListener("click", toggleEditMode);
 
     const addBtn = document.getElementById("admin-add-btn");
     if (addBtn) addBtn.addEventListener("click", addRow);
