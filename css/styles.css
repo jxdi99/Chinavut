@@ -139,8 +139,19 @@ a {
 }
 
 .btn-success {
-  background: linear-gradient(135deg, var(--success), color-mix(in srgb, var(--success) 70%, #fff));
-  color: #fff
+  background: linear-gradient(135deg, var(--success), #66bb6a);
+  color: #fff;
+  border: none;
+}
+
+.btn-add {
+  background: color-mix(in srgb, var(--success) 12%, transparent);
+  color: var(--success);
+  border: 1px solid color-mix(in srgb, var(--success) 30%, var(--border));
+}
+
+.btn-add:hover {
+  background: color-mix(in srgb, var(--success) 20%, transparent);
 }
 
 .btn-quote {
@@ -456,9 +467,11 @@ textarea:focus {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 12px
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--border);
 }
 
 .table-wrap {

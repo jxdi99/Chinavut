@@ -387,14 +387,14 @@
     const addBtn = document.getElementById("admin-add-btn");
 
     if (isEditMode) {
-      toggleBtn.innerHTML = "🔒 ปิดโหมดแก้ไข (ยกเลิก)";
-      toggleBtn.classList.replace("btn-primary", "btn-danger");
+      toggleBtn.innerHTML = "🏁 เสร็จสิ้น / ยกเลิก";
+      toggleBtn.classList.replace("btn-primary", "btn-secondary");
       if (saveBtn) saveBtn.style.display = "inline-block";
       if (addBtn) addBtn.style.display = "inline-block";
       App.showToast("🔓 เปิดโหมดแก้ไขแล้ว");
     } else {
       toggleBtn.innerHTML = "🔓 แก้ไขข้อมูล";
-      toggleBtn.classList.replace("btn-danger", "btn-primary");
+      toggleBtn.classList.replace("btn-secondary", "btn-primary");
       if (saveBtn) saveBtn.style.display = "none";
       if (addBtn) addBtn.style.display = "none";
       App.showToast("🔒 ปิดโหมดแก้ไข");
