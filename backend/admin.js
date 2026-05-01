@@ -421,6 +421,12 @@
     document.getElementById("import-modal").style.display = "none";
   }
 
+  function cleanNum(str) {
+    if (!str) return 0;
+    // Remove commas and any non-numeric except decimal point
+    return parseFloat(str.replace(/,/g, "")) || 0;
+  }
+
   function handleImportInput() {
     const raw = document.getElementById("import-area").value.trim();
     const container = document.getElementById("import-preview-container");
@@ -440,13 +446,20 @@
     // Use current group's headers for preview
     const mainThead = document.getElementById("admin-thead");
     thead.innerHTML = mainThead.innerHTML;
+    
+    const headColCount = mainThead.querySelectorAll("th").length;
 
     tbody.innerHTML = lines
       .map((line) => {
         const cols = line.split("\t").map((s) => s.trim());
-        return `<tr><td>-</td>${cols
-          .map((c) => `<td>${escapeHtml(c)}</td>`)
-          .join("")}</tr>`;
+        // Pad or truncate to match header count (Handle + data + Manage)
+        // Data usually starts at index 1 in main table (0 is Handle)
+        let rowHtml = "<td>-</td>"; 
+        for(let i=0; i < headColCount - 2; i++) {
+            rowHtml += `<td>${escapeHtml(cols[i] || "")}</td>`;
+        }
+        rowHtml += "<td>(Auto)</td>"; // Manage column
+        return `<tr>${rowHtml}</tr>`;
       })
       .join("");
 
@@ -468,24 +481,24 @@
       if (selectedGroup === "controllers") {
         data().controllers.push({
           name: cols[0],
-          load: parseInt(cols[1]) || 0,
-          price: parseInt(cols[2]) || 0,
+          load: cleanNum(cols[1]),
+          price: cleanNum(cols[2]),
         });
       } else if (selectedGroup === "accessories") {
         data().accessories.push({
           name: cols[0],
-          price: parseInt(cols[1]) || 0,
+          price: cleanNum(cols[1]),
         });
       } else {
         group().items.push({
           name: cols[0],
-          rw: parseInt(cols[1]) || 0,
-          rh: parseInt(cols[2]) || 0,
-          max: parseInt(cols[3]) || 0,
-          avg: parseInt(cols[4]) || 0,
-          price: parseInt(cols[5]) || 0,
-          brightness: parseInt(cols[6]) || 0,
-          refresh_rate: parseInt(cols[7]) || 0,
+          rw: cleanNum(cols[1]),
+          rh: cleanNum(cols[2]),
+          max: cleanNum(cols[3]),
+          avg: cleanNum(cols[4]),
+          price: cleanNum(cols[5]),
+          brightness: cleanNum(cols[6]),
+          refresh_rate: cleanNum(cols[7]),
           material: cols[8] || "",
           maintenance: cols[9] || "",
           ingress_protection: cols[10] || "",
@@ -493,7 +506,7 @@
           beam_angle: cols[12] || "",
           color_temperature: cols[13] || "",
           processing_depth: cols[14] || "",
-          life_hours: parseInt(cols[15]) || 0,
+          life_hours: cleanNum(cols[15]),
           video_support: cols[16] || "",
           display_type: cols[17] || "",
         });
