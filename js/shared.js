@@ -27,17 +27,17 @@
   App.syncToDB = async function () {
     try {
       const { MasterDataAPI } = await import(`../src/api/client.js?v=${Date.now()}`);
-      const success = await MasterDataAPI.syncToDb(App.state.masterData);
-      if (success) {
+      const result = await MasterDataAPI.syncToDb(App.state.masterData);
+      if (result && result.success) {
         App.showToast("อัปเดตข้อมูลลง Database เรียบร้อยแล้ว");
-        return true;
+        return { success: true };
       } else {
-        console.error("MasterData sync to DB failed.");
-        return false;
+        console.error("MasterData sync to DB failed.", result?.error);
+        return { success: false, error: result?.error || "Unknown Error" };
       }
     } catch (err) {
       console.error("Sync to DB Error Exception:", err);
-      return false;
+      return { success: false, error: err.message };
     }
   };
 

@@ -353,11 +353,12 @@
   }
 
   async function saveAll() {
-    const success = await persist();
-    if (success) {
+    const result = await persist();
+    if (result && result.success) {
       App.showToast(App.t("saved"));
     } else {
-      alert("เกิดข้อผิดพลาดในการบันทึกลง Database กรุณาเช็ค Console หรือสิทธิ์ RLS");
+      const errMsg = result?.error ? `\n\n[ข้อผิดพลาดจากระบบ: ${result.error}]` : "";
+      alert(`❌ ไม่สามารถบันทึกได้! สาเหตุหลักคือ:\n\n1. คุณลืมปิด RLS (Row Level Security) ใน Supabase\n2. ไปที่ Supabase -> Table Editor -> ปิด RLS ของตาราง led_models, controllers, accessories ให้เป็นสีเทา\n\nถ้าปิดแล้วจะบันทึกได้ทันทีครับ!${errMsg}`);
     }
   }
 

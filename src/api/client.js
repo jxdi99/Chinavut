@@ -209,7 +209,7 @@ export const MasterDataAPI = {
       
       if (delModelsErr) {
         console.error("Error deleting models:", delModelsErr);
-        return false;
+        return { success: false, error: "led_models Delete Error: " + delModelsErr.message };
       }
 
       if (modelsToSync.length > 0) {
@@ -218,7 +218,7 @@ export const MasterDataAPI = {
           .insert(modelsToSync);
         if (modelsError) {
           console.error("Error inserting models:", modelsError);
-          return false;
+          return { success: false, error: "led_models Insert Error: " + modelsError.message };
         }
       }
 
@@ -231,7 +231,7 @@ export const MasterDataAPI = {
         
         if (delControllersErr) {
           console.error("Error deleting controllers:", delControllersErr);
-          return false;
+          return { success: false, error: "controllers Delete Error: " + delControllersErr.message };
         }
 
         const { error: controllersError } = await supabase
@@ -245,7 +245,7 @@ export const MasterDataAPI = {
           );
         if (controllersError) {
           console.error("Error inserting controllers:", controllersError);
-          return false;
+          return { success: false, error: "controllers Insert Error: " + controllersError.message };
         }
       }
 
@@ -258,7 +258,7 @@ export const MasterDataAPI = {
 
         if (delAccessoriesErr) {
           console.error("Error deleting accessories:", delAccessoriesErr);
-          return false;
+          return { success: false, error: "accessories Delete Error: " + delAccessoriesErr.message };
         }
 
         const { error: accessoriesError } = await supabase
@@ -271,14 +271,14 @@ export const MasterDataAPI = {
           );
         if (accessoriesError) {
           console.error("Error inserting accessories:", accessoriesError);
-          return false;
+          return { success: false, error: "accessories Insert Error: " + accessoriesError.message };
         }
       }
 
-      return true;
+      return { success: true };
     } catch (err) {
       console.error("Sync Error:", err);
-      return false;
+      return { success: false, error: "Exception: " + err.message };
     }
   },
 };
