@@ -32,29 +32,34 @@
 
         <div id="welcome-banner-section" style="margin-top: -10px;"></div>
 
-        <div class="card">
-            <div class="row" style="margin-bottom:12px;">
-                <div class="field">
-                    <label id="admin-group-label">เลือกหมวดที่ต้องการแก้ไข</label>
-                    <select id="admin-group">
-                        <option value="UIR" data-i18n="tab1">UIR</option>
-                        <option value="UOS" data-i18n="tab2">UOS</option>
-                        <option value="CIH" data-i18n="tab3">CIH</option>
-                        <option value="controllers" data-i18n="controller">Controllers</option>
-                        <option value="accessories" data-i18n="accessories">อุปกรณ์เสริม (Accessories)</option>
-                    </select>
-            </div>
- 
-            <div class="panel" id="admin-panel" style="display:block;">
-                <div class="panel-head">
-                    <div class="small-muted" data-i18n="adminPanelInfo">แก้ไขข้อมูลในตารางได้ทันที ระบบจะบันทึกให้อัตโนมัติ</div>
-                    <div class="toolbar">
+        <div class="card admin-main-card" id="admin-panel" style="display:none;">
+            <div class="panel-header-pro">
+                <div class="header-left">
+                    <h2 id="admin-title-pro">Master Data Management</h2>
+                    <div class="small-muted" data-i18n="adminPanelInfo">จัดการข้อมูล LED Controllers และ Accessories ทั้งหมด</div>
+                </div>
+                
+                <div class="header-controls">
+                    <div class="group-selector-pro">
+                        <label id="admin-group-label" class="label-pro">หมวดหมู่:</label>
+                        <select id="admin-group" class="select-pro">
+                            <option value="UIR" data-i18n="tab1">UIR</option>
+                            <option value="UOS" data-i18n="tab2">UOS</option>
+                            <option value="CIH" data-i18n="tab3">CIH</option>
+                            <option value="controllers" data-i18n="controller">Controllers</option>
+                            <option value="accessories" data-i18n="accessories">Accessories</option>
+                        </select>
+                    </div>
+                    
+                    <div class="toolbar-pro">
                         <button class="btn btn-primary" id="admin-edit-toggle-btn">🔓 แก้ไขข้อมูล</button>
                         <button class="btn btn-add" id="admin-add-btn" style="display:none;" data-i18n="addRow">➕ เพิ่มแถวใหม่</button>
                         <button class="btn btn-success" id="admin-save-btn" data-i18n="saveAll" style="display:none;">💾 บันทึกทั้งหมด</button>
                     </div>
                 </div>
+            </div>
 
+            <div class="admin-table-container">
                 <div class="table-wrap">
                     <table>
                         <thead id="admin-thead"></thead>
