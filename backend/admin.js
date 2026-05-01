@@ -387,12 +387,14 @@
     const addBtn = document.getElementById("admin-add-btn");
 
     if (isEditMode) {
+      document.body.classList.add("edit-mode-active");
       toggleBtn.innerHTML = "🏁 เสร็จสิ้น / ยกเลิก";
       toggleBtn.classList.replace("btn-primary", "btn-secondary");
       if (saveBtn) saveBtn.style.display = "inline-block";
       if (addBtn) addBtn.style.display = "inline-block";
       App.showToast("🔓 เปิดโหมดแก้ไขแล้ว");
     } else {
+      document.body.classList.remove("edit-mode-active");
       toggleBtn.innerHTML = "🔓 แก้ไขข้อมูล";
       toggleBtn.classList.replace("btn-secondary", "btn-primary");
       if (saveBtn) saveBtn.style.display = "none";
