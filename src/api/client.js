@@ -171,31 +171,35 @@ export const MasterDataAPI = {
       return false;
     }
     try {
+      // Helper: safely convert to integer (prevents "" -> integer crash)
+      const toInt = (v) => { const n = parseInt(v, 10); return isNaN(n) ? 0 : n; };
+      const toFloat = (v) => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
+
       // Sync LED Models
       const modelsToSync = [];
       ["UIR", "UOS", "CIH"].forEach((group) => {
         if (masterData[group] && masterData[group].items) {
           masterData[group].items.forEach((item) => {
             modelsToSync.push({
-              name: item.name,
+              name: String(item.name || ""),
               group_id: group,
-              rw: item.rw || 0,
-              rh: item.rh || 0,
-              max_w: item.max || 0,
-              avg_w: item.avg || 0,
-              price: item.price || 0,
-              brightness: item.brightness || 0,
-              refresh_rate: item.refresh_rate || 0,
-              material: item.material || "",
-              maintenance: item.maintenance || "",
-              ingress_protection: item.ingress_protection || "",
-              led_type: item.led_type || "",
-              beam_angle: item.beam_angle || "",
-              color_temperature: item.color_temperature || "",
-              processing_depth: item.processing_depth || "",
-              life_hours: item.life_hours || 0,
-              video_support: item.video_support || "",
-              display_type: item.display_type || "",
+              rw: toInt(item.rw),
+              rh: toInt(item.rh),
+              max_w: toInt(item.max),
+              avg_w: toInt(item.avg),
+              price: toFloat(item.price),
+              brightness: toInt(item.brightness),
+              refresh_rate: toInt(item.refresh_rate),
+              material: String(item.material || ""),
+              maintenance: String(item.maintenance || ""),
+              ingress_protection: String(item.ingress_protection || ""),
+              led_type: String(item.led_type || ""),
+              beam_angle: String(item.beam_angle || ""),
+              color_temperature: String(item.color_temperature || ""),
+              processing_depth: String(item.processing_depth || ""),
+              life_hours: toInt(item.life_hours),
+              video_support: String(item.video_support || ""),
+              display_type: String(item.display_type || ""),
             });
           });
         }
