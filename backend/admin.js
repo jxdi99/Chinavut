@@ -106,7 +106,8 @@
         )
         .join("");
     } else {
-      const items = group().item      thead.innerHTML = `
+      const items = group().items;
+      thead.innerHTML = `
         <tr>
           <th style="width:40px;"></th>
           <th>${App.t("name")}</th>
@@ -171,7 +172,7 @@
           <td>
             ${isEditMode ? `<button class="mini-btn delete" data-action="delete-item" data-index="${idx}">${App.t("delete")}</button>` : "-"}
           </td>
-        </tr>`; </tr>
+        </tr>
       `,
         )
         .join("");
@@ -281,6 +282,12 @@
       "processing_depth",
       "video_support",
       "display_type",
+      "module_size",
+      "cabinet_resolution",
+      "contrast_ratio",
+      "working_temp",
+      "humidity",
+      "status_checking",
     ];
     const isTextField = textFields.includes(field);
 

@@ -9,6 +9,7 @@ export default defineConfig({
         main: resolve(__dirname, 'index.html'),
         calculator: resolve(__dirname, 'calculator.html'),
         admin: resolve(__dirname, 'backend/index.html'),
+        adminPage: resolve(__dirname, 'backend/admin.html'),
         quote: resolve(__dirname, 'quote.html'),
         detail: resolve(__dirname, 'detail.html'),
         resetPassword: resolve(__dirname, 'reset-password.html'),
