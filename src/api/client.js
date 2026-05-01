@@ -168,14 +168,15 @@ export const MasterDataAPI = {
   async syncToDb(masterData) {
     if (!supabase) {
       console.error("Supabase not initialized");
-      return false;
+      return { success: false, error: "Supabase not initialized" };
     }
     try {
-      // Helper: safely convert to integer (prevents "" -> integer crash)
       const toInt = (v) => { const n = parseInt(v, 10); return isNaN(n) ? 0 : n; };
       const toFloat = (v) => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
 
-      // Sync LED Models
+      // ---- SAFE SYNC: Insert new data FIRST, delete old AFTER ----
+
+      // === 1. LED Models ===
       const modelsToSync = [];
       ["UIR", "UOS", "CIH"].forEach((group) => {
         if (masterData[group] && masterData[group].items) {
@@ -205,90 +206,51 @@ export const MasterDataAPI = {
         }
       });
 
-      // Delete and re-insert models
-      const { error: delModelsErr } = await supabase
-        .from("led_models")
-        .delete()
-        .neq("name", "___DELETE_ALL_HACK___");
-      
-      if (delModelsErr) {
-        console.error("Error deleting models:", delModelsErr);
-        return { success: false, error: "led_models Delete Error: " + delModelsErr.message };
-      }
+      // Get old IDs before inserting
+      const { data: oldModels } = await supabase.from("led_models").select("id");
+      const oldModelIds = (oldModels || []).map(r => r.id);
 
+      // Insert new first
       if (modelsToSync.length > 0) {
-        const { data: insertedModels, error: modelsError } = await supabase
-          .from("led_models")
-          .insert(modelsToSync)
-          .select();
-        if (modelsError) {
-          console.error("Error inserting models:", modelsError);
-          return { success: false, error: "led_models Insert Error: " + modelsError.message };
-        }
-        if (!insertedModels || insertedModels.length === 0) {
-           return { success: false, error: "led_models บันทึกสำเร็จแต่ Database ไม่ยอมรับข้อมูล (น่าจะลืมปิด RLS)" };
-        }
+        const { data: inserted, error: err } = await supabase.from("led_models").insert(modelsToSync).select();
+        if (err) return { success: false, error: "led_models Insert: " + err.message };
+        if (!inserted || inserted.length === 0) return { success: false, error: "led_models: DB rejected data (check RLS)" };
+      }
+      // Delete old only after insert succeeded
+      if (oldModelIds.length > 0) {
+        await supabase.from("led_models").delete().in("id", oldModelIds);
       }
 
-      // Sync Controllers
-      if (masterData.controllers && masterData.controllers.length > 0) {
-        const { error: delControllersErr } = await supabase
-          .from("controllers")
-          .delete()
-          .neq("name", "___DELETE_ALL_HACK___");
-        
-        if (delControllersErr) {
-          console.error("Error deleting controllers:", delControllersErr);
-          return { success: false, error: "controllers Delete Error: " + delControllersErr.message };
-        }
+      // === 2. Controllers ===
+      const cData = (masterData.controllers || []).map(c => ({
+        name: String(c.name || ""), load_pixels: toInt(c.load), price: toFloat(c.price),
+      }));
+      const { data: oldC } = await supabase.from("controllers").select("id");
+      const oldCIds = (oldC || []).map(r => r.id);
 
-        const { data: insertedControllers, error: controllersError } = await supabase
-          .from("controllers")
-          .insert(
-            masterData.controllers.map((c) => ({
-              name: c.name,
-              load_pixels: c.load || 0,
-              price: c.price || 0,
-            })),
-          )
-          .select();
-        if (controllersError) {
-          console.error("Error inserting controllers:", controllersError);
-          return { success: false, error: "controllers Insert Error: " + controllersError.message };
-        }
-        if (!insertedControllers || insertedControllers.length === 0) {
-           return { success: false, error: "controllers บันทึกสำเร็จแต่ Database ไม่ยอมรับข้อมูล (น่าจะลืมปิด RLS)" };
-        }
+      if (cData.length > 0) {
+        const { data: inserted, error: err } = await supabase.from("controllers").insert(cData).select();
+        if (err) return { success: false, error: "controllers Insert: " + err.message };
+        if (!inserted || inserted.length === 0) return { success: false, error: "controllers: DB rejected data (check RLS)" };
+      }
+      if (oldCIds.length > 0) {
+        await supabase.from("controllers").delete().in("id", oldCIds);
       }
 
-      // Sync Accessories
-      if (masterData.accessories && masterData.accessories.length > 0) {
-        const { error: delAccessoriesErr } = await supabase
-          .from("accessories")
-          .delete()
-          .neq("name", "___DELETE_ALL_HACK___");
+      // === 3. Accessories ===
+      const aData = (masterData.accessories || []).map(a => ({
+        name: String(a.name || ""), price: toFloat(a.price),
+      }));
+      const { data: oldA } = await supabase.from("accessories").select("id");
+      const oldAIds = (oldA || []).map(r => r.id);
 
-        if (delAccessoriesErr) {
-          console.error("Error deleting accessories:", delAccessoriesErr);
-          return { success: false, error: "accessories Delete Error: " + delAccessoriesErr.message };
-        }
-
-        const { data: insertedAcc, error: accessoriesError } = await supabase
-          .from("accessories")
-          .insert(
-            masterData.accessories.map((a) => ({
-              name: a.name,
-              price: a.price || 0,
-            })),
-          )
-          .select();
-        if (accessoriesError) {
-          console.error("Error inserting accessories:", accessoriesError);
-          return { success: false, error: "accessories Insert Error: " + accessoriesError.message };
-        }
-        if (!insertedAcc || insertedAcc.length === 0) {
-           return { success: false, error: "accessories บันทึกสำเร็จแต่ Database ไม่ยอมรับข้อมูล (น่าจะลืมปิด RLS)" };
-        }
+      if (aData.length > 0) {
+        const { data: inserted, error: err } = await supabase.from("accessories").insert(aData).select();
+        if (err) return { success: false, error: "accessories Insert: " + err.message };
+        if (!inserted || inserted.length === 0) return { success: false, error: "accessories: DB rejected data (check RLS)" };
+      }
+      if (oldAIds.length > 0) {
+        await supabase.from("accessories").delete().in("id", oldAIds);
       }
 
       return { success: true };
