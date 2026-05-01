@@ -926,40 +926,31 @@ input[type="checkbox"].switch-input:checked+.switch-box::after {
     flex-wrap: wrap;
 }
 
-.group-selector-pro {
+.group-selector-minimal {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 5px 0;
 }
 
-.label-pro {
-    font-weight: 700;
-    font-size: 0.95rem;
-    color: var(--muted);
-    white-space: nowrap;
-}
-
-.select-pro {
-    background: var(--card);
+.select-pro-minimal {
+    background: color-mix(in srgb, var(--bg) 80%, var(--card));
     border: 1px solid var(--border);
     border-radius: 12px;
+    padding: 10px 15px;
     font-weight: 700;
-    color: var(--text);
-    font-size: 1rem;
+    color: var(--primary);
+    font-size: 1.1rem;
     cursor: pointer;
-    padding: 8px 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     transition: all 0.2s ease;
 }
 
-.select-pro:hover {
+.select-pro-minimal:hover {
     border-color: var(--primary);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: var(--bg);
 }
 
-.select-pro:focus {
+.select-pro-minimal:focus {
     outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
 }
 
 .toolbar-pro {
