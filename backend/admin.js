@@ -589,15 +589,8 @@
     state.ui = state.ui || { theme: "light", lang: "th" };
 
     // === ดึงข้อมูลจาก Database เป็นหลัก 100% ===
-    // เตรียมโครงสร้างว่างไว้ก่อน (ถ้า DB ว่าง จะแสดงตารางว่าง)
-    const emptyData = {
-      UIR: { w: 640, h: 480, weight: 7.8, type: "indoor", items: [] },
-      UOS: { w: 960, h: 960, weight: 26.5, type: "outdoor", items: [] },
-      CIH: { w: 600, h: 337.5, weight: 4.0, type: "indoor", items: [] },
-      controllers: [],
-      accessories: [],
-    };
-    state.masterData = emptyData;
+    // เริ่มต้นด้วยข้อมูลจาก DEFAULT_DATA ในโค้ดก่อน
+    state.masterData = App.clone(window.DEFAULT_DATA);
     App.state = state;
 
     try {
