@@ -90,21 +90,13 @@ export const MasterDataAPI = {
         supabase.from("accessories").select("*").order("name"),
       ]);
 
+      // Log errors but don't fail entirely - load whatever we can
       if (models.error)
-        console.error("Supabase Error (led_models):", models.error);
+        console.warn("Supabase Warning (led_models):", models.error);
       if (controllers.error)
-        console.error("Supabase Error (controllers):", controllers.error);
+        console.warn("Supabase Warning (controllers):", controllers.error);
       if (accessories.error)
-        console.error("Supabase Error (accessories):", accessories.error);
-
-      if (models.error || controllers.error || accessories.error) {
-        console.error("MasterData sync failed due to table errors:", {
-          models: models.error,
-          controllers: controllers.error,
-          accessories: accessories.error
-        });
-        return null;
-      }
+        console.warn("Supabase Warning (accessories):", accessories.error);
 
       // Reconstruct the grouped object format expected by the app
       const groupedModels = {
