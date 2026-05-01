@@ -37,9 +37,6 @@
     document.getElementById("admin-add-btn").style.display = isEditMode ? "inline-block" : "none";
     document.getElementById("admin-save-btn").style.display = isEditMode ? "inline-block" : "none";
     
-    const addBtnWrapper = document.getElementById("add-row-wrapper");
-    if (addBtnWrapper) addBtnWrapper.style.display = isEditMode ? "block" : "none";
-    
     document.getElementById("admin-group").value = selectedGroup;
     renderTable();
   }
@@ -387,19 +384,19 @@
     isEditMode = !isEditMode;
     const toggleBtn = document.getElementById("admin-edit-toggle-btn");
     const saveBtn = document.getElementById("admin-save-btn");
-    const addBtnWrapper = document.getElementById("add-row-wrapper");
+    const addBtn = document.getElementById("admin-add-btn");
 
     if (isEditMode) {
       toggleBtn.innerHTML = "🔒 ปิดโหมดแก้ไข (ยกเลิก)";
       toggleBtn.classList.replace("btn-primary", "btn-danger");
-      saveBtn.style.display = "inline-block";
-      if (addBtnWrapper) addBtnWrapper.style.display = "block";
+      if (saveBtn) saveBtn.style.display = "inline-block";
+      if (addBtn) addBtn.style.display = "inline-block";
       App.showToast("🔓 เปิดโหมดแก้ไขแล้ว");
     } else {
       toggleBtn.innerHTML = "🔓 แก้ไขข้อมูล";
       toggleBtn.classList.replace("btn-danger", "btn-primary");
-      saveBtn.style.display = "none";
-      if (addBtnWrapper) addBtnWrapper.style.display = "none";
+      if (saveBtn) saveBtn.style.display = "none";
+      if (addBtn) addBtn.style.display = "none";
       App.showToast("🔒 ปิดโหมดแก้ไข");
       // Re-load data from state to undo unsaved changes
       renderTable();
