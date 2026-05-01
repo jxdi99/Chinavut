@@ -106,27 +106,43 @@ export const MasterDataAPI = {
       };
 
       (models.data || []).forEach((m) => {
-        if (groupedModels[m.group_id]) {
-          groupedModels[m.group_id].items.push({
+        // Infer group from model_name (UIR, UOS, CIH)
+        let groupId = "UIR"; 
+        const nameUpper = String(m.model_name || "").toUpperCase();
+        if (nameUpper.startsWith("UOS")) groupId = "UOS";
+        else if (nameUpper.startsWith("CIH")) groupId = "CIH";
+        else if (nameUpper.startsWith("UIR")) groupId = "UIR";
+
+        if (groupedModels[groupId]) {
+          groupedModels[groupId].items.push({
             id: m.id,
-            name: m.name,
-            rw: m.rw,
-            rh: m.rh,
-            max: m.max_w,
-            avg: m.avg_w,
-            price: m.price,
-            brightness: m.brightness,
-            refresh_rate: m.refresh_rate,
+            name: m.model_name,
+            rw: m.resolution_width,
+            rh: m.resolution_height,
+            max: m.max_power_w,
+            avg: m.avg_power_w,
+            price: m.price_per_sqm,
+            brightness: m.brightness_nits,
+            refresh_rate: m.refresh_rate_hz,
             material: m.material,
             maintenance: m.maintenance,
-            ingress_protection: m.ingress_protection,
+            ingress_protection: m.ip_rating,
             led_type: m.led_type,
             beam_angle: m.beam_angle,
-            color_temperature: m.color_temperature,
-            processing_depth: m.processing_depth,
+            color_temperature: m.color_temp,
+            processing_depth: m.grayscale,
             life_hours: m.life_hours,
-            video_support: m.video_support,
+            video_support: m.frame_rate,
             display_type: m.display_type,
+            // New fields from user's schema
+            module_size: m.module_size,
+            cabinet_resolution: m.cabinet_resolution,
+            modules_per_cabinet: m.modules_per_cabinet,
+            weight_kg: m.weight_kg,
+            contrast_ratio: m.contrast_ratio,
+            working_temp: m.working_temp,
+            humidity: m.humidity,
+            status_checking: m.status_checking
           });
         }
       });
@@ -174,25 +190,33 @@ export const MasterDataAPI = {
         if (masterData[group] && masterData[group].items) {
           masterData[group].items.forEach((item) => {
             modelsToSync.push({
-              name: String(item.name || ""),
-              group_id: group,
-              rw: toInt(item.rw),
-              rh: toInt(item.rh),
-              max_w: toInt(item.max),
-              avg_w: toInt(item.avg),
-              price: toFloat(item.price),
-              brightness: toInt(item.brightness),
-              refresh_rate: toInt(item.refresh_rate),
+              model_name: String(item.name || ""),
+              resolution_width: toInt(item.rw),
+              resolution_height: toInt(item.rh),
+              max_power_w: toInt(item.max),
+              avg_power_w: toInt(item.avg),
+              price_per_sqm: toFloat(item.price),
+              brightness_nits: toInt(item.brightness),
+              refresh_rate_hz: toInt(item.refresh_rate),
               material: String(item.material || ""),
               maintenance: String(item.maintenance || ""),
-              ingress_protection: String(item.ingress_protection || ""),
+              ip_rating: String(item.ingress_protection || ""),
               led_type: String(item.led_type || ""),
               beam_angle: String(item.beam_angle || ""),
-              color_temperature: String(item.color_temperature || ""),
-              processing_depth: String(item.processing_depth || ""),
+              color_temp: String(item.color_temperature || ""),
+              grayscale: String(item.processing_depth || ""),
               life_hours: toInt(item.life_hours),
-              video_support: String(item.video_support || ""),
+              frame_rate: String(item.video_support || ""),
               display_type: String(item.display_type || ""),
+              // New fields
+              module_size: String(item.module_size || ""),
+              cabinet_resolution: String(item.cabinet_resolution || ""),
+              modules_per_cabinet: toInt(item.modules_per_cabinet),
+              weight_kg: toFloat(item.weight_kg),
+              contrast_ratio: String(item.contrast_ratio || ""),
+              working_temp: String(item.working_temp || ""),
+              humidity: String(item.humidity || ""),
+              status_checking: String(item.status_checking || "")
             });
           });
         }

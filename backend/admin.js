@@ -106,16 +106,19 @@
         )
         .join("");
     } else {
-      const items = group().items;
-      thead.innerHTML = `
+      const items = group().item      thead.innerHTML = `
         <tr>
           <th style="width:40px;"></th>
           <th>${App.t("name")}</th>
+          <th>Price /sqm</th>
           <th>RW</th>
           <th>RH</th>
           <th>Max W</th>
           <th>Avg W</th>
-          <th>${App.t("pricePerCab")}</th>
+          <th>Module Size</th>
+          <th>Cab. Res</th>
+          <th>Modules/Cab</th>
+          <th>Weight kg</th>
           <th>Brightness</th>
           <th>Refresh</th>
           <th>Material</th>
@@ -124,10 +127,14 @@
           <th>LED Type</th>
           <th>Beam Angle</th>
           <th>Color Temp</th>
-          <th>Processing</th>
+          <th>Grayscale</th>
           <th>Life Hours</th>
-          <th>Video Support</th>
+          <th>Frame Rate</th>
           <th>Display Type</th>
+          <th>Contrast</th>
+          <th>Working Temp</th>
+          <th>Humidity</th>
+          <th>Status</th>
           <th>${App.t("manage")}</th>
         </tr>`;
       tbody.innerHTML = items
@@ -136,11 +143,15 @@
         <tr data-index="${idx}">
           <td class="drag-handle" style="cursor:grab; text-align:center; font-size:1.2rem; color:var(--muted); user-select:none;">☰</td>
           <td><input data-kind="item" data-field="name" data-index="${idx}" type="text" value="${escapeHtml(it.name)}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="price" data-index="${idx}" type="number" value="${it.price || 0}" ${!isEditMode ? "disabled" : ""}></td>
           <td><input data-kind="item" data-field="rw" data-index="${idx}" type="number" value="${it.rw || 0}" ${!isEditMode ? "disabled" : ""}></td>
           <td><input data-kind="item" data-field="rh" data-index="${idx}" type="number" value="${it.rh || 0}" ${!isEditMode ? "disabled" : ""}></td>
           <td><input data-kind="item" data-field="max" data-index="${idx}" type="number" value="${it.max || 0}" ${!isEditMode ? "disabled" : ""}></td>
           <td><input data-kind="item" data-field="avg" data-index="${idx}" type="number" value="${it.avg || 0}" ${!isEditMode ? "disabled" : ""}></td>
-          <td><input data-kind="item" data-field="price" data-index="${idx}" type="number" value="${it.price || 0}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="module_size" data-index="${idx}" type="text" value="${escapeHtml(it.module_size || "")}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="cabinet_resolution" data-index="${idx}" type="text" value="${escapeHtml(it.cabinet_resolution || "")}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="modules_per_cabinet" data-index="${idx}" type="number" value="${it.modules_per_cabinet || 0}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="weight_kg" data-index="${idx}" type="number" step="0.1" value="${it.weight_kg || 0}" ${!isEditMode ? "disabled" : ""}></td>
           <td><input data-kind="item" data-field="brightness" data-index="${idx}" type="number" value="${it.brightness || 0}" ${!isEditMode ? "disabled" : ""}></td>
           <td><input data-kind="item" data-field="refresh_rate" data-index="${idx}" type="number" value="${it.refresh_rate || 0}" ${!isEditMode ? "disabled" : ""}></td>
           <td><input data-kind="item" data-field="material" data-index="${idx}" type="text" value="${escapeHtml(it.material || "")}" ${!isEditMode ? "disabled" : ""}></td>
@@ -153,10 +164,14 @@
           <td><input data-kind="item" data-field="life_hours" data-index="${idx}" type="number" value="${it.life_hours || 0}" ${!isEditMode ? "disabled" : ""}></td>
           <td><input data-kind="item" data-field="video_support" data-index="${idx}" type="text" value="${escapeHtml(it.video_support || "")}" ${!isEditMode ? "disabled" : ""}></td>
           <td><input data-kind="item" data-field="display_type" data-index="${idx}" type="text" value="${escapeHtml(it.display_type || "")}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="contrast_ratio" data-index="${idx}" type="text" value="${escapeHtml(it.contrast_ratio || "")}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="working_temp" data-index="${idx}" type="text" value="${escapeHtml(it.working_temp || "")}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="humidity" data-index="${idx}" type="text" value="${escapeHtml(it.humidity || "")}" ${!isEditMode ? "disabled" : ""}></td>
+          <td><input data-kind="item" data-field="status_checking" data-index="${idx}" type="text" value="${escapeHtml(it.status_checking || "")}" ${!isEditMode ? "disabled" : ""}></td>
           <td>
             ${isEditMode ? `<button class="mini-btn delete" data-action="delete-item" data-index="${idx}">${App.t("delete")}</button>` : "-"}
           </td>
-        </tr>
+        </tr>`; </tr>
       `,
         )
         .join("");
@@ -202,6 +217,15 @@
         life_hours: 0,
         video_support: "",
         display_type: "",
+        // New
+        module_size: "",
+        cabinet_resolution: "",
+        modules_per_cabinet: 0,
+        weight_kg: 0,
+        contrast_ratio: "",
+        working_temp: "",
+        humidity: "",
+        status_checking: ""
       });
       addedName = selectedGroup + " Model";
     }
@@ -529,6 +553,15 @@
           life_hours: cleanNum(cols[15]),
           video_support: cols[16] || "",
           display_type: cols[17] || "",
+          // New
+          module_size: cols[18] || "",
+          cabinet_resolution: cols[19] || "",
+          modules_per_cabinet: cleanNum(cols[20]),
+          weight_kg: cleanNum(cols[21]),
+          contrast_ratio: cols[22] || "",
+          working_temp: cols[23] || "",
+          humidity: cols[24] || "",
+          status_checking: cols[25] || ""
         });
       }
       count++;
