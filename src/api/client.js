@@ -83,7 +83,7 @@ export const MasterDataAPI = {
     }
     try {
       const [models, controllers, accessories] = await Promise.all([
-        supabase.from("led_models").select("*").order("name"),
+        supabase.from("led_models").select("*").order("model_name"),
         supabase.from("controllers").select("*").order("name"),
         supabase.from("accessories").select("*").order("name"),
       ]);
