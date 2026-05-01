@@ -205,7 +205,7 @@ export const MasterDataAPI = {
       const { error: delModelsErr } = await supabase
         .from("led_models")
         .delete()
-        .neq("id", "00000000-0000-0000-0000-000000000000");
+        .neq("name", "___DELETE_ALL_HACK___");
       
       if (delModelsErr) {
         console.error("Error deleting models:", delModelsErr);
@@ -227,7 +227,7 @@ export const MasterDataAPI = {
         const { error: delControllersErr } = await supabase
           .from("controllers")
           .delete()
-          .neq("id", "00000000-0000-0000-0000-000000000000");
+          .neq("name", "___DELETE_ALL_HACK___");
         
         if (delControllersErr) {
           console.error("Error deleting controllers:", delControllersErr);
@@ -254,7 +254,7 @@ export const MasterDataAPI = {
         const { error: delAccessoriesErr } = await supabase
           .from("accessories")
           .delete()
-          .neq("id", "00000000-0000-0000-0000-000000000000");
+          .neq("name", "___DELETE_ALL_HACK___");
 
         if (delAccessoriesErr) {
           console.error("Error deleting accessories:", delAccessoriesErr);
