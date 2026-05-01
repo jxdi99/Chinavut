@@ -172,11 +172,14 @@
 
   function addRow() {
     normalizeGroupKey();
+    let addedName = "";
     if (selectedGroup === "controllers") {
       data().controllers.push({ name: "NEW", load: 1000000, price: 0 });
+      addedName = "Controller";
     } else if (selectedGroup === "accessories") {
       if (!data().accessories) data().accessories = [];
       data().accessories.push({ name: "NEW ACCESSORY", price: 0 });
+      addedName = "Accessory";
     } else {
       group().items.push({
         name: "NEW MODEL",
@@ -198,30 +201,38 @@
         video_support: "",
         display_type: "",
       });
+      addedName = selectedGroup + " Model";
     }
     renderTable();
     scheduleSave();
+    App.showToast(`✅ เพิ่มแถวใหม่ (${addedName}) เรียบร้อย`);
   }
 
   function deleteItem(idx) {
-    if (!confirm(App.t("confirmDelete"))) return;
+    const itemName = group().items[idx]?.name || "รายการนี้";
+    if (!confirm(`⚠️ คุณต้องการลบ "${itemName}" ใช่หรือไม่?\n\n(ข้อมูลจะถูกลบออกจากตาราง กดบันทึกทั้งหมดเพื่อยืนยัน)`)) return;
     group().items.splice(idx, 1);
     renderTable();
     scheduleSave();
+    App.showToast(`🗑️ ลบ "${itemName}" แล้ว`);
   }
 
   function deleteController(idx) {
-    if (!confirm(App.t("confirmDeleteCon"))) return;
+    const itemName = data().controllers[idx]?.name || "Controller นี้";
+    if (!confirm(`⚠️ คุณต้องการลบ "${itemName}" ใช่หรือไม่?\n\n(กดบันทึกทั้งหมดเพื่อยืนยัน)`)) return;
     data().controllers.splice(idx, 1);
     renderTable();
     scheduleSave();
+    App.showToast(`🗑️ ลบ "${itemName}" แล้ว`);
   }
 
   function deleteAccessory(idx) {
-    if (!confirm(App.t("confirmDelete"))) return;
+    const itemName = data().accessories?.[idx]?.name || "อุปกรณ์เสริมนี้";
+    if (!confirm(`⚠️ คุณต้องการลบ "${itemName}" ใช่หรือไม่?\n\n(กดบันทึกทั้งหมดเพื่อยืนยัน)`)) return;
     if (data().accessories) data().accessories.splice(idx, 1);
     renderTable();
     scheduleSave();
+    App.showToast(`🗑️ ลบ "${itemName}" แล้ว`);
   }
 
   function handleTableInput(e) {
@@ -261,6 +272,11 @@
         : Number(el.value || 0);
     }
     scheduleSave();
+    // Debounce edit toast so it doesn't spam
+    clearTimeout(window._editToastTimer);
+    window._editToastTimer = setTimeout(() => {
+      App.showToast(`✏️ แก้ไขข้อมูลเรียบร้อย (กดบันทึกทั้งหมดเพื่ออัปเดต Database)`);
+    }, 1000);
   }
 
   function handleTableAction(e) {
@@ -375,11 +391,16 @@
   }
 
   async function resetToDefault() {
-    if (!confirm(App.t("confirmReset"))) return;
+    // Double confirm: ให้พิมพ์คำว่า "RESET" เพื่อยืนยัน
+    const userInput = prompt('⚠️ คำเตือน! การรีเซ็ตจะลบข้อมูลทั้งหมดที่คุณแก้ไขไว้\n\nพิมพ์คำว่า "RESET" เพื่อยืนยัน:');
+    if (userInput !== "RESET") {
+      App.showToast("❌ ยกเลิกการรีเซ็ต");
+      return;
+    }
     state.masterData = App.clone(DEFAULT_DATA);
     await AppStorage.saveState(state);
     renderTable();
-    App.showToast(App.t("resetDone"));
+    App.showToast("🔄 รีเซ็ตข้อมูลเป็นค่าเริ่มต้นแล้ว");
   }
 
   async function boot() {
