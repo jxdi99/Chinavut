@@ -412,11 +412,46 @@
 
   function openImport() {
     document.getElementById("import-area").value = "";
+    document.getElementById("import-preview-container").style.display = "none";
+    document.getElementById("import-confirm-btn").disabled = true;
     document.getElementById("import-modal").style.display = "flex";
   }
 
   function closeImport() {
     document.getElementById("import-modal").style.display = "none";
+  }
+
+  function handleImportInput() {
+    const raw = document.getElementById("import-area").value.trim();
+    const container = document.getElementById("import-preview-container");
+    const confirmBtn = document.getElementById("import-confirm-btn");
+    const thead = document.getElementById("import-preview-thead");
+    const tbody = document.getElementById("import-preview-tbody");
+
+    if (!raw) {
+      container.style.display = "none";
+      confirmBtn.disabled = true;
+      return;
+    }
+
+    const lines = raw.split("\n");
+    if (lines.length === 0) return;
+
+    // Use current group's headers for preview
+    const mainThead = document.getElementById("admin-thead");
+    thead.innerHTML = mainThead.innerHTML;
+
+    tbody.innerHTML = lines
+      .map((line) => {
+        const cols = line.split("\t").map((s) => s.trim());
+        return `<tr><td>-</td>${cols
+          .map((c) => `<td>${escapeHtml(c)}</td>`)
+          .join("")}</tr>`;
+      })
+      .join("");
+
+    container.style.display = "block";
+    confirmBtn.disabled = false;
   }
 
   function processImport() {
@@ -544,6 +579,9 @@
 
     const importConfirm = document.getElementById("import-confirm-btn");
     if (importConfirm) importConfirm.addEventListener("click", processImport);
+
+    const importArea = document.getElementById("import-area");
+    if (importArea) importArea.addEventListener("input", handleImportInput);
 
     const groupSelect = document.getElementById("admin-group");
     if (groupSelect)
