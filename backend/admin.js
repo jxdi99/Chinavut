@@ -35,6 +35,7 @@
 
     document.getElementById("admin-panel").style.display = "block";
     document.getElementById("admin-add-btn").style.display = isEditMode ? "inline-block" : "none";
+    document.getElementById("admin-import-btn").style.display = isEditMode ? "inline-block" : "none";
     document.getElementById("admin-save-btn").style.display = isEditMode ? "inline-block" : "none";
     
     document.getElementById("admin-group").value = selectedGroup;
@@ -382,9 +383,8 @@
 
   function toggleEditMode() {
     isEditMode = !isEditMode;
-    const toggleBtn = document.getElementById("admin-edit-toggle-btn");
-    const saveBtn = document.getElementById("admin-save-btn");
     const addBtn = document.getElementById("admin-add-btn");
+    const importBtn = document.getElementById("admin-import-btn");
 
     if (isEditMode) {
       document.body.classList.add("edit-mode-active");
@@ -392,6 +392,7 @@
       toggleBtn.classList.replace("btn-primary", "btn-secondary");
       if (saveBtn) saveBtn.style.display = "inline-block";
       if (addBtn) addBtn.style.display = "inline-block";
+      if (importBtn) importBtn.style.display = "inline-block";
       App.showToast("🔓 เปิดโหมดแก้ไขแล้ว");
     } else {
       document.body.classList.remove("edit-mode-active");
@@ -399,11 +400,77 @@
       toggleBtn.classList.replace("btn-secondary", "btn-primary");
       if (saveBtn) saveBtn.style.display = "none";
       if (addBtn) addBtn.style.display = "none";
+      if (importBtn) importBtn.style.display = "none";
       App.showToast("🔒 ปิดโหมดแก้ไข");
       // Re-load data from state to undo unsaved changes
       renderTable();
     }
     renderTable();
+  }
+
+  function openImport() {
+    document.getElementById("import-area").value = "";
+    document.getElementById("import-modal").style.display = "flex";
+  }
+
+  function closeImport() {
+    document.getElementById("import-modal").style.display = "none";
+  }
+
+  function processImport() {
+    const raw = document.getElementById("import-area").value.trim();
+    if (!raw) return;
+
+    const lines = raw.split("\n");
+    let count = 0;
+
+    lines.forEach((line) => {
+      const cols = line.split("\t").map((s) => s.trim());
+      if (cols.length < 2) return;
+
+      if (selectedGroup === "controllers") {
+        data().controllers.push({
+          name: cols[0],
+          load: parseInt(cols[1]) || 0,
+          price: parseInt(cols[2]) || 0,
+        });
+      } else if (selectedGroup === "accessories") {
+        data().accessories.push({
+          name: cols[0],
+          price: parseInt(cols[1]) || 0,
+        });
+      } else {
+        group().items.push({
+          name: cols[0],
+          rw: parseInt(cols[1]) || 0,
+          rh: parseInt(cols[2]) || 0,
+          max: parseInt(cols[3]) || 0,
+          avg: parseInt(cols[4]) || 0,
+          price: parseInt(cols[5]) || 0,
+          brightness: parseInt(cols[6]) || 0,
+          refresh_rate: parseInt(cols[7]) || 0,
+          material: cols[8] || "",
+          maintenance: cols[9] || "",
+          ingress_protection: cols[10] || "",
+          led_type: cols[11] || "",
+          beam_angle: cols[12] || "",
+          color_temperature: cols[13] || "",
+          processing_depth: cols[14] || "",
+          life_hours: parseInt(cols[15]) || 0,
+          video_support: cols[16] || "",
+          display_type: cols[17] || "",
+        });
+      }
+      count++;
+    });
+
+    if (count > 0) {
+      renderTable();
+      closeImport();
+      App.showToast(`📊 นำเข้าข้อมูล ${count} แถว เรียบร้อย (อย่าลืมกดบันทึก)`);
+    } else {
+      alert("ไม่พบข้อมูลที่ถูกต้อง (ตรวจสอบว่าคั่นด้วย Tab หรือไม่)");
+    }
   }
 
   async function boot() {
@@ -466,6 +533,15 @@
 
     const addBtn = document.getElementById("admin-add-btn");
     if (addBtn) addBtn.addEventListener("click", addRow);
+
+    const importBtn = document.getElementById("admin-import-btn");
+    if (importBtn) importBtn.addEventListener("click", openImport);
+
+    const importCancel = document.getElementById("import-cancel-btn");
+    if (importCancel) importCancel.addEventListener("click", closeImport);
+
+    const importConfirm = document.getElementById("import-confirm-btn");
+    if (importConfirm) importConfirm.addEventListener("click", processImport);
 
     const groupSelect = document.getElementById("admin-group");
     if (groupSelect)

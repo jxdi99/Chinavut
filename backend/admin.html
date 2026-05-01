@@ -54,6 +54,7 @@
                     <div class="toolbar">
                         <button class="btn btn-primary" id="admin-edit-toggle-btn">🔓 แก้ไขข้อมูล</button>
                         <button class="btn btn-add" id="admin-add-btn" style="display:none;" data-i18n="addRow">➕ เพิ่มแถวใหม่</button>
+                        <button class="btn btn-secondary" id="admin-import-btn" style="display:none;">📊 นำเข้าจาก Excel</button>
                         <button class="btn btn-success" id="admin-save-btn" data-i18n="saveAll" style="display:none;">💾 บันทึกทั้งหมด</button>
                     </div>
                 </div>
@@ -64,6 +65,19 @@
                         <tbody id="admin-tbody"></tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="import-modal">
+        <div class="modal-box" style="width: min(800px, 95%);">
+            <h2 style="margin-top:0;">📊 นำเข้าข้อมูลจาก Excel / Google Sheets</h2>
+            <p class="small-muted">คัดลอกแถวจาก Excel แล้ววางลงในช่องว่างด้านล่าง (ระบบจะอ่านตามลำดับคอลัมน์ในตาราง)</p>
+            <textarea id="import-area" style="width:100%; height:300px; border-radius:12px; padding:12px; font-family:monospace; margin-bottom:12px;" placeholder="ตัวอย่าง:
+Model A	640	480	500	200	15000..."></textarea>
+            <div class="footer-actions">
+                <button class="btn btn-secondary" id="import-cancel-btn">ยกเลิก</button>
+                <button class="btn btn-primary" id="import-confirm-btn">🚀 นำเข้าข้อมูล</button>
             </div>
         </div>
     </div>
