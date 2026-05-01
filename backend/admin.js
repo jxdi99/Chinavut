@@ -36,6 +36,7 @@
     document.getElementById("admin-panel").style.display = "block";
     document.getElementById("admin-add-btn").style.display = isEditMode ? "inline-block" : "none";
     document.getElementById("admin-import-btn").style.display = isEditMode ? "inline-block" : "none";
+    document.getElementById("admin-clear-btn").style.display = isEditMode ? "inline-block" : "none";
     document.getElementById("admin-save-btn").style.display = isEditMode ? "inline-block" : "none";
     
     document.getElementById("admin-group").value = selectedGroup;
@@ -387,6 +388,7 @@
     const saveBtn = document.getElementById("admin-save-btn");
     const addBtn = document.getElementById("admin-add-btn");
     const importBtn = document.getElementById("admin-import-btn");
+    const clearBtn = document.getElementById("admin-clear-btn");
 
     if (isEditMode) {
       document.body.classList.add("edit-mode-active");
@@ -395,6 +397,7 @@
       if (saveBtn) saveBtn.style.display = "inline-block";
       if (addBtn) addBtn.style.display = "inline-block";
       if (importBtn) importBtn.style.display = "inline-block";
+      if (clearBtn) clearBtn.style.display = "inline-block";
       App.showToast("🔓 เปิดโหมดแก้ไขแล้ว");
     } else {
       document.body.classList.remove("edit-mode-active");
@@ -403,11 +406,27 @@
       if (saveBtn) saveBtn.style.display = "none";
       if (addBtn) addBtn.style.display = "none";
       if (importBtn) importBtn.style.display = "none";
+      if (clearBtn) clearBtn.style.display = "none";
       App.showToast("🔒 ปิดโหมดแก้ไข");
       // Re-load data from state to undo unsaved changes
       renderTable();
     }
     renderTable();
+  }
+
+  async function clearCurrentTable() {
+    if (!confirm("⚠️ คุณแน่ใจหรือไม่ที่จะลบข้อมูลทั้งหมดในตารางนี้?")) return;
+    
+    if (selectedGroup === "controllers") {
+      state.masterData.controllers = [];
+    } else if (selectedGroup === "accessories") {
+      state.masterData.accessories = [];
+    } else {
+      group().items = [];
+    }
+    
+    renderTable();
+    App.showToast("🗑️ ล้างข้อมูลในตารางเรียบร้อย");
   }
 
   function openImport() {
@@ -422,9 +441,10 @@
   }
 
   function cleanNum(str) {
-    if (!str) return 0;
-    // Remove commas and any non-numeric except decimal point
-    return parseFloat(str.replace(/,/g, "")) || 0;
+    if (str === null || str === undefined || str === "") return 0;
+    // Remove commas, spaces, and any currency symbols, then parse
+    const cleaned = String(str).replace(/,/g, "").replace(/\s/g, "").replace(/[฿$]/g, "");
+    return parseFloat(cleaned) || 0;
   }
 
   function handleImportInput() {
@@ -577,6 +597,10 @@
 
     const saveBtn = document.getElementById("admin-save-btn");
     if (saveBtn) saveBtn.addEventListener("click", saveAll);
+
+    const clearBtn = document.getElementById("admin-clear-btn");
+    if (clearBtn) clearBtn.addEventListener("click", clearCurrentTable);
+
 
     const editToggleBtn = document.getElementById("admin-edit-toggle-btn");
     if (editToggleBtn) editToggleBtn.addEventListener("click", toggleEditMode);
