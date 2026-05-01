@@ -407,27 +407,30 @@
     await App.checkAuth();
     state = await AppStorage.loadState();
     state.ui = state.ui || { theme: "light", lang: "th" };
-    // Ensure masterData exists and has items. If empty, seed from DEFAULT_DATA.
-    const isDataEmpty = !state.masterData || !state.masterData.UIR || !state.masterData.UIR.items || state.masterData.UIR.items.length === 0;
-    if (isDataEmpty) {
-      state.masterData = App.clone(DEFAULT_DATA);
-    }
-    
-    // Ensure nested structures like accessories exist
-    if (!state.masterData.accessories) {
-      state.masterData.accessories = App.clone(DEFAULT_DATA.accessories);
-    }
 
-    // Try to sync from Supabase first
+    // === ดึงข้อมูลจาก Database เป็นหลัก 100% ===
+    // เตรียมโครงสร้างว่างไว้ก่อน (ถ้า DB ว่าง จะแสดงตารางว่าง)
+    const emptyData = {
+      UIR: { w: 640, h: 480, weight: 7.8, type: "indoor", items: [] },
+      UOS: { w: 960, h: 960, weight: 26.5, type: "outdoor", items: [] },
+      CIH: { w: 600, h: 337.5, weight: 4.0, type: "indoor", items: [] },
+      controllers: [],
+      accessories: [],
+    };
+    state.masterData = emptyData;
+
     try {
       const syncSuccess = await App.syncFromDB();
       if (syncSuccess) {
         state.masterData = App.state.masterData;
+        App.showToast("✅ โหลดข้อมูลจาก Database เรียบร้อย");
       } else {
-        console.warn("Supabase sync returned false, using local/default data.");
+        console.warn("Supabase sync returned false.");
+        App.showToast("⚠️ ไม่สามารถดึงข้อมูลจาก Database ได้ (ตารางอาจว่างเปล่า)");
       }
     } catch (err) {
       console.error("Supabase sync exception:", err);
+      App.showToast("❌ เชื่อมต่อ Database ไม่ได้");
     }
 
     App.state = state;
