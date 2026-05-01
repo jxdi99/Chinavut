@@ -202,26 +202,38 @@ export const MasterDataAPI = {
       });
 
       // Delete and re-insert models
-      await supabase
+      const { error: delModelsErr } = await supabase
         .from("led_models")
         .delete()
         .neq("id", "00000000-0000-0000-0000-000000000000");
+      
+      if (delModelsErr) {
+        console.error("Error deleting models:", delModelsErr);
+        return false;
+      }
+
       if (modelsToSync.length > 0) {
         const { error: modelsError } = await supabase
           .from("led_models")
           .insert(modelsToSync);
         if (modelsError) {
-          console.error("Error syncing models:", modelsError);
+          console.error("Error inserting models:", modelsError);
           return false;
         }
       }
 
       // Sync Controllers
       if (masterData.controllers && masterData.controllers.length > 0) {
-        await supabase
+        const { error: delControllersErr } = await supabase
           .from("controllers")
           .delete()
           .neq("id", "00000000-0000-0000-0000-000000000000");
+        
+        if (delControllersErr) {
+          console.error("Error deleting controllers:", delControllersErr);
+          return false;
+        }
+
         const { error: controllersError } = await supabase
           .from("controllers")
           .insert(
@@ -232,17 +244,23 @@ export const MasterDataAPI = {
             })),
           );
         if (controllersError) {
-          console.error("Error syncing controllers:", controllersError);
+          console.error("Error inserting controllers:", controllersError);
           return false;
         }
       }
 
       // Sync Accessories
       if (masterData.accessories && masterData.accessories.length > 0) {
-        await supabase
+        const { error: delAccessoriesErr } = await supabase
           .from("accessories")
           .delete()
           .neq("id", "00000000-0000-0000-0000-000000000000");
+
+        if (delAccessoriesErr) {
+          console.error("Error deleting accessories:", delAccessoriesErr);
+          return false;
+        }
+
         const { error: accessoriesError } = await supabase
           .from("accessories")
           .insert(
@@ -252,7 +270,7 @@ export const MasterDataAPI = {
             })),
           );
         if (accessoriesError) {
-          console.error("Error syncing accessories:", accessoriesError);
+          console.error("Error inserting accessories:", accessoriesError);
           return false;
         }
       }

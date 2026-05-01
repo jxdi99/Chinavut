@@ -43,7 +43,7 @@
 
   async function persist() {
     await AppStorage.saveState(state);
-    await App.syncToDB();
+    return await App.syncToDB();
   }
 
   function scheduleSave() {
@@ -353,8 +353,12 @@
   }
 
   async function saveAll() {
-    await persist();
-    App.showToast(App.t("saved"));
+    const success = await persist();
+    if (success) {
+      App.showToast(App.t("saved"));
+    } else {
+      alert("เกิดข้อผิดพลาดในการบันทึกลง Database กรุณาเช็ค Console หรือสิทธิ์ RLS");
+    }
   }
 
   async function syncFromDB() {
