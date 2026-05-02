@@ -216,7 +216,7 @@ export const MasterDataAPI = {
           masterData[group].items.forEach((item) => {
             modelsToSync.push({
               model_name: String(item.name || ""),
-              group_id: n,
+              group_id: group,
               // Mapping back to misaligned columns based on Turn 12 discovery:
               resolution_width: toFloat(item.price),      // Logical Price -> DB resolution_width
               max_power_w: toInt(item.rw),               // Logical RW -> DB max_power_w
