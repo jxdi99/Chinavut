@@ -243,8 +243,6 @@ export const MasterDataAPI = {
               contrast_ratio: String(item.contrast_ratio || ""),
               working_temp: String(item.working_temp || ""),
               humidity: String(item.humidity || ""),
-              cabinet_w_width: toInt(item.cabinet_w_width || item.w),
-              cabinet_h_height: toInt(item.cabinet_h_height || item.h),
               life_hours: toInt(item.life_hours || 0)
             });
           });
