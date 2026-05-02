@@ -112,27 +112,60 @@ export const MasterDataAPI = {
         else if (nameUpper.startsWith("UIR")) groupId = "UIR";
 
         if (groupedModels[groupId]) {
-          // Parse cabinet_resolution (e.g. "256x192")
-          let rw = m.resolution_width;
-          let rh = m.resolution_height;
-          if (m.cabinet_resolution && typeof m.cabinet_resolution === 'string' && m.cabinet_resolution.includes('x')) {
-            const parts = m.cabinet_resolution.split('x');
-            rw = parseInt(parts[0], 10) || rw;
-            rh = parseInt(parts[1], 10) || rh;
+          // Heuristic Mapping: The user's DB columns seem to be swapped.
+          // We try to find the data in the most likely columns.
+          
+          // 1. Resolution (Look for "256x192" etc.)
+          let resString = "";
+          if (typeof m.cabinet_resolution === 'string' && m.cabinet_resolution.includes('x')) resString = m.cabinet_resolution;
+          else if (typeof m.max_power_w === 'string' && m.max_power_w.includes('x')) resString = m.max_power_w;
+          else if (typeof m.module_size === 'string' && m.module_size.includes('x') && !resString) resString = m.module_size;
+
+          let rw = parseInt(m.resolution_width, 10);
+          let rh = parseInt(m.resolution_height, 10);
+          
+          if (resString) {
+            const parts = resString.split('x');
+            const prw = parseInt(parts[0], 10);
+            const prh = parseInt(parts[1], 10);
+            // If the parsed values are reasonable for a cabinet (usually < 1000), use them
+            if (prw > 0 && prw < 2000) rw = prw;
+            if (prh > 0 && prh < 2000) rh = prh;
+          }
+
+          // 2. Power (Look for numbers in max_power_w, avg_power_w, or cabinet_resolution if swapped)
+          let maxPower = parseFloat(m.max_power_w);
+          let avgPower = parseFloat(m.avg_power_w);
+          if (isNaN(maxPower) || (typeof m.max_power_w === 'string' && m.max_power_w.includes('x'))) {
+            if (typeof m.cabinet_resolution === 'number') maxPower = m.cabinet_resolution;
+          }
+          if (isNaN(avgPower)) {
+            if (typeof m.cluster_size === 'number') avgPower = m.cluster_size;
+          }
+
+          // 3. Price (Look for numbers in price_per_sqm or resolution_width if swapped)
+          let price = parseFloat(m.price_per_sqm);
+          if (isNaN(price) || price === 0) {
+            if (typeof m.resolution_width === 'number' && m.resolution_width > 1000) price = m.resolution_width;
+          }
+
+          // 4. Weight
+          let weight = parseFloat(m.weight_kg);
+          if (isNaN(weight) || weight > 500) { // Weights > 500kg for one cabinet are unlikely, probably price
+             weight = groupedModels[groupId].weight; 
           }
 
           groupedModels[groupId].items.push({
             id: m.id,
             name: m.model_name,
-            // Main specs used in calculations
-            rw: rw,
-            rh: rh,
-            w: m.cabinet_w_width || groupedModels[groupId].w, // Use DB value or fallback to group default
+            rw: rw || 0,
+            rh: rh || 0,
+            w: m.cabinet_w_width || groupedModels[groupId].w,
             h: m.cabinet_h_height || groupedModels[groupId].h,
-            weight: m.weight_kg || groupedModels[groupId].weight,
-            max: m.max_power_w,
-            avg: m.avg_power_w,
-            price: m.price_per_sqm,
+            weight: weight || groupedModels[groupId].weight,
+            max: maxPower || 0,
+            avg: avgPower || 0,
+            price: price || 0,
             // Additional technical specs
             brightness: m.brightness_nits,
             refresh_rate: m.refresh_rate_hz,
