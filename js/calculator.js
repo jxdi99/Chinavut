@@ -125,8 +125,8 @@
       const widthM = parseFloat(document.getElementById("width_m").value) || 0;
       const heightM =
         parseFloat(document.getElementById("height_m").value) || 0;
-      wQty = widthM > 0 ? Math.round((widthM * 1000) / g.w) : 0;
-      hQty = heightM > 0 ? Math.round((heightM * 1000) / g.h) : 0;
+      wQty = widthM > 0 ? Math.round((widthM * 1000) / led.w) : 0;
+      hQty = heightM > 0 ? Math.round((heightM * 1000) / led.h) : 0;
       // ให้ปรับขั้นต่ำเป็น 1 ตู้เสมอเมื่อมีการกรอกค่า
       if (widthM > 0) wQty = Math.max(1, wQty);
       if (heightM > 0) hQty = Math.max(1, hQty);
@@ -138,8 +138,8 @@
     }
 
     const totalQty = wQty * hQty;
-    const screenW = (wQty * g.w) / 1000;
-    const screenH = (hQty * g.h) / 1000;
+    const screenW = (wQty * led.w) / 1000;
+    const screenH = (hQty * led.h) / 1000;
     const area = screenW * screenH;
     const resW = wQty * led.rw;
     const resH = hQty * led.rh;
@@ -365,14 +365,14 @@
     `;
 
     document.getElementById("result-display").innerHTML = `
-      ${makeRow(App.t("screenSize"), `${screenW.toFixed(2)} x ${screenH.toFixed(2)} ${App.t("unitMeter")}`, `<b>ที่มา:</b> ขนาดจอภาพ (กว้าง x สูง)<br><b>สูตร:</b> จำนวนตู้กว้าง * ขนาดตู้กว้าง = กว้างรวม<br>${wQty} * ${g.w} = ${screenW.toFixed(2)} ม.<br>จำนวนตู้สูง * ขนาดตู้สูง = สูงรวม<br>${hQty} * ${g.h} = ${screenH.toFixed(2)} ม.`)}
+      ${makeRow(App.t("screenSize"), `${screenW.toFixed(2)} x ${screenH.toFixed(2)} ${App.t("unitMeter")}`, `<b>ที่มา:</b> ขนาดจอภาพ (กว้าง x สูง)<br><b>สูตร:</b> จำนวนตู้กว้าง * ขนาดตู้กว้าง = กว้างรวม<br>${wQty} * ${led.w} = ${screenW.toFixed(2)} ม.<br>จำนวนตู้สูง * ขนาดตู้สูง = สูงรวม<br>${hQty} * ${led.h} = ${screenH.toFixed(2)} ม.`)}
       ${makeRow(App.t("totalCabLabel"), `${wQty} x ${hQty} = ${totalQty} ${App.t("unitUnits")}`, `<b>ที่มา:</b> จำนวนตู้ทั้งหมด<br><b>สูตร:</b> ตู้แนวนอน * ตู้แนวตั้ง<br>${wQty} * ${hQty} = ${totalQty} ตู้`)}
       ${makeRow(App.t("diagonalLabel"), `${diagonalInch.toFixed(1)} ${App.t("unitInch")}`, `<b>ที่มา:</b> ความยาวเส้นทแยงมุม<br><b>สูตร:</b> √(กว้าง² + สูง²) * 39.3701<br>= √(${screenW.toFixed(2)}² + ${screenH.toFixed(2)}²) * 39.3701`)}
       ${ratioText ? makeRow(App.t("aspectRatio"), ratioText, `<b>ที่มา:</b> สัดส่วนจอภาพ<br><b>สูตร:</b> ความกว้าง / ความสูง<br>= ${screenW.toFixed(2)} / ${screenH.toFixed(2)} = ${(screenW/screenH).toFixed(2)}`, "color:var(--primary);") : ""}
       ${makeRow(App.t("area"), `${Number(area.toFixed(4))} ${App.t("unitSqM")}`, `<b>ที่มา:</b> พื้นที่จอภาพรวม<br><b>สูตร:</b> ความกว้าง * ความสูง<br>= ${screenW.toFixed(2)} * ${screenH.toFixed(2)} = ${area.toFixed(4)} ตร.ม.`)}
       ${makeRow(App.t("resolution"), `${resW} x ${resH} ${App.t("unitPixels")}`, `<b>ที่มา:</b> ความละเอียดจอภาพ (Resolution)<br><b>สูตร:</b> จำนวนพิกเซลของตู้ * จำนวนตู้<br>กว้าง: ${led.rw} * ${wQty} = ${resW} px<br>สูง: ${led.rh} * ${hQty} = ${resH} px`)}
       ${makeRow(App.t("pixels"), `${totalPixels.toLocaleString()} ${App.t("pixels")}`, `<b>ที่มา:</b> จำนวนพิกเซลทั้งหมด<br><b>สูตร:</b> ความละเอียดกว้าง * ความละเอียดสูง<br>= ${resW} * ${resH} = ${totalPixels} px`)}
-      ${makeRow(App.t("weight"), `${(totalQty * g.weight).toFixed(1)} ${App.t("unitKg")}`, `<b>ที่มา:</b> น้ำหนักรวมของจอภาพ<br><b>สูตร:</b> จำนวนตู้ทั้งหมด * น้ำหนักต่อตู้<br>= ${totalQty} * ${g.weight} = ${(totalQty * g.weight).toFixed(1)} กก.`)}
+      ${makeRow(App.t("weight"), `${(totalQty * led.weight).toFixed(1)} ${App.t("unitKg")}`, `<b>ที่มา:</b> น้ำหนักรวมของจอภาพ<br><b>สูตร:</b> จำนวนตู้ทั้งหมด * น้ำหนักต่อตู้<br>= ${totalQty} * ${led.weight} = ${(totalQty * led.weight).toFixed(1)} กก.`)}
       ${makeRow(App.t("power"), `${Math.round(area * led.avg).toLocaleString()} / ${Math.round(area * led.max).toLocaleString()} ${App.t("unitWatts")}`, `<b>ที่มา:</b> การกินไฟ (เฉลี่ย / สูงสุด)<br><b>สูตร:</b> พื้นที่ * อัตรากินไฟต่อ ตร.ม.<br>Avg: ${area.toFixed(4)} * ${led.avg} = ${Math.round(area*led.avg)} W<br>Max: ${area.toFixed(4)} * ${led.max} = ${Math.round(area*led.max)} W`)}
       ${makeRow(App.t("amps"), `${(((area * led.max) / 220) * 1.25).toFixed(2)} ${App.t("unitAmps")}`, `<b>ที่มา:</b> กระแสไฟสูงสุดเพื่อเผื่อขนาดสายไฟ<br><b>สูตร:</b> ((Max Power / 220V) * 1.25)<br>= ((${area.toFixed(4)} * ${led.max}) / 220) * 1.25`)}
       ${moneyRows}
@@ -411,9 +411,9 @@
         groupKey: activeGroup,
         groupType: g.type,
         pixelPitch,
-        cabinetW: g.w,
-        cabinetH: g.h,
-        cabinetWeight: g.weight,
+        cabinetW: led.w,
+        cabinetH: led.h,
+        cabinetWeight: led.weight,
         resW: led.rw,
         resH: led.rh,
         avgW: led.avg,
@@ -427,7 +427,7 @@
         displayResW: resW,
         displayResH: resH,
         totalPixels,
-        totalWeight: totalQty * g.weight,
+        totalWeight: totalQty * led.weight,
         totalPowerMax: Math.round(area * led.max),
         totalPowerAvg: Math.round(area * led.avg),
         totalPowerAvg: Math.round(area * led.avg),
@@ -612,7 +612,7 @@
         const val = parseFloat(e.target.value);
         if (!val || val <= 0) return;
         const g = group();
-        const cabSize = useW ? g.w : g.h;
+        const cabSize = useW ? led.w : led.h;
         const qty = Math.max(1, Math.round((val * 1000) / cabSize));
         const snapped = (qty * cabSize) / 1000;
         e.target.value = snapped.toFixed(2);
@@ -634,12 +634,12 @@
         if (widthM > 0)
           document.getElementById("w_qty").value = Math.max(
             1,
-            Math.round((widthM * 1000) / g.w),
+            Math.round((widthM * 1000) / led.w),
           );
         if (heightM > 0)
           document.getElementById("h_qty").value = Math.max(
             1,
-            Math.round((heightM * 1000) / g.h),
+            Math.round((heightM * 1000) / led.h),
           );
       }
       calcMode = "qty";
@@ -658,12 +658,12 @@
         const hQty = parseInt(document.getElementById("h_qty").value) || 0;
         if (wQty > 0)
           document.getElementById("width_m").value = (
-            (wQty * g.w) /
+            (wQty * led.w) /
             1000
           ).toFixed(2);
         if (hQty > 0)
           document.getElementById("height_m").value = (
-            (hQty * g.h) /
+            (hQty * led.h) /
             1000
           ).toFixed(2);
       }

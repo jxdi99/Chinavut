@@ -112,14 +112,28 @@ export const MasterDataAPI = {
         else if (nameUpper.startsWith("UIR")) groupId = "UIR";
 
         if (groupedModels[groupId]) {
+          // Parse cabinet_resolution (e.g. "256x192")
+          let rw = m.resolution_width;
+          let rh = m.resolution_height;
+          if (m.cabinet_resolution && typeof m.cabinet_resolution === 'string' && m.cabinet_resolution.includes('x')) {
+            const parts = m.cabinet_resolution.split('x');
+            rw = parseInt(parts[0], 10) || rw;
+            rh = parseInt(parts[1], 10) || rh;
+          }
+
           groupedModels[groupId].items.push({
             id: m.id,
             name: m.model_name,
-            rw: m.resolution_width,
-            rh: m.resolution_height,
+            // Main specs used in calculations
+            rw: rw,
+            rh: rh,
+            w: m.cabinet_w_width || groupedModels[groupId].w, // Use DB value or fallback to group default
+            h: m.cabinet_h_height || groupedModels[groupId].h,
+            weight: m.weight_kg || groupedModels[groupId].weight,
             max: m.max_power_w,
             avg: m.avg_power_w,
             price: m.price_per_sqm,
+            // Additional technical specs
             brightness: m.brightness_nits,
             refresh_rate: m.refresh_rate_hz,
             material: m.material,
@@ -128,14 +142,15 @@ export const MasterDataAPI = {
             led_type: m.led_type,
             beam_angle: m.beam_angle,
             color_temperature: m.color_temp,
-            processing_depth: m.grayscale,
+            processing_depth: m.gray_scale,
             life_hours: m.life_hours,
             video_support: m.frame_rate,
             display_type: m.display_type,
-            // New fields from user's schema
             module_size: m.module_size,
             cabinet_resolution: m.cabinet_resolution,
             modules_per_cabinet: m.modules_per_cabinet,
+            cabinet_w_width: m.cabinet_w_width,
+            cabinet_h_height: m.cabinet_h_height,
             weight_kg: m.weight_kg,
             contrast_ratio: m.contrast_ratio,
             working_temp: m.working_temp,
@@ -202,7 +217,7 @@ export const MasterDataAPI = {
               led_type: String(item.led_type || ""),
               beam_angle: String(item.beam_angle || ""),
               color_temp: String(item.color_temperature || ""),
-              grayscale: String(item.processing_depth || ""),
+              gray_scale: String(item.processing_depth || ""),
               life_hours: toInt(item.life_hours),
               frame_rate: String(item.video_support || ""),
               display_type: String(item.display_type || ""),
@@ -210,7 +225,9 @@ export const MasterDataAPI = {
               module_size: String(item.module_size || ""),
               cabinet_resolution: String(item.cabinet_resolution || ""),
               modules_per_cabinet: toInt(item.modules_per_cabinet),
-              weight_kg: toFloat(item.weight_kg),
+              cabinet_w_width: toInt(item.cabinet_w_width || item.w),
+              cabinet_h_height: toInt(item.cabinet_h_height || item.h),
+              weight_kg: toFloat(item.weight_kg || item.weight),
               contrast_ratio: String(item.contrast_ratio || ""),
               working_temp: String(item.working_temp || ""),
               humidity: String(item.humidity || ""),
