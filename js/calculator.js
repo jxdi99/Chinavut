@@ -365,10 +365,10 @@
       ${prodPrice > 0 ? `
         <div class="result-row" style="font-size: 0.9rem; opacity: 0.8;">
           <span>ภาษีมูลค่าเพิ่ม (VAT 7%)</span>
-          <b>${(total * 0.07).toLocaleString()} ${App.t("unitBaht")}</b>
+          <b>${Math.round(total * 0.07).toLocaleString()} ${App.t("unitBaht")}</b>
         </div>
-        <div class="result-total" style="color: var(--success); font-size: 1.4rem; margin-top: 4px;">
-          ราคาสุทธิ (รวม VAT): ${(total * 1.07).toLocaleString()} ${App.t("unitBaht")}
+        <div class="result-total" style="color: var(--success); font-size: 1.5rem; margin-top: 4px; border-top: 2px solid var(--success); padding-top: 8px;">
+          ราคาสุทธิ (รวม VAT): ${Math.round(total * 1.07).toLocaleString()} ${App.t("unitBaht")}
         </div>
       ` : ""}
     `
