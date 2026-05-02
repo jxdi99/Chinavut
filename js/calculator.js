@@ -565,6 +565,24 @@
 
         const showInputs = pricingMode === "custom";
         
+        if (showInputs) {
+            const g = group();
+            const ledIndex = Number(document.getElementById("led-select").value || 0);
+            const led = g.items[ledIndex] || g.items[0];
+            
+            const priceInput = document.getElementById("custom-price-sqm");
+            if (!priceInput.value || priceInput.value === "0") {
+                priceInput.value = led.price;
+            }
+
+            const conSel = document.getElementById("con-select");
+            const selectedCon = currentData().controllers[Number(conSel.value || 0)] || currentData().controllers[0];
+            const conPriceInput = document.getElementById("custom-controller-price");
+            if (!conPriceInput.value || conPriceInput.value === "0") {
+                conPriceInput.value = selectedCon?.price || 0;
+            }
+        }
+        
         document.getElementById("input-custom-price").style.display = showInputs
           ? "grid"
           : "none";
