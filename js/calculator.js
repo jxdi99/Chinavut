@@ -359,7 +359,18 @@
       ${accHtml}
       ${makeRow(App.t("installPrice"), installText, `<b>ที่มา:</b> ค่าติดตั้งเบื้องต้น<br><b>สูตร:</b> ตามที่ตั้งค่าไว้ในตารางราคา<br>= ${installPrice.toLocaleString()} บาท`)}
       ${customBreakdownHtml}
-      <div class="result-total">${App.t("total")}: ${prodPrice > 0 ? total.toLocaleString() + " " + App.t("unitBaht") : App.t("notQuoted2")}</div>
+      <div class="result-total" style="border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 8px;">
+        ${App.t("total")}: ${prodPrice > 0 ? total.toLocaleString() + " " + App.t("unitBaht") : App.t("notQuoted2")}
+      </div>
+      ${prodPrice > 0 ? `
+        <div class="result-row" style="font-size: 0.9rem; opacity: 0.8;">
+          <span>ภาษีมูลค่าเพิ่ม (VAT 7%)</span>
+          <b>${(total * 0.07).toLocaleString()} ${App.t("unitBaht")}</b>
+        </div>
+        <div class="result-total" style="color: var(--success); font-size: 1.4rem; margin-top: 4px;">
+          ราคาสุทธิ (รวม VAT): ${(total * 1.07).toLocaleString()} ${App.t("unitBaht")}
+        </div>
+      ` : ""}
     `
       : `
       <div class="result-row" style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); color: var(--primary); text-align: center; justify-content: center;">
