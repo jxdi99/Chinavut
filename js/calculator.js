@@ -165,10 +165,13 @@
       customFoundPrice = 0;
     let customBreakdownHtml = "";
 
+    let customPriceSqm = 0;
+    let customInstall = 0;
+
     if (pricingMode === "custom" || pricingMode === "audit") {
-      const customPriceSqm =
+      customPriceSqm =
         parseFloat(document.getElementById("custom-price-sqm").value) || 0;
-      const customInstall =
+      customInstall =
         parseFloat(document.getElementById("custom-install").value) || 0;
       customSteelPrice =
         parseFloat(document.getElementById("custom-steel").value) || 0;
