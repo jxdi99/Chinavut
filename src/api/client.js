@@ -112,79 +112,58 @@ export const MasterDataAPI = {
         else if (nameUpper.startsWith("UIR")) groupId = "UIR";
 
         if (groupedModels[groupId]) {
-          // Heuristic Mapping: The user's DB columns seem to be swapped.
-          // We try to find the data in the most likely columns.
-          
-          // 1. Resolution (Look for "256x192" etc.)
-          let resString = "";
-          if (typeof m.cabinet_resolution === 'string' && m.cabinet_resolution.includes('x')) resString = m.cabinet_resolution;
-          else if (typeof m.max_power_w === 'string' && m.max_power_w.includes('x')) resString = m.max_power_w;
-          else if (typeof m.module_size === 'string' && m.module_size.includes('x') && !resString) resString = m.module_size;
-
-          let rw = parseInt(m.resolution_width, 10);
-          let rh = parseInt(m.resolution_height, 10);
-          
-          if (resString) {
-            const parts = resString.split('x');
-            const prw = parseInt(parts[0], 10);
-            const prh = parseInt(parts[1], 10);
-            // If the parsed values are reasonable for a cabinet (usually < 1000), use them
-            if (prw > 0 && prw < 2000) rw = prw;
-            if (prh > 0 && prh < 2000) rh = prh;
-          }
-
-          // 2. Power (Look for numbers in max_power_w, avg_power_w, or cabinet_resolution if swapped)
-          let maxPower = parseFloat(m.max_power_w);
-          let avgPower = parseFloat(m.avg_power_w);
-          if (isNaN(maxPower) || (typeof m.max_power_w === 'string' && m.max_power_w.includes('x'))) {
-            if (typeof m.cabinet_resolution === 'number') maxPower = m.cabinet_resolution;
-          }
-          if (isNaN(avgPower)) {
-            if (typeof m.cluster_size === 'number') avgPower = m.cluster_size;
-          }
-
-          // 3. Price (Look for numbers in price_per_sqm or resolution_width if swapped)
-          let price = parseFloat(m.price_per_sqm);
-          if (isNaN(price) || price === 0) {
-            if (typeof m.resolution_width === 'number' && m.resolution_width > 1000) price = m.resolution_width;
-          }
-
-          // 4. Weight
-          let weight = parseFloat(m.weight_kg);
-          if (isNaN(weight) || weight > 500) { // Weights > 500kg for one cabinet are unlikely, probably price
-             weight = groupedModels[groupId].weight; 
-          }
+          // Mapping based on the actual misaligned structure provided by the user:
+          // price_per_sqm -> modules_per_cabinet (6)
+          // module_size -> beam_angle (160/140)
+          // cabinet_resolution -> color_temp (6500K)
+          // display_type -> led_type (SMD1010)
+          // modules_per_cabinet -> grayscale (14)
+          // resolution_width -> PRICE (69000)
+          // resolution_height -> ? (320)
+          // max_power_w -> RW (416)
+          // avg_power_w -> ? (0)
+          // brightness_nits -> MAX_POWER (416)
+          // refresh_rate_hz -> RH (312)
+          // frame_rate -> IP_RATING (IP30)
+          // material -> ? (386)
+          // weight_kg -> LIFE_HOURS (100000)
+          // maintenance -> AVG_POWER (116)
+          // ip_rating -> BRIGHTNESS (600)
+          // led_type -> REFRESH_RATE (3840)
+          // beam_angle -> FRAME_RATE (60 Hz)
+          // color_temp -> MATERIAL (Die-casting Aluminum)
+          // grayscale -> WEIGHT (7.8)
 
           groupedModels[groupId].items.push({
             id: m.id,
             name: m.model_name,
-            rw: rw || 0,
-            rh: rh || 0,
+            // Calculation fields (mapped from misaligned columns)
+            rw: parseInt(m.max_power_w, 10) || 0,
+            rh: parseInt(m.refresh_rate_hz, 10) || 0,
             w: m.cabinet_w_width || groupedModels[groupId].w,
             h: m.cabinet_h_height || groupedModels[groupId].h,
-            weight: weight || groupedModels[groupId].weight,
-            max: maxPower || 0,
-            avg: avgPower || 0,
-            price: price || 0,
-            // Additional technical specs
-            brightness: m.brightness_nits,
-            refresh_rate: m.refresh_rate_hz,
-            material: m.material,
-            maintenance: m.maintenance,
-            ingress_protection: m.ip_rating,
-            led_type: m.led_type,
-            beam_angle: m.beam_angle,
-            color_temperature: m.color_temp,
-            processing_depth: m.gray_scale,
-            life_hours: m.life_hours,
-            video_support: m.frame_rate,
-            display_type: m.display_type,
+            weight: parseFloat(m.grayscale) || groupedModels[groupId].weight,
+            max: parseInt(m.brightness_nits, 10) || 0,
+            avg: parseInt(m.maintenance, 10) || 0,
+            price: parseFloat(m.resolution_width) || 0,
+            
+            // Info fields
+            brightness: parseInt(m.ip_rating, 10) || 0,
+            refresh_rate: parseInt(m.led_type, 10) || 0,
+            material: m.color_temp, // "Die-casting Aluminum"
+            maintenance: m.status_checking, 
+            ingress_protection: m.frame_rate, // "IP30"
+            led_type: m.display_type, // "SMD1010"
+            beam_angle: m.module_size, // "160/140"
+            color_temperature: m.cabinet_resolution, // "6500K"
+            processing_depth: m.modules_per_cabinet, // 14
+            life_hours: m.weight_kg, // 100000
+            video_support: m.beam_angle, // "60 Hz"
+            
+            // Raw fields for safety
             module_size: m.module_size,
             cabinet_resolution: m.cabinet_resolution,
             modules_per_cabinet: m.modules_per_cabinet,
-            cabinet_w_width: m.cabinet_w_width,
-            cabinet_h_height: m.cabinet_h_height,
-            weight_kg: m.weight_kg,
             contrast_ratio: m.contrast_ratio,
             working_temp: m.working_temp,
             humidity: m.humidity,
