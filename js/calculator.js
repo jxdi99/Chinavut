@@ -359,18 +359,20 @@
       ${accHtml}
       ${makeRow(App.t("installPrice"), installText, `<b>ที่มา:</b> ค่าติดตั้งเบื้องต้น<br><b>สูตร:</b> ตามที่ตั้งค่าไว้ในตารางราคา<br>= ${installPrice.toLocaleString()} บาท`)}
       ${customBreakdownHtml}
-      <div class="result-total" style="border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 8px;">
-        ${App.t("total")}: ${prodPrice > 0 ? total.toLocaleString() + " " + App.t("unitBaht") : App.t("notQuoted2")}
-      </div>
-      ${prodPrice > 0 ? `
-        <div class="result-row" style="font-size: 0.9rem; opacity: 0.8;">
+      <div style="margin-top: 20px; padding: 16px; background: color-mix(in srgb, var(--primary) 5%, transparent); border-radius: 12px; border: 1px solid var(--border);">
+        <div class="result-row" style="border:none; padding: 4px 0; font-size: 0.95rem; opacity: 0.85;">
+          <span>ราคารวม (Subtotal)</span>
+          <b>${prodPrice > 0 ? total.toLocaleString() : "0"} ${App.t("unitBaht")}</b>
+        </div>
+        <div class="result-row" style="border:none; padding: 4px 0; font-size: 0.95rem; opacity: 0.85;">
           <span>ภาษีมูลค่าเพิ่ม (VAT 7%)</span>
           <b>${Math.round(total * 0.07).toLocaleString()} ${App.t("unitBaht")}</b>
         </div>
-        <div class="result-total" style="color: var(--success); font-size: 1.5rem; margin-top: 4px; border-top: 2px solid var(--success); padding-top: 8px;">
-          ราคาสุทธิ (รวม VAT): ${Math.round(total * 1.07).toLocaleString()} ${App.t("unitBaht")}
+        <div style="margin-top: 12px; padding-top: 12px; border-top: 2px solid var(--primary); display: flex; justify-content: space-between; align-items: baseline;">
+          <span style="font-weight: 800; color: var(--primary); font-size: 1.1rem;">ราคาสุทธิ (Grand Total)</span>
+          <b style="font-size: 1.8rem; color: var(--primary); letter-spacing: -0.5px;">${Math.round(total * 1.07).toLocaleString()} <span style="font-size: 1rem;">${App.t("unitBaht")}</span></b>
         </div>
-      ` : ""}
+      </div>
     `
       : `
       <div class="result-row" style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); color: var(--primary); text-align: center; justify-content: center;">
