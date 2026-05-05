@@ -207,7 +207,7 @@ export const MasterDataAPI = {
     return !error;
   },
 
-  async syncToDb(masterData, deletions = {}) {
+  async syncToDb(subsetData, deletions = {}) {
     if (!supabase) {
       console.error("Supabase not initialized");
       return { success: false, error: "Supabase not initialized" };
