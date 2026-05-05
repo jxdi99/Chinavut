@@ -38,7 +38,6 @@
     document.getElementById("admin-panel").style.display = "block";
     document.getElementById("admin-add-btn").style.display = isEditMode ? "inline-block" : "none";
     document.getElementById("admin-import-btn").style.display = isEditMode ? "inline-block" : "none";
-    document.getElementById("admin-clear-btn").style.display = isEditMode ? "inline-block" : "none";
     document.getElementById("admin-save-btn").style.display = isEditMode ? "inline-block" : "none";
     
     document.getElementById("admin-group").value = selectedGroup;
@@ -346,14 +345,6 @@
     renderTable();
   }
 
-  async function clearCurrentTable() {
-    if (!confirm("⚠️ ล้างข้อมูลทั้งหมดในตารางนี้?")) return;
-    if (selectedGroup === "controllers") state.masterData.controllers = [];
-    else if (selectedGroup === "accessories") state.masterData.accessories = [];
-    else group().items = [];
-    renderTable();
-  }
-
   function openImport() {
     document.getElementById("import-area").value = "";
     document.getElementById("import-modal").style.display = "flex";
@@ -416,7 +407,6 @@
     document.getElementById("admin-edit-toggle-btn").addEventListener("click", toggleEditMode);
     document.getElementById("admin-add-btn").addEventListener("click", addRow);
     document.getElementById("admin-import-btn").addEventListener("click", openImport);
-    document.getElementById("admin-clear-btn").addEventListener("click", clearCurrentTable);
     document.getElementById("import-confirm-btn").addEventListener("click", processImport);
     document.getElementById("import-cancel-btn").addEventListener("click", closeImport);
     document.getElementById("import-area").addEventListener("input", handleImportInput);
