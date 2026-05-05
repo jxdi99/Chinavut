@@ -646,6 +646,8 @@
         const val = parseFloat(e.target.value);
         if (!val || val <= 0) return;
         const g = group();
+        const ledIndex = Number(document.getElementById("led-select").value || 0);
+        const led = g.items[ledIndex] || g.items[0];
         const cabSize = useW ? led.w : led.h;
         const qty = Math.max(1, Math.round((val * 1000) / cabSize));
         const snapped = (qty * cabSize) / 1000;
@@ -661,6 +663,8 @@
       // Convert current size values to qty before switching
       if (calcMode === "size") {
         const g = group();
+        const ledIndex = Number(document.getElementById("led-select").value || 0);
+        const led = g.items[ledIndex] || g.items[0];
         const widthM =
           parseFloat(document.getElementById("width_m").value) || 0;
         const heightM =
@@ -688,6 +692,8 @@
       // Convert current qty values to size before switching
       if (calcMode === "qty") {
         const g = group();
+        const ledIndex = Number(document.getElementById("led-select").value || 0);
+        const led = g.items[ledIndex] || g.items[0];
         const wQty = parseInt(document.getElementById("w_qty").value) || 0;
         const hQty = parseInt(document.getElementById("h_qty").value) || 0;
         if (wQty > 0)
