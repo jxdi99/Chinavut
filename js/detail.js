@@ -117,7 +117,7 @@
   /* ── Helpers ───────────────────────────────────────────────── */
   function fmt(val, dec) {
     if (val === null || val === undefined || val === "" || val === "?")
-      return "?";
+      return "";
     if (typeof val === "number") {
       return dec !== undefined
         ? val.toFixed(dec)
@@ -179,7 +179,7 @@
 
     // Calculate viz left position and clamp to prevent overflow
     const vizLeft = startX + humanW + GAP_M * scale;
-    const vizMaxLeft = sectionW - drawW - 10; // Keep 10px margin from right edge
+    const vizMaxLeft = sectionW - drawW - 60; // Keep 60px margin from right edge to account for height label
     viz.style.left = px(Math.min(vizLeft, vizMaxLeft));
 
     // Labels
@@ -239,44 +239,44 @@
     const totalPx = (d.displayResW || 0) * (d.displayResH || 0);
 
     const LEFT = [
-      { l: t("pixelPitch"), v: `P${d.pixelPitch || "?"}`, u: "mm." },
+      { l: t("pixelPitch"), v: d.pixelPitch ? `P${d.pixelPitch}` : "", u: "mm." },
       {
         l: t("brightness"),
-        v: m.brightness || "?",
+        v: m.brightness || "",
         u: t("unitCdSqm"),
         hi: true,
       },
       { l: t("ledType"), v: `LED Indoor ${ledType}`, u: "", hi: true },
       {
         l: t("cabSize"),
-        v: `${d.cabinetW || "?"}×${d.cabinetH || "?"}`,
+        v: (d.cabinetW && d.cabinetH) ? `${d.cabinetW}×${d.cabinetH}` : "",
         u: "mm.",
         hi: true,
       },
       {
         l: t("cabRes"),
-        v: `${d.resW || "?"}×${d.resH || "?"}`,
+        v: (d.resW && d.resH) ? `${d.resW}×${d.resH}` : "",
         u: t("unitPixels"),
       },
       {
         l: t("modSize"),
-        v: modW ? `${modW}×${modH}` : "?",
+        v: modW ? `${modW}×${modH}` : "",
         u: "mm.",
         hi: true,
       },
       {
         l: t("modRes"),
-        v: modResW ? `${modResW}×${modResH}` : "?",
+        v: modResW ? `${modResW}×${modResH}` : "",
         u: t("unitPixels"),
       },
       {
         l: t("refreshRate"),
-        v: m.refresh_rate || "?",
+        v: m.refresh_rate || "",
         u: t("unitHz"),
         hi: true,
       },
-      { l: t("material"), v: m.material || "?", u: "", hi: true },
-      { l: t("maintenance"), v: m.maintenance || "?", u: "", hi: true },
+      { l: t("material"), v: m.material || "", u: "", hi: true },
+      { l: t("maintenance"), v: m.maintenance || "", u: "", hi: true },
       { l: t("cabWeight"), v: fmt(d.cabinetWeight), u: t("unitKg") },
       { l: t("typPower"), v: fmt(d.avgW), u: t("unitWatts") },
       { l: t("maxPower"), v: fmt(d.maxW), u: t("unitWatts") },
