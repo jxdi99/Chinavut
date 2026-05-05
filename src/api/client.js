@@ -169,8 +169,7 @@ export const MasterDataAPI = {
             working_temp: m.working_temp,
             humidity: m.humidity,
             status_checking: m.status_checking,
-            display_type: m.display_type
-            modules_per_cabinet: m.modules_per_cabinet,
+            display_type: m.display_type,
             contrast_ratio: m.contrast_ratio,
             working_temp: m.working_temp,
             humidity: m.humidity,
