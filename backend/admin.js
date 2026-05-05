@@ -6,6 +6,8 @@
   let saveTimer = null;
   // Track IDs that were explicitly deleted during this session
   let deletedIds = { led_models: [], controllers: [], accessories: [] };
+  // Track indices of rows that were modified in this session
+  let dirtyRows = { UIR: new Set(), UOS: new Set(), CIH: new Set(), controllers: new Set(), accessories: new Set() };
 
   function data() {
     return state.masterData;
@@ -46,9 +48,26 @@
 
   async function persist() {
     await AppStorage.saveState(state);
-    const result = await App.syncToDB(deletedIds);
+    
+    // Create a subset of masterData containing ONLY dirty (modified) rows
+    const subsetData = { UIR: { items: [] }, UOS: { items: [] }, CIH: { items: [] }, controllers: [], accessories: [] };
+    
+    ["UIR", "UOS", "CIH"].forEach(g => {
+        dirtyRows[g].forEach(idx => {
+            if (state.masterData[g].items[idx]) subsetData[g].items.push(state.masterData[g].items[idx]);
+        });
+    });
+    dirtyRows.controllers.forEach(idx => {
+        if (state.masterData.controllers[idx]) subsetData.controllers.push(state.masterData.controllers[idx]);
+    });
+    dirtyRows.accessories.forEach(idx => {
+        if (state.masterData.accessories[idx]) subsetData.accessories.push(state.masterData.accessories[idx]);
+    });
+
+    const result = await App.syncToDB(subsetData, deletedIds);
     if (result && result.success) {
       deletedIds = { led_models: [], controllers: [], accessories: [] };
+      dirtyRows = { UIR: new Set(), UOS: new Set(), CIH: new Set(), controllers: new Set(), accessories: new Set() };
     }
     return result;
   }
@@ -61,13 +80,15 @@
   }
 
   async function refreshData(force = false) {
-    if (!force && isEditMode && !confirm("⚠️ ข้อมูลที่คุณกำลังแก้ไขแต่ยังไม่ได้บันทึกจะหายไป ต้องการรีเฟรชหรือไม่?")) return;
+    if (!force && isEditMode && (dirtyRows.UIR.size > 0 || dirtyRows.UOS.size > 0 || dirtyRows.CIH.size > 0 || dirtyRows.controllers.size > 0 || dirtyRows.accessories.size > 0) && !confirm("⚠️ คุณมีการแก้ไขที่ยังไม่ได้บันทึก ข้อมูลที่แก้จะหายไป ต้องการรีเฟรชหรือไม่?")) return;
+    
     App.showToast("🔄 กำลังดึงข้อมูลล่าสุด...");
     try {
       const success = await App.syncFromDB();
       if (success) {
         state.masterData = App.state.masterData;
         deletedIds = { led_models: [], controllers: [], accessories: [] };
+        dirtyRows = { UIR: new Set(), UOS: new Set(), CIH: new Set(), controllers: new Set(), accessories: new Set() };
         renderTable();
         App.showToast("✅ ข้อมูลเป็นปัจจุบันแล้ว");
       }
@@ -223,6 +244,10 @@
       });
       addedName = selectedGroup + " Model";
     }
+    // Mark the newly added row as dirty
+    const newIdx = (selectedGroup === "controllers") ? data().controllers.length - 1 : (selectedGroup === "accessories" ? data().accessories.length - 1 : group().items.length - 1);
+    dirtyRows[selectedGroup].add(newIdx);
+
     renderTable();
     scheduleSave();
     App.showToast(`✅ เพิ่มแถวใหม่ (${addedName}) เรียบร้อย`);
@@ -279,6 +304,8 @@
     } else if (kind === "accessory" && data().accessories[index]) {
       data().accessories[index][field] = isTextField ? el.value : Number(el.value || 0);
     }
+    // Mark row as dirty
+    dirtyRows[selectedGroup].add(index);
     scheduleSave();
   }
 
@@ -379,9 +406,18 @@
     lines.forEach(line => {
       const cols = line.split("\t").map(s => s.trim());
       if (cols.length < 2) return;
-      if (selectedGroup === "controllers") data().controllers.push({ name: cols[0], load: cleanNum(cols[1]), price: cleanNum(cols[2]) });
-      else if (selectedGroup === "accessories") data().accessories.push({ name: cols[0], price: cleanNum(cols[1]) });
-      else group().items.push({ name: cols[0], price: cleanNum(cols[1]), rw: cleanNum(cols[2]), rh: cleanNum(cols[3]), max: cleanNum(cols[4]), avg: cleanNum(cols[5]), module_size: cols[6]||"", cabinet_resolution: cols[7]||"", modules_per_cabinet: cleanNum(cols[8]), weight_kg: cleanNum(cols[9]), brightness: cleanNum(cols[10]), refresh_rate: cleanNum(cols[11]), material: cols[12]||"", maintenance: cols[13]||"", ingress_protection: cols[14]||"", led_type: cols[15]||"", beam_angle: cols[16]||"", color_temperature: cols[17]||"", processing_depth: cols[18]||"", life_hours: cleanNum(cols[19]), video_support: cols[20]||"", display_type: cols[21]||"", contrast_ratio: cols[22]||"", working_temp: cols[23]||"", humidity: cols[24]||"", status_checking: cols[25]||"" });
+      let newIdx;
+      if (selectedGroup === "controllers") {
+        data().controllers.push({ name: cols[0], load: cleanNum(cols[1]), price: cleanNum(cols[2]) });
+        newIdx = data().controllers.length - 1;
+      } else if (selectedGroup === "accessories") {
+        data().accessories.push({ name: cols[0], price: cleanNum(cols[1]) });
+        newIdx = data().accessories.length - 1;
+      } else {
+        group().items.push({ name: cols[0], price: cleanNum(cols[1]), rw: cleanNum(cols[2]), rh: cleanNum(cols[3]), max: cleanNum(cols[4]), avg: cleanNum(cols[5]), module_size: cols[6]||"", cabinet_resolution: cols[7]||"", modules_per_cabinet: cleanNum(cols[8]), weight_kg: cleanNum(cols[9]), brightness: cleanNum(cols[10]), refresh_rate: cleanNum(cols[11]), material: cols[12]||"", maintenance: cols[13]||"", ingress_protection: cols[14]||"", led_type: cols[15]||"", beam_angle: cols[16]||"", color_temperature: cols[17]||"", processing_depth: cols[18]||"", life_hours: cleanNum(cols[19]), video_support: cols[20]||"", display_type: cols[21]||"", contrast_ratio: cols[22]||"", working_temp: cols[23]||"", humidity: cols[24]||"", status_checking: cols[25]||"" });
+        newIdx = group().items.length - 1;
+      }
+      dirtyRows[selectedGroup].add(newIdx);
     });
     renderTable();
     closeImport();
