@@ -225,7 +225,7 @@ export const MasterDataAPI = {
               resolution_height: toInt(item.rh),
               max_power_w: toInt(item.max),
               avg_power_w: toInt(item.avg),
-              weight_kg: toFloat(item.weight),
+              weight_kg: toFloat(item.weight_kg),
               brightness_nits: toInt(item.brightness),
               refresh_rate_hz: toInt(item.refresh_rate),
               material: String(item.material || ""),
