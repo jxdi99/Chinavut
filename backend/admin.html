@@ -7,6 +7,42 @@
     <title>RAZR LED Admin</title>
     <link rel="icon" type="image/png" href="../src/img/Logo_cm.png">
     <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: var(--card-bg, #fff);
+            min-width: 200px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 100;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        .dropdown-content a {
+            color: var(--text);
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+        .dropdown-content a:hover { background-color: var(--bg); }
+        .dropdown:hover .dropdown-content { display: block; }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        .btn-outline:hover { background: var(--bg); }
+    </style>
 </head>
 
 <body>
@@ -52,7 +88,16 @@
                         <span data-i18n="adminPanelInfo">แก้ไขข้อมูลในตารางได้ทันที ระบบจะบันทึกให้อัตโนมัติ</span>
                     </div>
                     <div class="toolbar">
+                        <button class="btn btn-secondary" id="admin-refresh-btn">🔄 Refresh</button>
                         <button class="btn btn-primary" id="admin-edit-toggle-btn">🔓 แก้ไขข้อมูล</button>
+                        <div class="dropdown">
+                            <button class="btn btn-outline" id="admin-export-btn">📋 คัดลอก/ส่งออก ▼</button>
+                            <div class="dropdown-content">
+                                <a href="#" id="copy-data-btn">คัดลอกเป็นข้อความ (TSV)</a>
+                                <a href="#" id="copy-excel-btn">คัดลอกสำหรับ Excel</a>
+                                <a href="#" id="download-csv-btn">ดาวน์โหลด CSV (.csv)</a>
+                            </div>
+                        </div>
                         <button class="btn btn-add" id="admin-add-btn" style="display:none;" data-i18n="addRow">➕ เพิ่มแถวใหม่</button>
                         <button class="btn btn-secondary" id="admin-import-btn" style="display:none;">📊 นำเข้าจาก Excel</button>
                         <button class="btn btn-danger" id="admin-clear-btn" style="display:none;">🗑️ ล้างตาราง</button>

@@ -204,7 +204,7 @@ export const MasterDataAPI = {
     return !error;
   },
 
-  async syncToDb(masterData) {
+  async syncToDb(masterData, deletions = {}) {
     if (!supabase) {
       console.error("Supabase not initialized");
       return { success: false, error: "Supabase not initialized" };
@@ -213,23 +213,19 @@ export const MasterDataAPI = {
       const toInt = (v) => { const n = parseInt(v, 10); return isNaN(n) ? 0 : n; };
       const toFloat = (v) => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
 
-      // ---- SAFE SYNC: Insert new data FIRST, delete old AFTER ----
-
       // === 1. LED Models ===
-      const modelsToSync = [];
+      const modelsToUpsert = [];
       ["UIR", "UOS", "CIH"].forEach((group) => {
         if (masterData[group] && masterData[group].items) {
           masterData[group].items.forEach((item) => {
-            modelsToSync.push({
+            const row = {
               model_name: String(item.name || ""),
-              // Direct Mapping
               price_per_sqm: toFloat(item.price),
               resolution_width: toInt(item.rw),
               resolution_height: toInt(item.rh),
               max_power_w: toInt(item.max),
               avg_power_w: toInt(item.avg),
               weight_kg: toFloat(item.weight),
-              
               brightness_nits: toInt(item.brightness),
               refresh_rate_hz: toInt(item.refresh_rate),
               material: String(item.material || ""),
@@ -242,67 +238,54 @@ export const MasterDataAPI = {
               life_hours: toInt(item.life_hours),
               frame_rate: String(item.video_support || ""),
               display_type: String(item.display_type || ""),
-              
               module_size: String(item.module_size || ""),
               cabinet_resolution: String(item.cabinet_resolution || ""),
               modules_per_cabinet: toInt(item.modules_per_cabinet),
               status_checking: String(item.status_checking || ""),
-              
-              // Stable fields
               contrast_ratio: String(item.contrast_ratio || ""),
               working_temp: String(item.working_temp || ""),
               humidity: String(item.humidity || ""),
-              life_hours: toInt(item.life_hours || 0)
-            });
+            };
+            if (item.id) row.id = item.id; // Use ID for upsert
+            modelsToUpsert.push(row);
           });
         }
       });
 
-      // Get old IDs before inserting
-      const { data: oldModels } = await supabase.from("led_models").select("id");
-      const oldModelIds = (oldModels || []).map(r => r.id);
-
-      // Insert new first
-      if (modelsToSync.length > 0) {
-        const { data: inserted, error: err } = await supabase.from("led_models").insert(modelsToSync).select();
-        if (err) return { success: false, error: "led_models Insert: " + err.message };
-        if (!inserted || inserted.length === 0) return { success: false, error: "led_models: DB rejected data (check RLS)" };
+      if (modelsToUpsert.length > 0) {
+        const { error } = await supabase.from("led_models").upsert(modelsToUpsert);
+        if (error) return { success: false, error: "led_models Upsert: " + error.message };
       }
-      // Delete old only after insert succeeded
-      if (oldModelIds.length > 0) {
-        await supabase.from("led_models").delete().in("id", oldModelIds);
+      if (deletions.led_models && deletions.led_models.length > 0) {
+        await supabase.from("led_models").delete().in("id", deletions.led_models);
       }
 
       // === 2. Controllers ===
-      const cData = (masterData.controllers || []).map(c => ({
-        name: String(c.name || ""), load_pixels: toInt(c.load), price: toFloat(c.price),
-      }));
-      const { data: oldC } = await supabase.from("controllers").select("id");
-      const oldCIds = (oldC || []).map(r => r.id);
-
+      const cData = (masterData.controllers || []).map(c => {
+        const row = { name: String(c.name || ""), load_pixels: toInt(c.load), price: toFloat(c.price) };
+        if (c.id) row.id = c.id;
+        return row;
+      });
       if (cData.length > 0) {
-        const { data: inserted, error: err } = await supabase.from("controllers").insert(cData).select();
-        if (err) return { success: false, error: "controllers Insert: " + err.message };
-        if (!inserted || inserted.length === 0) return { success: false, error: "controllers: DB rejected data (check RLS)" };
+        const { error } = await supabase.from("controllers").upsert(cData);
+        if (error) return { success: false, error: "controllers Upsert: " + error.message };
       }
-      if (oldCIds.length > 0) {
-        await supabase.from("controllers").delete().in("id", oldCIds);
+      if (deletions.controllers && deletions.controllers.length > 0) {
+        await supabase.from("controllers").delete().in("id", deletions.controllers);
       }
 
       // === 3. Accessories ===
-      const aData = (masterData.accessories || []).map(a => ({
-        name: String(a.name || ""), price: toFloat(a.price),
-      }));
-      const { data: oldA } = await supabase.from("accessories").select("id");
-      const oldAIds = (oldA || []).map(r => r.id);
-
+      const aData = (masterData.accessories || []).map(a => {
+        const row = { name: String(a.name || ""), price: toFloat(a.price) };
+        if (a.id) row.id = a.id;
+        return row;
+      });
       if (aData.length > 0) {
-        const { data: inserted, error: err } = await supabase.from("accessories").insert(aData).select();
-        if (err) return { success: false, error: "accessories Insert: " + err.message };
-        if (!inserted || inserted.length === 0) return { success: false, error: "accessories: DB rejected data (check RLS)" };
+        const { error } = await supabase.from("accessories").upsert(aData);
+        if (error) return { success: false, error: "accessories Upsert: " + error.message };
       }
-      if (oldAIds.length > 0) {
-        await supabase.from("accessories").delete().in("id", oldAIds);
+      if (deletions.accessories && deletions.accessories.length > 0) {
+        await supabase.from("accessories").delete().in("id", deletions.accessories);
       }
 
       return { success: true };
