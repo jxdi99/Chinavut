@@ -137,6 +137,7 @@ export const MasterDataAPI = {
           groupedModels[groupId].items.push({
             id: m.id,
             name: m.model_name,
+            updated_at: m.updated_at,
             // Calculation fields (Direct Mapping)
             rw: parseInt(m.resolution_width, 10) || 0,
             rh: parseInt(m.resolution_height, 10) || 0,
@@ -185,11 +186,13 @@ export const MasterDataAPI = {
           name: c.name,
           load: c.load_pixels,
           price: c.price,
+          updated_at: c.updated_at
         })),
         accessories: (accessories.data || []).map((a) => ({
           id: a.id,
           name: a.name,
           price: a.price,
+          updated_at: a.updated_at
         })),
       };
     } catch (err) {
@@ -213,11 +216,11 @@ export const MasterDataAPI = {
       const toInt = (v) => { const n = parseInt(v, 10); return isNaN(n) ? 0 : n; };
       const toFloat = (v) => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
 
-      // === 1. LED Models ===
-      const modelsToUpsert = [];
-      ["UIR", "UOS", "CIH"].forEach((group) => {
-        if (masterData[group] && masterData[group].items) {
-          masterData[group].items.forEach((item) => {
+      if (subsetData.UIR || subsetData.UOS || subsetData.CIH) {
+        const groups = ["UIR", "UOS", "CIH"];
+        for (const g of groups) {
+          if (!subsetData[g] || !subsetData[g].items) continue;
+          for (const item of subsetData[g].items) {
             const row = {
               model_name: String(item.name || ""),
               price_per_sqm: toFloat(item.price),
@@ -246,43 +249,66 @@ export const MasterDataAPI = {
               working_temp: String(item.working_temp || ""),
               humidity: String(item.humidity || ""),
             };
-            if (item.id) row.id = item.id; // Use ID for upsert
-            modelsToUpsert.push(row);
-          });
-        }
-      });
 
-      if (modelsToUpsert.length > 0) {
-        const { error } = await supabase.from("led_models").upsert(modelsToUpsert);
-        if (error) return { success: false, error: "led_models Upsert: " + error.message };
+            if (item.id) {
+              // OPTIMISTIC LOCKING: Update only if updated_at matches
+              const { data, error, status } = await supabase.from("led_models")
+                .update(row)
+                .match({ id: item.id, updated_at: item.updated_at })
+                .select();
+              
+              if (error) return { success: false, error: "led_models Update Error: " + error.message };
+              if (!data || data.length === 0) {
+                return { success: false, error: `CONFLICT: แถว "${item.name}" ถูกแก้ไขโดยผู้อื่นไปแล้ว โปรด Refresh ข้อมูลก่อนแก้ไขใหม่` };
+              }
+            } else {
+              // New row
+              const { error } = await supabase.from("led_models").insert(row);
+              if (error) return { success: false, error: "led_models Insert Error: " + error.message };
+            }
+          }
+        }
       }
+      
       if (deletions.led_models && deletions.led_models.length > 0) {
         await supabase.from("led_models").delete().in("id", deletions.led_models);
       }
 
       // === 2. Controllers ===
-      const cData = (masterData.controllers || []).map(c => {
-        const row = { name: String(c.name || ""), load_pixels: toInt(c.load), price: toFloat(c.price) };
-        if (c.id) row.id = c.id;
-        return row;
-      });
-      if (cData.length > 0) {
-        const { error } = await supabase.from("controllers").upsert(cData);
-        if (error) return { success: false, error: "controllers Upsert: " + error.message };
+      if (subsetData.controllers && subsetData.controllers.length > 0) {
+        for (const c of subsetData.controllers) {
+          const row = { name: String(c.name || ""), load_pixels: toInt(c.load), price: toFloat(c.price) };
+          if (c.id) {
+            const { data, error } = await supabase.from("controllers")
+              .update(row)
+              .match({ id: c.id, updated_at: c.updated_at })
+              .select();
+            if (error) return { success: false, error: "controllers Update Error: " + error.message };
+            if (!data || data.length === 0) return { success: false, error: `CONFLICT: Controller "${c.name}" ถูกแก้ไขโดยผู้อื่นไปแล้ว` };
+          } else {
+            await supabase.from("controllers").insert(row);
+          }
+        }
       }
       if (deletions.controllers && deletions.controllers.length > 0) {
         await supabase.from("controllers").delete().in("id", deletions.controllers);
       }
 
       // === 3. Accessories ===
-      const aData = (masterData.accessories || []).map(a => {
-        const row = { name: String(a.name || ""), price: toFloat(a.price) };
-        if (a.id) row.id = a.id;
-        return row;
-      });
-      if (aData.length > 0) {
-        const { error } = await supabase.from("accessories").upsert(aData);
-        if (error) return { success: false, error: "accessories Upsert: " + error.message };
+      if (subsetData.accessories && subsetData.accessories.length > 0) {
+        for (const a of subsetData.accessories) {
+          const row = { name: String(a.name || ""), price: toFloat(a.price) };
+          if (a.id) {
+            const { data, error } = await supabase.from("accessories")
+              .update(row)
+              .match({ id: a.id, updated_at: a.updated_at })
+              .select();
+            if (error) return { success: false, error: "accessories Update Error: " + error.message };
+            if (!data || data.length === 0) return { success: false, error: `CONFLICT: อุปกรณ์ "${a.name}" ถูกแก้ไขโดยผู้อื่นไปแล้ว` };
+          } else {
+            await supabase.from("accessories").insert(row);
+          }
+        }
       }
       if (deletions.accessories && deletions.accessories.length > 0) {
         await supabase.from("accessories").delete().in("id", deletions.accessories);
