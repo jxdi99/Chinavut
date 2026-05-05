@@ -320,9 +320,18 @@
   async function logout() { App.logout(); }
 
   async function saveAll() {
+    App.showToast("💾 กำลังบันทึกข้อมูล...");
     const result = await persist();
-    if (result && result.success) App.showToast(App.t("saved"));
-    else alert("❌ ไม่สามารถบันทึกได้! กรุณาตรวจสอบ RLS ใน Supabase");
+    if (result && result.success) {
+      App.showToast("✅ บันทึกข้อมูลเรียบร้อยแล้ว");
+      // IMPORTANT: Refresh data immediately to get new IDs from DB
+      // and clear local cache so other pages (Calculator) get fresh data
+      localStorage.removeItem("razr_led_state"); 
+      await refreshData(); 
+    } else {
+      const errorDetail = result?.error || "ไม่ทราบสาเหตุ";
+      alert(`❌ ไม่สามารถบันทึกข้อมูลได้!\n\nสาเหตุ: ${errorDetail}\n\nคำแนะนำ:\n1. ตรวจสอบว่าปิด RLS ใน Supabase แล้ว (ทั้ง Insert และ Update)\n2. ตรวจสอบว่าข้อมูลในช่องตัวเลข (เช่น Price, RW) ไม่ได้ใส่ตัวอักษร\n3. หากยังไม่ได้ผล โปรดจับภาพหน้าจอนี้ส่งให้ทีมพัฒนาครับ`);
+    }
   }
 
   function toggleEditMode() {
