@@ -216,55 +216,58 @@ export const MasterDataAPI = {
       const toInt = (v) => { const n = parseInt(v, 10); return isNaN(n) ? 0 : n; };
       const toFloat = (v) => { const n = parseFloat(v); return isNaN(n) ? 0 : n; };
 
+      const modelFieldMap = {
+        name: "model_name", price: "price_per_sqm", rw: "resolution_width", rh: "resolution_height",
+        max: "max_power_w", avg: "avg_power_w", weight_kg: "weight_kg", brightness: "brightness_nits",
+        refresh_rate: "refresh_rate_hz", material: "material", maintenance: "maintenance",
+        ingress_protection: "ip_rating", led_type: "led_type", beam_angle: "beam_angle",
+        color_temperature: "color_temp", processing_depth: "grayscale", life_hours: "life_hours",
+        video_support: "frame_rate", display_type: "display_type", module_size: "module_size",
+        cabinet_resolution: "cabinet_resolution", modules_per_cabinet: "modules_per_cabinet",
+        status_checking: "status_checking", contrast_ratio: "contrast_ratio",
+        working_temp: "working_temp", humidity: "humidity"
+      };
+
       if (subsetData.UIR || subsetData.UOS || subsetData.CIH) {
-        const groups = ["UIR", "UOS", "CIH"];
-        for (const g of groups) {
+        for (const g of ["UIR", "UOS", "CIH"]) {
           if (!subsetData[g] || !subsetData[g].items) continue;
           for (const item of subsetData[g].items) {
-            const row = {
-              model_name: String(item.name || ""),
-              price_per_sqm: toFloat(item.price),
-              resolution_width: toInt(item.rw),
-              resolution_height: toInt(item.rh),
-              max_power_w: toInt(item.max),
-              avg_power_w: toInt(item.avg),
-              weight_kg: toFloat(item.weight_kg),
-              brightness_nits: toInt(item.brightness),
-              refresh_rate_hz: toInt(item.refresh_rate),
-              material: String(item.material || ""),
-              maintenance: String(item.maintenance || ""),
-              ip_rating: String(item.ingress_protection || ""),
-              led_type: String(item.led_type || ""),
-              beam_angle: String(item.beam_angle || ""),
-              color_temp: String(item.color_temperature || ""),
-              grayscale: String(item.processing_depth || ""),
-              life_hours: toInt(item.life_hours),
-              frame_rate: String(item.video_support || ""),
-              display_type: String(item.display_type || ""),
-              module_size: String(item.module_size || ""),
-              cabinet_resolution: String(item.cabinet_resolution || ""),
-              modules_per_cabinet: toInt(item.modules_per_cabinet),
-              status_checking: String(item.status_checking || ""),
-              contrast_ratio: String(item.contrast_ratio || ""),
-              working_temp: String(item.working_temp || ""),
-              humidity: String(item.humidity || ""),
-            };
-
-            if (item.id) {
-              // OPTIMISTIC LOCKING: Update only if updated_at matches
-              const { data, error, status } = await supabase.from("led_models")
-                .update(row)
-                .match({ id: item.id, updated_at: item.updated_at })
-                .select();
-              
-              if (error) return { success: false, error: "led_models Update Error: " + error.message };
-              if (!data || data.length === 0) {
-                return { success: false, error: `CONFLICT: แถว "${item.name}" ถูกแก้ไขโดยผู้อื่นไปแล้ว โปรด Refresh ข้อมูลก่อนแก้ไขใหม่` };
-              }
-            } else {
-              // New row
+            let row = {};
+            if (!item.id) {
+              // Full row for new items
+              row = {
+                model_name: String(item.name || ""), price_per_sqm: toFloat(item.price),
+                resolution_width: toInt(item.rw), resolution_height: toInt(item.rh),
+                max_power_w: toInt(item.max), avg_power_w: toInt(item.avg),
+                weight_kg: toFloat(item.weight_kg), brightness_nits: toInt(item.brightness),
+                refresh_rate_hz: toInt(item.refresh_rate), material: String(item.material || ""),
+                maintenance: String(item.maintenance || ""), ip_rating: String(item.ingress_protection || ""),
+                led_type: String(item.led_type || ""), beam_angle: String(item.beam_angle || ""),
+                color_temp: String(item.color_temperature || ""), grayscale: String(item.processing_depth || ""),
+                life_hours: toInt(item.life_hours), frame_rate: String(item.video_support || ""),
+                display_type: String(item.display_type || ""), module_size: String(item.module_size || ""),
+                cabinet_resolution: String(item.cabinet_resolution || ""), modules_per_cabinet: toInt(item.modules_per_cabinet),
+                status_checking: String(item.status_checking || ""), contrast_ratio: String(item.contrast_ratio || ""),
+                working_temp: String(item.working_temp || ""), humidity: String(item.humidity || "")
+              };
               const { error } = await supabase.from("led_models").insert(row);
               if (error) return { success: false, error: "led_models Insert Error: " + error.message };
+            } else {
+              // Partial row for updates (Merge support)
+              if (item._dirtyFields) {
+                Object.keys(item._dirtyFields).forEach(f => {
+                  const dbCol = modelFieldMap[f];
+                  if (dbCol) {
+                    const val = item[f];
+                    row[dbCol] = (typeof val === 'number') ? val : String(val || "");
+                  }
+                });
+              } else {
+                // Fallback: entire row if no dirty tracking
+                row = { model_name: item.name, price_per_sqm: item.price }; 
+              }
+              const { error } = await supabase.from("led_models").update(row).eq("id", item.id);
+              if (error) return { success: false, error: "led_models Update Error: " + error.message };
             }
           }
         }
@@ -277,16 +280,16 @@ export const MasterDataAPI = {
       // === 2. Controllers ===
       if (subsetData.controllers && subsetData.controllers.length > 0) {
         for (const c of subsetData.controllers) {
-          const row = { name: String(c.name || ""), load_pixels: toInt(c.load), price: toFloat(c.price) };
-          if (c.id) {
-            const { data, error } = await supabase.from("controllers")
-              .update(row)
-              .match({ id: c.id, updated_at: c.updated_at })
-              .select();
-            if (error) return { success: false, error: "controllers Update Error: " + error.message };
-            if (!data || data.length === 0) return { success: false, error: `CONFLICT: Controller "${c.name}" ถูกแก้ไขโดยผู้อื่นไปแล้ว` };
+          if (!c.id) {
+            await supabase.from("controllers").insert({ name: String(c.name || ""), load_pixels: toInt(c.load), price: toFloat(c.price) });
           } else {
-            await supabase.from("controllers").insert(row);
+            const row = {};
+            if (c._dirtyFields) {
+               if (c._dirtyFields.name) row.name = c.name;
+               if (c._dirtyFields.load) row.load_pixels = toInt(c.load);
+               if (c._dirtyFields.price) row.price = toFloat(c.price);
+            }
+            await supabase.from("controllers").update(row).eq("id", c.id);
           }
         }
       }
@@ -297,18 +300,20 @@ export const MasterDataAPI = {
       // === 3. Accessories ===
       if (subsetData.accessories && subsetData.accessories.length > 0) {
         for (const a of subsetData.accessories) {
-          const row = { name: String(a.name || ""), price: toFloat(a.price) };
-          if (a.id) {
-            const { data, error } = await supabase.from("accessories")
-              .update(row)
-              .match({ id: a.id, updated_at: a.updated_at })
-              .select();
-            if (error) return { success: false, error: "accessories Update Error: " + error.message };
-            if (!data || data.length === 0) return { success: false, error: `CONFLICT: อุปกรณ์ "${a.name}" ถูกแก้ไขโดยผู้อื่นไปแล้ว` };
+          if (!a.id) {
+            await supabase.from("accessories").insert({ name: String(a.name || ""), price: toFloat(a.price) });
           } else {
-            await supabase.from("accessories").insert(row);
+            const row = {};
+            if (a._dirtyFields) {
+               if (a._dirtyFields.name) row.name = a.name;
+               if (a._dirtyFields.price) row.price = toFloat(a.price);
+            }
+            await supabase.from("accessories").update(row).eq("id", a.id);
           }
         }
+      }
+      if (deletions.accessories && deletions.accessories.length > 0) {
+        await supabase.from("accessories").delete().in("id", deletions.accessories);
       }
       if (deletions.accessories && deletions.accessories.length > 0) {
         await supabase.from("accessories").delete().in("id", deletions.accessories);

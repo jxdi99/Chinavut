@@ -298,11 +298,20 @@
     const isTextField = textFields.includes(field);
 
     if (kind === "item" && group().items[index]) {
-      group().items[index][field] = isTextField ? el.value : Number(el.value || 0);
+      const it = group().items[index];
+      it[field] = isTextField ? el.value : Number(el.value || 0);
+      it._dirtyFields = it._dirtyFields || {};
+      it._dirtyFields[field] = true;
     } else if (kind === "controller" && data().controllers[index]) {
-      data().controllers[index][field] = isTextField ? el.value : Number(el.value || 0);
+      const it = data().controllers[index];
+      it[field] = isTextField ? el.value : Number(el.value || 0);
+      it._dirtyFields = it._dirtyFields || {};
+      it._dirtyFields[field] = true;
     } else if (kind === "accessory" && data().accessories[index]) {
-      data().accessories[index][field] = isTextField ? el.value : Number(el.value || 0);
+      const it = data().accessories[index];
+      it[field] = isTextField ? el.value : Number(el.value || 0);
+      it._dirtyFields = it._dirtyFields || {};
+      it._dirtyFields[field] = true;
     }
     // Mark row as dirty
     dirtyRows[selectedGroup].add(index);
